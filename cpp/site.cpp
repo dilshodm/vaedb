@@ -19,7 +19,7 @@ Site::Site(string su, string sk, bool testMode, bool stagingMode_) : secretKey(s
     filename = su;
     subdomain = "test";
   } else {
-    filename = "/var/www/vhosts/" + su + ".vae/data/feed.xml";
+    filename = "/var/www/vhosts/" + su + ".verb/data/feed.xml";
     subdomain = su;
     validateSecretKeyAgainstConfig(sk);
   }
@@ -129,7 +129,7 @@ void Site::validateSecretKey(string testSecretKey) {
   
 void Site::validateSecretKeyAgainstConfig(string testSecretKey) {
   ifstream conf;
-  string filename = "/var/www/vhosts/" + subdomain + ".vae/conf/config.php";
+  string filename = "/var/www/vhosts/" + subdomain + ".verb/conf/config.php";
   conf.open(filename.c_str(), ios::ate);
   if (!conf.is_open()) {
     L(warning) << "[" << subdomain << "] could not open configuration file: " << filename;
