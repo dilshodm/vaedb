@@ -9,7 +9,7 @@ typedef vector<class Context *> ContextList;
 typedef map<int,xmlNodePtr> NodeIdMap;
 typedef vector<xmlNodePtr> NodeList;
 typedef map<string,xmlNodePtr> PermalinkMap;
-typedef map<int,VerbDbStructure *> StructureMap;
+typedef map<int,VaeDbStructure *> StructureMap;
 
 class Site {
   
@@ -34,7 +34,7 @@ class Site {
   ~Site();
   string getSubdomain();
   void reset();
-  VerbDbStructure *structureFromStructureId(int structureId);
+  VaeDbStructure *structureFromStructureId(int structureId);
   void validateSecretKey(string testSecretKey);
 
  private:

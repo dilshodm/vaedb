@@ -19,18 +19,18 @@ using namespace boost;
 using namespace std;
 namespace po = boost::program_options;
 
-#include "../gen-cpp/VerbDb.h"
+#include "../gen-cpp/VaeDb.h"
 #include "site.h"
 #include "context.h"
 #include "logger.h"
 #include "response.h"
 #include "session.h"
-#include "verb_db_handler.h"
+#include "vae_db_handler.h"
 
 int main(int argc, char **argv) {
   
   int opt, workers;
-  po::options_description desc("verbdb options", 80);
+  po::options_description desc("vaedb options", 80);
   desc.add_options()
     ("help,H", "outputs this help message")
     ("log_level,L", po::value<string>(), "log level.  Acceptable values: error, warning, info, debug")
@@ -55,8 +55,8 @@ int main(int argc, char **argv) {
   }
   
   shared_ptr<PosixThreadFactory> threadFactory = shared_ptr<PosixThreadFactory>(new PosixThreadFactory());
-  shared_ptr<VerbDbHandler> handler(new VerbDbHandler(vm.count("test")));
-  shared_ptr<TProcessor> processor(new VerbDbProcessor(handler));
+  shared_ptr<VaeDbHandler> handler(new VaeDbHandler(vm.count("test")));
+  shared_ptr<TProcessor> processor(new VaeDbProcessor(handler));
   shared_ptr<TServerSocket> serverSocket(new TServerSocket(vm["port"].as<int>()));
   shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
   shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());

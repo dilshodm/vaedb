@@ -7,7 +7,7 @@
 using namespace std;
 using namespace boost;
 
-#include "../gen-cpp/VerbDb.h"
+#include "../gen-cpp/VaeDb.h"
 #include "context.h"
 #include "query.h"
 #include "response.h"
@@ -37,19 +37,19 @@ Context::Context(Site *s, const xmlNodePtr n) : site(s) {
     }
   }
   site->nodes[id] = node;
-  verbDbContext.id = id;
+  vaeDbContext.id = id;
   if (structure) {
-    verbDbContext.structure_id = structure->id;
-    verbDbContext.type = type;
+    vaeDbContext.structure_id = structure->id;
+    vaeDbContext.type = type;
   }
   if (permalink) {
-    verbDbContext.permalink = permalink;
+    vaeDbContext.permalink = permalink;
     site->permalinks[permalink] = node;
   } else {
-    verbDbContext.permalink = "";
+    vaeDbContext.permalink = "";
   }
   if (id == 0) {
-    verbDbContext.data = getSingleData();
+    vaeDbContext.data = getSingleData();
   }
 }
 
@@ -69,7 +69,7 @@ string Context::getData(const string &query) {
   if (!dataPopulated) populateData();
   boost::unique_lock<boost::mutex> lock(mutex);
   if (query == "") {
-    throw VerbDbInternalError("Empty query passed to Context::getData");
+    throw VaeDbInternalError("Empty query passed to Context::getData");
   }
   DataMap::const_iterator it;
   if ((it = data.find(query)) != data.end()) {
@@ -121,7 +121,7 @@ void Context::initializeAssociation() {
     
       /* set up reverse association */
       xmlNodePtr pointerNode = xmlCopyNode(node->parent, 0);
-      if (pointerNode == NULL) throw VerbDbInternalError("xmlCopyNode returned NULL");
+      if (pointerNode == NULL) throw VaeDbInternalError("xmlCopyNode returned NULL");
       pointerNode->_private = node->parent->_private;
       pointerNode->children = node->parent->children;
       pointerNode->last = node->parent->last;
@@ -190,17 +190,17 @@ void Context::populateData() {
   dataPopulated = true;
 }
 
-VerbDbContext Context::toVerbDbContext() {
-  return verbDbContext;
+VaeDbContext Context::toVaeDbContext() {
+  return vaeDbContext;
 }
 
-VerbDbDataForContext Context::toVerbDbDataForContext() {
-  VerbDbDataForContext _return;
+VaeDbDataForContext Context::toVaeDbDataForContext() {
+  VaeDbDataForContext _return;
   if (!dataPopulated) populateData();
   _return.data = data;
   return _return;
 }
 
-VerbDbStructure Context::toVerbDbStructureForContext() {
+VaeDbStructure Context::toVaeDbStructureForContext() {
   return *structure;
 }

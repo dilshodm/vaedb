@@ -12,23 +12,23 @@ CXXFLAGS = @CXXFLAGS@ @BOOST_CXXFLAGS@ -I/usr/local/include/thrift -I../gen-cpp 
 LDFLAGS = -L/usr/local/libxml2/lib -L/usr/local/lib @LDFLAGS@ @BOOST_LDFLAGS@ -g
 LIBS = @LIBS@ -lboost_program_options -lboost_thread -lpcrecpp -Wl,-Bstatic -lxml2 -Wl,-Bdynamic -lthrift -lm -lz -g 
 
-GEN_SRC = ../gen-cpp/verb_types.cpp ../gen-cpp/VerbDb.cpp
-OBJS = context.o logger.o main.o query.o reaper.o response.o session.o site.o util.o verb_db_handler.o verb_types.o VerbDb.o
-HEADERS = context.h logger.h query.h reaper.h response.h session.h site.h util.h verb_db_handler.h ../gen-cpp/verb_types.h ../gen-cpp/verb_constants.h ../gen-cpp/VerbDb.h
+GEN_SRC = ../gen-cpp/vae_types.cpp ../gen-cpp/VaeDb.cpp
+OBJS = context.o logger.o main.o query.o reaper.o response.o session.o site.o util.o vae_db_handler.o vae_types.o VaeDb.o
+HEADERS = context.h logger.h query.h reaper.h response.h session.h site.h util.h vae_db_handler.h ../gen-cpp/vae_types.h ../gen-cpp/vae_constants.h ../gen-cpp/VaeDb.h
 	
 default: server
 
 clean:
-	$(RM) verbdb *.o
+	$(RM) vaedb *.o
 
 context.o: context.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} context.cpp
 
 install: server
-	svc -d /service/verbdbd
+	svc -d /service/vaedbd
 	sleep 2
-	cp verbdb /usr/local/bin
-	svc -u /service/verbdbd
+	cp vaedb /usr/local/bin
+	svc -u /service/vaedbd
 	
 logger.o: logger.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} logger.cpp
@@ -40,7 +40,7 @@ query.o: query.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} query.cpp
 
 patch:
-	patch ../gen-cpp/verb_types.h < verb_types.h.patch
+	patch ../gen-cpp/vae_types.h < vae_types.h.patch
 
 reaper.o: reaper.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} reaper.cpp
@@ -49,7 +49,7 @@ response.o: response.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} response.cpp
 	
 server: ${OBJS}
-	${CXX} -o verbdb ${OBJS} ${LDFLAGS} ${LIBS}
+	${CXX} -o vaedb ${OBJS} ${LDFLAGS} ${LIBS}
 	
 session.o: session.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} session.cpp
@@ -60,11 +60,11 @@ site.o: site.cpp ${HEADERS}
 util.o: util.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} util.cpp
 	
-verb_db_handler.o: verb_db_handler.cpp ${HEADERS}
-	${CXX} ${CXXFLAGS} verb_db_handler.cpp
+vae_db_handler.o: vae_db_handler.cpp ${HEADERS}
+	${CXX} ${CXXFLAGS} vae_db_handler.cpp
 	
-verb_types.o: ../gen-cpp/verb_types.cpp ../gen-cpp/verb_types.h
-	${CXX} ${CXXFLAGS} ../gen-cpp/verb_types.cpp 
+vae_types.o: ../gen-cpp/vae_types.cpp ../gen-cpp/vae_types.h
+	${CXX} ${CXXFLAGS} ../gen-cpp/vae_types.cpp 
 	
-VerbDb.o: ../gen-cpp/VerbDb.cpp ../gen-cpp/VerbDb.h
-	${CXX} ${CXXFLAGS} ../gen-cpp/VerbDb.cpp
+VaeDb.o: ../gen-cpp/VaeDb.cpp ../gen-cpp/VaeDb.h
+	${CXX} ${CXXFLAGS} ../gen-cpp/VaeDb.cpp

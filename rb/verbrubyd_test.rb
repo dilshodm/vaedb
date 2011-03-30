@@ -5,9 +5,9 @@ Dir.glob(File.dirname(THIS_FILE) + '/lib/vendor/*/lib').each { |dir| $:.unshift(
 $:.unshift File.dirname(THIS_FILE) + '/lib'
 
 require 'test/unit'
-require 'verbrubyd'
+require 'vaerubyd'
 
-class VerbrubydTest < Test::Unit::TestCase
+class VaerubydTest < Test::Unit::TestCase
   
   def setup
   end

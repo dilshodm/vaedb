@@ -17,9 +17,9 @@ class Context {
   NodeList pointerNodes;
   string singleData;
   class Site *site;
-  VerbDbStructure *structure;
+  VaeDbStructure *structure;
   string type;
-  VerbDbContext verbDbContext;
+  VaeDbContext vaeDbContext;
   
  public:
   xmlNodePtr node;
@@ -37,7 +37,7 @@ class Context {
   const char *getNodeName();
   int32_t getStructureId();
   void initializeAssociation();
-  VerbDbContext toVerbDbContext();
-  VerbDbDataForContext toVerbDbDataForContext();
-  VerbDbStructure toVerbDbStructureForContext();
+  VaeDbContext toVaeDbContext();
+  VaeDbDataForContext toVaeDbDataForContext();
+  VaeDbStructure toVaeDbStructureForContext();
 };

@@ -6,7 +6,7 @@
 using namespace boost;
 using namespace std;
 
-#include "../gen-cpp/VerbDb.h"
+#include "../gen-cpp/VaeDb.h"
 #include "context.h"
 #include "site.h"
 #include "logger.h"
@@ -19,7 +19,7 @@ Site::Site(string su, string sk, bool testMode, bool stagingMode_) : secretKey(s
     filename = su;
     subdomain = "test";
   } else {
-    filename = "/var/www/vhosts/" + su + ".verb/data/feed.xml";
+    filename = "/var/www/vhosts/" + su + ".vae/data/feed.xml";
     subdomain = su;
     validateSecretKeyAgainstConfig(sk);
   }
@@ -70,20 +70,20 @@ string Site::getSubdomain() {
 void Site::loadXmlDoc() {
   if ((doc = xmlParseFile(filename.c_str())) == NULL) {
     L(warning) << "[" << subdomain << "] could not open XML file: " << filename;
-    throw VerbDbInternalError("Could not open XML file!");
+    throw VaeDbInternalError("Could not open XML file!");
   }
   xmlXPathOrderDocElems(doc);
   rootNode = rootDesignNode = NULL;
   Query _rootNodeQuery(this);
   _rootNodeQuery.runRawQuery(NULL, "/website/content", "website root node");
   if (_rootNodeQuery.getSize() != 1) {
-    throw VerbDbInternalError("Could not find root content node in XML file");
+    throw VaeDbInternalError("Could not find root content node in XML file");
   }
   rootNode = _rootNodeQuery.getNode(0);
   Query _rootDesignNodeQuery(this);
   _rootDesignNodeQuery.runRawQuery(NULL, "/website/design", "website design node");
   if (_rootDesignNodeQuery.getSize() != 1) {
-    throw VerbDbInternalError("Could not find root design node in XML file");
+    throw VaeDbInternalError("Could not find root design node in XML file");
   }
   rootDesignNode = _rootDesignNodeQuery.getNode(0);
   xmlNode *next;
@@ -99,7 +99,7 @@ void Site::loadXmlDoc() {
   associationsToInitialize.clear();
 }
 
-VerbDbStructure *Site::structureFromStructureId(int structureId) {
+VaeDbStructure *Site::structureFromStructureId(int structureId) {
   StructureMap::const_iterator it;
   if ((it = structures.find(structureId)) != structures.end()) {
     return it->second;
@@ -109,7 +109,7 @@ VerbDbStructure *Site::structureFromStructureId(int structureId) {
   Query _query(this);
   _query.runRawQuery(NULL, q.str(), q.str());
   if (!_query.getNode(0)) return NULL;
-  VerbDbStructure *structure = new VerbDbStructure();
+  VaeDbStructure *structure = new VaeDbStructure();
   structure->id = structureId;
   for (xmlAttr *child = _query.getNode(0)->properties; child; child = child->next) {
     if (!strcmp((const char *)child->name, "name")) structure->name = (const char *)child->children->content;
@@ -123,17 +123,17 @@ VerbDbStructure *Site::structureFromStructureId(int structureId) {
 void Site::validateSecretKey(string testSecretKey) {
   if (secretKey != testSecretKey) {
     L(warning) << "[" << subdomain << "] secret key mismatch: " << secretKey << " <> " << testSecretKey;
-    throw VerbDbInternalError("Secret key mismatch");
+    throw VaeDbInternalError("Secret key mismatch");
   }
 }
   
 void Site::validateSecretKeyAgainstConfig(string testSecretKey) {
   ifstream conf;
-  string filename = "/var/www/vhosts/" + subdomain + ".verb/conf/config.php";
+  string filename = "/var/www/vhosts/" + subdomain + ".vae/conf/config.php";
   conf.open(filename.c_str(), ios::ate);
   if (!conf.is_open()) {
     L(warning) << "[" << subdomain << "] could not open configuration file: " << filename;
-    throw VerbDbInternalError("could not open configuration file!");
+    throw VaeDbInternalError("could not open configuration file!");
   }
   ifstream::pos_type size = conf.tellg();
   char *memblock = new char[size];
@@ -142,7 +142,7 @@ void Site::validateSecretKeyAgainstConfig(string testSecretKey) {
   if (!pcrecpp::RE("\\['secret_key'\\] = \"" + testSecretKey + "\"").PartialMatch(memblock)) {
     delete[] memblock;
     L(warning) << "[" << subdomain << "] secret key did not match: " << testSecretKey;
-    throw VerbDbInternalError("Secret Key did not match!");
+    throw VaeDbInternalError("Secret Key did not match!");
   }
   delete[] memblock;
 }

@@ -8,7 +8,7 @@
 using namespace std;
 using namespace boost;
 
-#include "../gen-cpp/VerbDb.h"
+#include "../gen-cpp/VaeDb.h"
 #include "site.h"
 #include "context.h"
 #include "response.h"
@@ -134,7 +134,7 @@ Response::~Response() {
 }
 
 void Response::createInfo(Context *context, const string &query) {
-  VerbDbCreateInfo ci;
+  VaeDbCreateInfo ci;
   string mainQuery, lastPart;
   vector<string> queryParts;
   boost::split(queryParts, query, boost::is_any_of("/"));
@@ -157,7 +157,7 @@ void Response::createInfo(Context *context, const string &query) {
   }
   if (atoi(lastPart.c_str()) != 0) {
     string error = "invalid path for creating: '" + query + "'";
-    throw VerbDbQueryError(error.c_str());
+    throw VaeDbQueryError(error.c_str());
   }
   Query structureQuery(site.get());
   structureQuery.runDesignQuery(context, lastPart);
@@ -167,7 +167,7 @@ void Response::createInfo(Context *context, const string &query) {
     }
   } else {
     string error = "could not find path for creating: '" + query + "'";
-    throw VerbDbQueryError(error.c_str());
+    throw VaeDbQueryError(error.c_str());
   }
   createInfos.push_back(ci);
 }
@@ -311,35 +311,35 @@ bool Response::uniqueMatch(xmlNode *node) {
   return false;
 }
 
-void Response::writeVerbDbCreateInfoResponse(VerbDbCreateInfoResponse &_return) {
+void Response::writeVaeDbCreateInfoResponse(VaeDbCreateInfoResponse &_return) {
   for (CreateInfoList::iterator it = createInfos.begin(); it != createInfos.end(); it++) {
     _return.contexts.push_back(*it);
   }
 }
 
-void Response::writeVerbDbDataResponse(VerbDbDataResponse &_return) {
+void Response::writeVaeDbDataResponse(VaeDbDataResponse &_return) {
   for (ResponseContextList::const_iterator it = contexts.begin(); it != contexts.end(); it++) {
     for (ContextList::const_iterator it2 = (*it).contexts.begin(); it2 != (*it).contexts.end(); it2++) {
-       _return.contexts.push_back((*it2)->toVerbDbDataForContext());
+       _return.contexts.push_back((*it2)->toVaeDbDataForContext());
     }
   }
 }
 
-void Response::writeVerbDbResponse(VerbDbResponse &_return) {
+void Response::writeVaeDbResponse(VaeDbResponse &_return) {
   for (ResponseContextList::const_iterator it = contexts.begin(); it != contexts.end(); it++) {
-    VerbDbResponseForContext context_list;
+    VaeDbResponseForContext context_list;
     for (ContextList::const_iterator it2 = (*it).contexts.begin(); it2 != (*it).contexts.end(); it2++) {
-      context_list.contexts.push_back((*it2)->toVerbDbContext());
+      context_list.contexts.push_back((*it2)->toVaeDbContext());
     }
     context_list.totalItems = (*it).total;
     _return.contexts.push_back(context_list);
   }
 }
 
-void Response::writeVerbDbStructureResponse(VerbDbStructureResponse &_return) {
+void Response::writeVaeDbStructureResponse(VaeDbStructureResponse &_return) {
   for (ResponseContextList::const_iterator it = contexts.begin(); it != contexts.end(); it++) {
     for (ContextList::const_iterator it2 = (*it).contexts.begin(); it2 != (*it).contexts.end(); it2++) {
-       _return.contexts.push_back((*it2)->toVerbDbStructureForContext());
+       _return.contexts.push_back((*it2)->toVaeDbStructureForContext());
     }
   }
 }

@@ -6,18 +6,18 @@
 using namespace boost;
 using namespace std;
 
-#include "../gen-cpp/VerbDb.h"
+#include "../gen-cpp/VaeDb.h"
 #include "site.h"
 #include "context.h"
 #include "logger.h"
 #include "reaper.h"
 #include "response.h"
 #include "session.h"
-#include "verb_db_handler.h"
+#include "vae_db_handler.h"
 
 void eatErrors(void * ctx, const char * msg, ...) { }
 
-shared_ptr<Site> VerbDbHandler::getSite(string subdomain, string secretKey, bool stagingMode) {
+shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey, bool stagingMode) {
   boost::mutex *siteMutex;
   string sitesKey;
   sitesKey = (stagingMode ? subdomain + ".staging" : subdomain);
@@ -52,21 +52,21 @@ shared_ptr<Site> VerbDbHandler::getSite(string subdomain, string secretKey, bool
   }
 }
  
-VerbDbHandler::VerbDbHandler(bool t) : testMode(t) {
+VaeDbHandler::VaeDbHandler(bool t) : testMode(t) {
   nextSessionId = 1;
   xmlInitParser();
   xmlSetGenericErrorFunc(NULL, eatErrors);
   writePid();
   new Reaper(this);  
-  L(info) << "VerbDB Running (" << (testMode ? "TEST" : "production") << " environment)";
+  L(info) << "VaeDB Running (" << (testMode ? "TEST" : "production") << " environment)";
 }
 
-VerbDbHandler::~VerbDbHandler() { 
+VaeDbHandler::~VaeDbHandler() { 
   L(info) << "shutdown";
   xmlCleanupParser();
 }
 
-void VerbDbHandler::closeSession(const int32_t sessionId, const string& secretKey) {
+void VaeDbHandler::closeSession(const int32_t sessionId, const string& secretKey) {
   boost::unique_lock<boost::mutex> lock(sessionsMutex);
   if (sessions.count(sessionId)) {
     sessions.erase(sessionId);
@@ -75,7 +75,7 @@ void VerbDbHandler::closeSession(const int32_t sessionId, const string& secretKe
   }
 }
 
-void VerbDbHandler::createInfo(VerbDbCreateInfoResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query) {
+void VaeDbHandler::createInfo(VaeDbCreateInfoResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query) {
   shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -89,7 +89,7 @@ void VerbDbHandler::createInfo(VerbDbCreateInfoResponse& _return, const int32_t 
   session->createInfo(_return, responseId, query);
 }
 
-void VerbDbHandler::data(VerbDbDataResponse& _return, const int32_t sessionId, const int32_t responseId) {
+void VaeDbHandler::data(VaeDbDataResponse& _return, const int32_t sessionId, const int32_t responseId) {
   shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -103,7 +103,7 @@ void VerbDbHandler::data(VerbDbDataResponse& _return, const int32_t sessionId, c
   session->data(_return, responseId);
 }
   
-void VerbDbHandler::get(VerbDbResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query, const map<string, string> & options) {
+void VaeDbHandler::get(VaeDbResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query, const map<string, string> & options) {
   shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -117,11 +117,11 @@ void VerbDbHandler::get(VerbDbResponse& _return, const int32_t sessionId, const 
   session->get(_return, responseId, query, options);
 }
   
-SessionMap& VerbDbHandler::getSessions() {
+SessionMap& VaeDbHandler::getSessions() {
   return sessions;
 }
 
-int32_t VerbDbHandler::openSession(const string& subdomain, const string& secretKey, const bool stagingMode) {
+int32_t VaeDbHandler::openSession(const string& subdomain, const string& secretKey, const bool stagingMode) {
   int32_t sessionId; 
   shared_ptr<Site> site = getSite(subdomain, secretKey, stagingMode);
   {
@@ -135,12 +135,12 @@ int32_t VerbDbHandler::openSession(const string& subdomain, const string& secret
   return sessionId;
 }
 
-int8_t VerbDbHandler::ping() {
+int8_t VaeDbHandler::ping() {
   L(info) << "[ping]";
   return 0;
 }
 
-void VerbDbHandler::resetSite(const string& subdomain, const std::string& secretKey) {
+void VaeDbHandler::resetSite(const string& subdomain, const std::string& secretKey) {
   boost::unique_lock<boost::mutex> lock(sitesMutex);
   if (sites.count(subdomain)) {
     sites[subdomain]->validateSecretKey(secretKey);
@@ -153,7 +153,7 @@ void VerbDbHandler::resetSite(const string& subdomain, const std::string& secret
   }
 }
 
-void VerbDbHandler::structure(VerbDbStructureResponse& _return, const int32_t sessionId, const int32_t responseId) {
+void VaeDbHandler::structure(VaeDbStructureResponse& _return, const int32_t sessionId, const int32_t responseId) {
   shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -167,13 +167,13 @@ void VerbDbHandler::structure(VerbDbStructureResponse& _return, const int32_t se
   session->structure(_return, responseId);
 }
 
-void VerbDbHandler::writePid() {
+void VaeDbHandler::writePid() {
   ofstream pidfile;
-  pidfile.open("/tmp/verbdb.pid");
+  pidfile.open("/tmp/vaedb.pid");
   if (pidfile.is_open()) {
     pidfile << getpid();
   } else {
-    L(warning) << "Could not write PID file /tmp/verbdb.pid";
+    L(warning) << "Could not write PID file /tmp/vaedb.pid";
   }
   pidfile.close();
 }

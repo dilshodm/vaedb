@@ -1,9 +1,9 @@
 require 'rubygems'
 require 'compass'
 require 'haml'
-require 'verb_rubyd'
+require 'vae_rubyd'
 
-class VerbRubydHandler
+class VaeRubydHandler
   
   def fixDocRoot(path)
     `sudo /www/plesk_rest/current/fix_document_root.rb #{path}`
@@ -20,7 +20,7 @@ class VerbRubydHandler
       engine = Haml::Engine.new(text)
       engine.render
     rescue Haml::SyntaxError => e
-      raise VerbSyntaxError.new("Haml Syntax Error on line <span class='c'>#{get_line(e)}</span>: #{e.message}")
+      raise VaeSyntaxError.new("Haml Syntax Error on line <span class='c'>#{get_line(e)}</span>: #{e.message}")
     end
   end
   
@@ -32,7 +32,7 @@ class VerbRubydHandler
       engine = Sass::Engine.new(text, options)
       engine.render
     rescue Sass::SyntaxError => e
-      raise VerbSyntaxError.new("Sass Syntax Error on line <span class='c'>#{get_line(e)}</span>: #{e.message}")
+      raise VaeSyntaxError.new("Sass Syntax Error on line <span class='c'>#{get_line(e)}</span>: #{e.message}")
     end
   end
   

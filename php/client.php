@@ -1,29 +1,29 @@
 <?php
 
-function _verb_thrift($port = 9090) {
-  global $_VERB;
-  if ($_VERB['verbrubyd']) return $_VERB['verbrubyd'];
-  $_VERB['verbrubyd'] = _verb_thrift_open("VerbRubydClient", $port);
-  return $_VERB['verbrubyd'];
+function _vae_thrift($port = 9090) {
+  global $_VAE;
+  if ($_VAE['vaerubyd']) return $_VAE['vaerubyd'];
+  $_VAE['vaerubyd'] = _vae_thrift_open("VaeRubydClient", $port);
+  return $_VAE['vaerubyd'];
 };
 
-function _verb_dbd($port = 9091) {
-  global $_VERB;
-  if ($_VERB['verbdbd_port']) $port = $_VERB['verbdbd_port'];
-  if ($_VERB['verbdbd']) return $_VERB['verbdbd'];
-  $_VERB['verbdbd'] = _verb_thrift_open("VerbDbClient", $port);
-  return $_VERB['verbdbd'];
+function _vae_dbd($port = 9091) {
+  global $_VAE;
+  if ($_VAE['vaedbd_port']) $port = $_VAE['vaedbd_port'];
+  if ($_VAE['vaedbd']) return $_VAE['vaedbd'];
+  $_VAE['vaedbd'] = _vae_thrift_open("VaeDbClient", $port);
+  return $_VAE['vaedbd'];
 };
 
-function _verb_thrift_open($client_class, $port) {
+function _vae_thrift_open($client_class, $port) {
   $GLOBALS['THRIFT_ROOT'] = dirname(__FILE__) . '/vendor/thrift';
   require_once $GLOBALS['THRIFT_ROOT'].'/Thrift.php';
   require_once $GLOBALS['THRIFT_ROOT'].'/protocol/TBinaryProtocol.php';
   require_once $GLOBALS['THRIFT_ROOT'].'/transport/TSocket.php';
   require_once $GLOBALS['THRIFT_ROOT'].'/transport/TBufferedTransport.php';
-  require_once $GLOBALS['THRIFT_ROOT'].'/../../../gen-php/verb/VerbDb.php';
-  require_once $GLOBALS['THRIFT_ROOT'].'/../../../gen-php/verb/VerbRubyd.php';
-  require_once $GLOBALS['THRIFT_ROOT'].'/../../../gen-php/verb/verb_types.php';
+  require_once $GLOBALS['THRIFT_ROOT'].'/../../../gen-php/vae/VaeDb.php';
+  require_once $GLOBALS['THRIFT_ROOT'].'/../../../gen-php/vae/VaeRubyd.php';
+  require_once $GLOBALS['THRIFT_ROOT'].'/../../../gen-php/vae/vae_types.php';
   try {
     $socket = new TSocket('localhost', $port);
     $socket->setRecvTimeout(30000);
@@ -33,7 +33,7 @@ function _verb_thrift_open($client_class, $port) {
     $transport->open();
     return $client;
   } catch (TException $tx) {
-    throw new VerbException("", $tx->getMessage());
+    throw new VaeException("", $tx->getMessage());
   }
 }
 

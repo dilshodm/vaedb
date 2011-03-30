@@ -1,9 +1,9 @@
 class Reaper {
 
-  class VerbDbHandler *verbDbHandler;
+  class VaeDbHandler *vaeDbHandler;
 
  public:
-   Reaper(class VerbDbHandler *h);
+   Reaper(class VaeDbHandler *h);
    void Run();
 
 };

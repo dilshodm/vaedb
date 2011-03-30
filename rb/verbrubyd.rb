@@ -5,6 +5,6 @@ Dir.glob(File.dirname(THIS_FILE) + '/lib/vendor/*/lib').each { |dir| $:.unshift(
 $:.unshift File.dirname(THIS_FILE) + '/lib'
 $stderr.reopen $stdout
 
-require 'verbrubyd'
+require 'vaerubyd'
 
-Verbrubyd.new.run
+Vaerubyd.new.run

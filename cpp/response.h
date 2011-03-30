@@ -9,7 +9,7 @@ struct ResponseContext {
   int32_t total;
 };
 typedef vector<ResponseContext> ResponseContextList;
-typedef vector<VerbDbCreateInfo> CreateInfoList;
+typedef vector<VaeDbCreateInfo> CreateInfoList;
   
 class Response {
 
@@ -44,10 +44,10 @@ class Response {
   ~Response();
   bool containsContexts();
   bool sortCallback(Context *lhs, Context *rhs);
-  void writeVerbDbCreateInfoResponse(VerbDbCreateInfoResponse &_return);
-  void writeVerbDbDataResponse(VerbDbDataResponse &_return);
-  void writeVerbDbResponse(VerbDbResponse &_return);
-  void writeVerbDbStructureResponse(VerbDbStructureResponse &_return);
+  void writeVaeDbCreateInfoResponse(VaeDbCreateInfoResponse &_return);
+  void writeVaeDbDataResponse(VaeDbDataResponse &_return);
+  void writeVaeDbResponse(VaeDbResponse &_return);
+  void writeVaeDbStructureResponse(VaeDbStructureResponse &_return);
 
  private:
   void createInfo(Context *context, const string &query);
