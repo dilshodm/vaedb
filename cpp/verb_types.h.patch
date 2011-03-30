@@ -1,0 +1,9 @@
+24a25,26
+>   VerbDbInternalError(const char *m) : message(m) {
+>   }
+60c62,64
+< 
+---
+>   VerbDbQueryError(const char *m) : message(m) {
+>   }
+>   

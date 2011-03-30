@@ -1,0 +1,25 @@
+AC_PREREQ(2.61)
+AC_INIT(verbdb, 20100205, info@actionverb.com)
+AC_CONFIG_SRCDIR([context.cpp])
+AC_CONFIG_HEADER([config.h])
+
+m4_include([aclocal/ax_boost_base.m4])
+
+AC_PROG_CXX
+AC_PROG_CC
+AC_PATH_PROG([XML2_CONFIG], [xml2-config], AC_MSG_ERROR(could not find libxml2))
+
+AX_BOOST_BASE
+#AC_CHECK_LIB([pcrecpp], [pcre_exec], , AC_MSG_ERROR(could not find libpcrecpp))
+#AC_CHECK_LIB([thrift], [thrift_main], , AC_MSG_ERROR(could not find libthrift))
+
+AC_HEADER_STDBOOL
+AC_C_CONST
+AC_TYPE_INT32_T
+AC_TYPE_INT8_T
+
+AC_FUNC_MALLOC
+AC_CHECK_FUNCS([strcasecmp strstr])
+
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT

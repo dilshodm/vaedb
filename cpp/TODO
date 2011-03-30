@@ -1,0 +1,5 @@
+Launch:
+
+- bring back recursion in filtered queries
+- levenstein distances in filters (edit_distance)
+- support | queries with 12345 queries

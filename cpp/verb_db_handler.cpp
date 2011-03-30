@@ -1,0 +1,179 @@
+#include <iostream>
+#include <fstream>
+#include <boost/smart_ptr.hpp>
+#include <boost/thread/locks.hpp> 
+
+using namespace boost;
+using namespace std;
+
+#include "../gen-cpp/VerbDb.h"
+#include "site.h"
+#include "context.h"
+#include "logger.h"
+#include "reaper.h"
+#include "response.h"
+#include "session.h"
+#include "verb_db_handler.h"
+
+void eatErrors(void * ctx, const char * msg, ...) { }
+
+shared_ptr<Site> VerbDbHandler::getSite(string subdomain, string secretKey, bool stagingMode) {
+  boost::mutex *siteMutex;
+  string sitesKey;
+  sitesKey = (stagingMode ? subdomain + ".staging" : subdomain);
+  {
+    boost::unique_lock<boost::mutex> lock(sitesMutex);
+    if (sites.count(sitesKey)) {
+      sites[sitesKey]->validateSecretKey(secretKey);
+      return sites[sitesKey];
+    }
+    if (siteMutexes.count(sitesKey)) {
+      siteMutex = siteMutexes[sitesKey];
+    } else {
+      siteMutex = new boost::mutex;
+      siteMutexes[sitesKey] = siteMutex;
+    }
+  }
+  {
+    boost::unique_lock<boost::mutex> lock(*siteMutex);
+    {
+      boost::unique_lock<boost::mutex> lock(sitesMutex);
+      if (sites.count(sitesKey)) {
+        sites[sitesKey]->validateSecretKey(secretKey);
+        return sites[sitesKey];
+      }
+    }
+    shared_ptr<Site> site(new Site(subdomain, secretKey, testMode, stagingMode));
+    {
+      boost::unique_lock<boost::mutex> lock(sitesMutex);
+      sites[sitesKey] = site;
+    }
+    return site;
+  }
+}
+ 
+VerbDbHandler::VerbDbHandler(bool t) : testMode(t) {
+  nextSessionId = 1;
+  xmlInitParser();
+  xmlSetGenericErrorFunc(NULL, eatErrors);
+  writePid();
+  new Reaper(this);  
+  L(info) << "VerbDB Running (" << (testMode ? "TEST" : "production") << " environment)";
+}
+
+VerbDbHandler::~VerbDbHandler() { 
+  L(info) << "shutdown";
+  xmlCleanupParser();
+}
+
+void VerbDbHandler::closeSession(const int32_t sessionId, const string& secretKey) {
+  boost::unique_lock<boost::mutex> lock(sessionsMutex);
+  if (sessions.count(sessionId)) {
+    sessions.erase(sessionId);
+  } else {
+    L(warning) << "closeSession() called with an invalid session ID: " << sessionId;
+  }
+}
+
+void VerbDbHandler::createInfo(VerbDbCreateInfoResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query) {
+  shared_ptr<class Session> session;
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    if (sessions.count(sessionId)) {
+      session = sessions[sessionId];
+    } else {
+      L(warning) << "createInfo() called with an invalid session ID: " << sessionId;
+      return;
+    }
+  }
+  session->createInfo(_return, responseId, query);
+}
+
+void VerbDbHandler::data(VerbDbDataResponse& _return, const int32_t sessionId, const int32_t responseId) {
+  shared_ptr<class Session> session;
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    if (sessions.count(sessionId)) {
+      session = sessions[sessionId];
+    } else {
+      L(warning) << "data() called with an invalid session ID: " << sessionId;
+      return;
+    }
+  }
+  session->data(_return, responseId);
+}
+  
+void VerbDbHandler::get(VerbDbResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query, const map<string, string> & options) {
+  shared_ptr<class Session> session;
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    if (sessions.count(sessionId)) {
+      session = sessions[sessionId];
+    } else {
+      L(warning) << "get() called with an invalid session ID: " << sessionId;
+      return;
+    }
+  }
+  session->get(_return, responseId, query, options);
+}
+  
+SessionMap& VerbDbHandler::getSessions() {
+  return sessions;
+}
+
+int32_t VerbDbHandler::openSession(const string& subdomain, const string& secretKey, const bool stagingMode) {
+  int32_t sessionId; 
+  shared_ptr<Site> site = getSite(subdomain, secretKey, stagingMode);
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    do { 
+      sessionId = rand();
+    } while (sessions.count(sessionId));
+    shared_ptr<Session> session(new Session(site));
+    sessions[sessionId] = session;
+  }
+  return sessionId;
+}
+
+int8_t VerbDbHandler::ping() {
+  L(info) << "[ping]";
+  return 0;
+}
+
+void VerbDbHandler::resetSite(const string& subdomain, const std::string& secretKey) {
+  boost::unique_lock<boost::mutex> lock(sitesMutex);
+  if (sites.count(subdomain)) {
+    sites[subdomain]->validateSecretKey(secretKey);
+    sites.erase(subdomain);
+  }
+  string staging = subdomain + ".staging";
+  if (sites.count(staging)) {
+    sites[staging]->validateSecretKey(secretKey);
+    sites.erase(staging);
+  }
+}
+
+void VerbDbHandler::structure(VerbDbStructureResponse& _return, const int32_t sessionId, const int32_t responseId) {
+  shared_ptr<class Session> session;
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    if (sessions.count(sessionId)) {
+      session = sessions[sessionId];
+    } else {
+      L(warning) << "structure() called with an invalid session ID: " << sessionId;
+      return;
+    }
+  }
+  session->structure(_return, responseId);
+}
+
+void VerbDbHandler::writePid() {
+  ofstream pidfile;
+  pidfile.open("/tmp/verbdb.pid");
+  if (pidfile.is_open()) {
+    pidfile << getpid();
+  } else {
+    L(warning) << "Could not write PID file /tmp/verbdb.pid";
+  }
+  pidfile.close();
+}
