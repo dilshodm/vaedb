@@ -22,6 +22,8 @@ class VaeDbInternalError : public apache::thrift::TException {
 
   VaeDbInternalError() : message("") {
   }
+  VaeDbInternalError(const char *m) : message(m) {
+  }
 
   virtual ~VaeDbInternalError() throw() {}
 
@@ -57,7 +59,9 @@ class VaeDbQueryError : public apache::thrift::TException {
 
   VaeDbQueryError() : message("") {
   }
-
+  VaeDbQueryError(const char *m) : message(m) {
+  }
+  
   virtual ~VaeDbQueryError() throw() {}
 
   std::string message;
