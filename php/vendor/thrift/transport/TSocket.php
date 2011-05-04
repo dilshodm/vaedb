@@ -20,6 +20,9 @@
  * @package thrift.transport
  */
 
+class TSocketException extends TException {
+}
+
 
 /**
  * Sockets implementation of the TTransport interface.
@@ -188,7 +191,7 @@ class TSocket extends TTransport {
       if ($this->debug_) {
         call_user_func($this->debugHandler_, $error);
       }
-      throw new TException($error);
+      throw new TSocketException($error);
     }
 
     stream_set_timeout($this->handle_, 0, $this->sendTimeout_*1000);
@@ -225,16 +228,16 @@ class TSocket extends TTransport {
       if ($buf === FALSE || $buf === '') {
         $md = stream_get_meta_data($this->handle_);
         if ($md['timed_out']) {
-          throw new TException('TSocket: timed out reading '.$len.' bytes from '.
+          throw new TSocketException('TSocket: timed out reading '.$len.' bytes from '.
                                $this->host_.':'.$this->port_);
         } else {
-          throw new TException('TSocket: Could not read '.$len.' bytes from '.
+          throw new TSocketException('TSocket: Could not read '.$len.' bytes from '.
                                $this->host_.':'.$this->port_);
         }
       } else if (($sz = strlen($buf)) < $len) {
         $md = stream_get_meta_data($this->handle_);
         if ($md['timed_out']) {
-          throw new TException('TSocket: timed out reading '.$len.' bytes from '.
+          throw new TSocketException('TSocket: timed out reading '.$len.' bytes from '.
                                $this->host_.':'.$this->port_);
         } else {
           $pre .= $buf;
@@ -261,10 +264,10 @@ class TSocket extends TTransport {
     if ($data === FALSE || $data === '') {
       $md = stream_get_meta_data($this->handle_);
       if ($md['timed_out']) {
-        throw new TException('TSocket: timed out reading '.$len.' bytes from '.
+        throw new TSocketException('TSocket: timed out reading '.$len.' bytes from '.
                              $this->host_.':'.$this->port_);
       } else {
-        throw new TException('TSocket: Could not read '.$len.' bytes from '.
+        throw new TSocketException('TSocket: Could not read '.$len.' bytes from '.
                              $this->host_.':'.$this->port_);
       }
     }
@@ -286,10 +289,10 @@ class TSocket extends TTransport {
       if ($got === 0 || $got === FALSE) {
         $md = stream_get_meta_data($this->handle_);
         if ($md['timed_out']) {
-          throw new TException('TSocket: timed out writing '.strlen($buf).' bytes from '.
+          throw new TSocketException('TSocket: timed out writing '.strlen($buf).' bytes from '.
                                $this->host_.':'.$this->port_);
         } else {
-            throw new TException('TSocket: Could not write '.strlen($buf).' bytes '.
+            throw new TSocketException('TSocket: Could not write '.strlen($buf).' bytes '.
                                  $this->host_.':'.$this->port_);
         }
       }
@@ -303,7 +306,7 @@ class TSocket extends TTransport {
   public function flush() {
     $ret = fflush($this->handle_);
     if ($ret === FALSE) {
-      throw new TException('TSocket: Could not flush: '.
+      throw new TSocketException('TSocket: Could not flush: '.
                            $this->host_.':'.$this->port_);
     }
   }
