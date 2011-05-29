@@ -195,32 +195,35 @@ void Response::filterMatchRecursive(xmlNode *node, int reentry) {
 }
 
 void Response::query(Context *context, const string &q, const map<string, string> &options) {
-  int size, start, end;
+  int size, start, end, skip_, paginate_, page_;
   Query _query(site.get(), context, q);
   ResponseContext _return;
   _return.total = size = _query.getSize();
+  skip_ = skip;
+  paginate_ = paginate;
+  page_ = page;
   L(debug) << "  found " << size << " result" << (size != 1 ? "s" : "");
   if (groups) {
-    if (page <= 0) {
-      page = 1;
+    if (page_ <= 0) {
+      page_ = 1;
     }
-    for (int j = 0; j < page; j++) {
-      if (j > 0) skip += paginate;
-      paginate = (int)ceil((float)(size - skip) / (groups-j));
+    for (int j = 0; j < page_; j++) {
+      if (j > 0) skip_ += paginate_;
+      paginate_ = (int)ceil((float)(size - skip_) / (groups-j));
     }
   } else {
-    if (page == -1) {
-      page = (int)ceil((float)(size - skip) / paginate);
-    } else if (page <= 0) {
-      page = 1;
+    if (page_ == -1) {
+      page_ = (int)ceil((float)(size - skip_) / paginate_);
+    } else if (page_ <= 0) {
+      page_ = 1;
     }
-    skip += (int)ceil((page - 1) * paginate);
+    skip_ += (int)ceil((page_ - 1) * paginate_);
   }
   end = size;
   if (sortType == None) {
-    start = skip;
-    if ((paginate + start) < end) {
-      end = (paginate + skip);
+    start = skip_;
+    if ((paginate_ + start) < end) {
+      end = (paginate_ + skip_);
     }
   } else {
     start = 0;
@@ -260,9 +263,9 @@ void Response::query(Context *context, const string &q, const map<string, string
     sort(_return.contexts.begin(), _return.contexts.end(), boost::bind(&Response::sortCallback, this, _1, _2));
   }
   if (sortType != None) {
-    _return.contexts.erase(_return.contexts.begin(), _return.contexts.begin() + skip);
-    if (_return.contexts.size() > paginate) {
-      _return.contexts.resize(paginate);
+    _return.contexts.erase(_return.contexts.begin(), _return.contexts.begin() + skip_);
+    if (_return.contexts.size() > paginate_) {
+      _return.contexts.resize(paginate_);
     }
   }
   contexts.push_back(_return);
