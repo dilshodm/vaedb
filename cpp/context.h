@@ -23,6 +23,7 @@ class Context {
   
  public:
   xmlNodePtr node;
+  bool killMe;
   
  private:
   string getSingleData();

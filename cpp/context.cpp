@@ -21,7 +21,9 @@ Context::Context(Site *s, const xmlNodePtr n) : site(s) {
   dataPopulated = false;
   permalink = NULL;
   structure = NULL;
+  killMe = false;
   if (populateAttrs()) {
+    killMe = true;
     return;
   }
   if (type == "AssociationItem" || type == "SingleAssociationItem") {
@@ -32,7 +34,14 @@ Context::Context(Site *s, const xmlNodePtr n) : site(s) {
       next = child->next;
       if (child->type == XML_ELEMENT_NODE) {      
         if (child->_private == NULL) {
-          child->_private = (void *)new Context(site, child);
+          Context *ctxt = new Context(site, child);
+          if (ctxt->killMe) {
+            xmlUnlinkNode(child);
+            xmlFreeNode(child);
+            delete ctxt;
+          } else {
+            child->_private = (void *)ctxt;
+          }
         }
       }
     }
@@ -146,6 +155,7 @@ void Context::initializeAssociation() {
   
   /* couldn't find association */
   xmlUnlinkNode(node);
+  xmlFreeNode(node);
   delete this;
 }
 
@@ -156,9 +166,6 @@ bool Context::populateAttrs() {
     if (!strcmp((const char *)child->name, "type")) structureId = atoi((const char *)child->children->content);
     if (!strcmp((const char *)child->name, "permalink")) permalink = (char *)child->children->content;
     if (!site->stagingMode && !strcmp((const char *)child->name, "staging")) {
-      xmlUnlinkNode(node);
-      xmlFreeNode(node);
-      delete this;
       return true;
     }
   }
