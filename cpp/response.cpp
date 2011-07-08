@@ -323,7 +323,7 @@ void Response::writeVaeDbCreateInfoResponse(VaeDbCreateInfoResponse &_return) {
 void Response::writeVaeDbDataResponse(VaeDbDataResponse &_return) {
   for (ResponseContextList::const_iterator it = contexts.begin(); it != contexts.end(); it++) {
     for (ContextList::const_iterator it2 = (*it).contexts.begin(); it2 != (*it).contexts.end(); it2++) {
-      if (it2) _return.contexts.push_back((*it2)->toVaeDbDataForContext());
+      if (it2 != NULL) _return.contexts.push_back((*it2)->toVaeDbDataForContext());
     }
   }
 }
@@ -332,7 +332,7 @@ void Response::writeVaeDbResponse(VaeDbResponse &_return) {
   for (ResponseContextList::const_iterator it = contexts.begin(); it != contexts.end(); it++) {
     VaeDbResponseForContext context_list;
     for (ContextList::const_iterator it2 = (*it).contexts.begin(); it2 != (*it).contexts.end(); it2++) {
-      if (it2) context_list.contexts.push_back((*it2)->toVaeDbContext());
+      if (it2 != NULL) context_list.contexts.push_back((*it2)->toVaeDbContext());
     }
     context_list.totalItems = (*it).total;
     _return.contexts.push_back(context_list);
@@ -342,7 +342,7 @@ void Response::writeVaeDbResponse(VaeDbResponse &_return) {
 void Response::writeVaeDbStructureResponse(VaeDbStructureResponse &_return) {
   for (ResponseContextList::const_iterator it = contexts.begin(); it != contexts.end(); it++) {
     for (ContextList::const_iterator it2 = (*it).contexts.begin(); it2 != (*it).contexts.end(); it2++) {
-      if (it2) _return.contexts.push_back((*it2)->toVaeDbStructureForContext());
+      if (it2 != NULL) _return.contexts.push_back((*it2)->toVaeDbStructureForContext());
     }
   }
 }
