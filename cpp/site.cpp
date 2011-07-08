@@ -89,8 +89,15 @@ void Site::loadXmlDoc() {
   xmlNode *next;
   for (xmlNode *child = rootNode->children; child; child = next) {
     next = child->next;
-    if (child->type == XML_ELEMENT_NODE) {    
-      child->_private = (void *)new Context(this, child);
+    if (child->type == XML_ELEMENT_NODE) {
+      Context *ctxt = new Context(this, child);
+      if (ctxt->killMe) {
+        xmlUnlinkNode(child);
+        xmlFreeNode(child);
+        delete ctxt;
+      } else {
+        child->_private = (void *)ctxt;
+      }
     }
   }
   for (ContextList::iterator it = associationsToInitialize.begin(); it != associationsToInitialize.end(); it++) {
