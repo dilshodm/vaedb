@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstring>
 #include <time.h>
 #include <boost/smart_ptr.hpp>
 
@@ -94,7 +95,7 @@ const char *Context::getNodeName() {
 
 string Context::getSingleData() {
   xmlNode *child = node->children;
-  if (child->type == XML_TEXT_NODE) return (const char *)child->content;
+  if (child && (child->type == XML_TEXT_NODE)) return (const char *)child->content;
   return "";
 }
 
