@@ -183,7 +183,7 @@ void Context::populateData() {
           break;
         }
       }
-      if (content != NULL) {
+      if (content != NULL && child->name) {
         data[(const char *)child->name] = content;
       }
     }
