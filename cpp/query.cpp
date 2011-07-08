@@ -61,16 +61,16 @@ Query::Query(Site *s, Context *context, const string &q) : site(s) {
   
   // prev() and next()
   if (!strcasecmp("prev()", query.c_str())) {
-    query = (string)"preceding-sibling::" + context->getNodeName() + "[1]";
     if (!context) {
       throw VaeDbQueryError("You cannot use PREV() outside of a context.");
     }
+    query = (string)"preceding-sibling::" + context->getNodeName() + "[1]";
   }
   if (!strcasecmp("next()", query.c_str())) {
-    query = (string)"following-sibling::" + context->getNodeName() + "[1]";
     if (!context) {
       throw VaeDbQueryError("You cannot use NEXT() outside of a context.");
     }
+    query = (string)"following-sibling::" + context->getNodeName() + "[1]";
   }
   
   // hack in a /text() to the end of predicate selectors
