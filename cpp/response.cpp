@@ -243,8 +243,10 @@ void Response::query(Context *context, const string &q, const map<string, string
           skipped++;
         } else if ((included + skipped) < end) {
           Context *ctxt = (Context *)node->_private;
-          _return.contexts.push_back(ctxt);
-          included++;
+          if (ctxt) {
+            _return.contexts.push_back(ctxt);
+            included++;
+          }
         }
       }
     }
@@ -252,7 +254,7 @@ void Response::query(Context *context, const string &q, const map<string, string
     for (int i = start; i < end; i++) {
   	  xmlNode *node = _query.getNode(i);
       Context *ctxt = (Context *)node->_private;
-      _return.contexts.push_back(ctxt);
+      if (ctxt) _return.contexts.push_back(ctxt);
     }
   }
   if (sortType == Reverse) {
