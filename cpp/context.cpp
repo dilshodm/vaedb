@@ -210,5 +210,9 @@ VaeDbDataForContext Context::toVaeDbDataForContext() {
 }
 
 VaeDbStructure Context::toVaeDbStructureForContext() {
-  return *structure;
+  if (structure) {
+    return *structure;
+  } else {
+    return VaeDbStructure();
+  }
 }
