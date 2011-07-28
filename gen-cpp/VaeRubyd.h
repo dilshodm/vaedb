@@ -18,6 +18,7 @@ class VaeRubydIf {
   virtual int8_t fixDocRoot(const std::string& path) = 0;
   virtual void haml(std::string& _return, const std::string& text) = 0;
   virtual void sass(std::string& _return, const std::string& text, const std::string& load_path) = 0;
+  virtual void scss(std::string& _return, const std::string& text, const std::string& load_path) = 0;
 };
 
 class VaeRubydNull : virtual public VaeRubydIf {
@@ -35,6 +36,9 @@ class VaeRubydNull : virtual public VaeRubydIf {
     return;
   }
   void sass(std::string& /* _return */, const std::string& /* text */, const std::string& /* load_path */) {
+    return;
+  }
+  void scss(std::string& /* _return */, const std::string& /* text */, const std::string& /* load_path */) {
     return;
   }
 };
@@ -419,6 +423,110 @@ class VaeRubyd_sass_presult {
 
 };
 
+class VaeRubyd_scss_args {
+ public:
+
+  VaeRubyd_scss_args() : text(""), load_path("") {
+  }
+
+  virtual ~VaeRubyd_scss_args() throw() {}
+
+  std::string text;
+  std::string load_path;
+
+  struct __isset {
+    __isset() : text(false), load_path(false) {}
+    bool text;
+    bool load_path;
+  } __isset;
+
+  bool operator == (const VaeRubyd_scss_args & rhs) const
+  {
+    if (!(text == rhs.text))
+      return false;
+    if (!(load_path == rhs.load_path))
+      return false;
+    return true;
+  }
+  bool operator != (const VaeRubyd_scss_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VaeRubyd_scss_args & ) const;
+
+  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+class VaeRubyd_scss_pargs {
+ public:
+
+
+  virtual ~VaeRubyd_scss_pargs() throw() {}
+
+  const std::string* text;
+  const std::string* load_path;
+
+  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+class VaeRubyd_scss_result {
+ public:
+
+  VaeRubyd_scss_result() : success("") {
+  }
+
+  virtual ~VaeRubyd_scss_result() throw() {}
+
+  std::string success;
+  VaeSyntaxError se;
+
+  struct __isset {
+    __isset() : success(false), se(false) {}
+    bool success;
+    bool se;
+  } __isset;
+
+  bool operator == (const VaeRubyd_scss_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(se == rhs.se))
+      return false;
+    return true;
+  }
+  bool operator != (const VaeRubyd_scss_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VaeRubyd_scss_result & ) const;
+
+  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+class VaeRubyd_scss_presult {
+ public:
+
+
+  virtual ~VaeRubyd_scss_presult() throw() {}
+
+  std::string* success;
+  VaeSyntaxError se;
+
+  struct __isset {
+    __isset() : success(false), se(false) {}
+    bool success;
+    bool se;
+  } __isset;
+
+  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class VaeRubydClient : virtual public VaeRubydIf {
  public:
   VaeRubydClient(boost::shared_ptr<apache::thrift::protocol::TProtocol> prot) :
@@ -451,6 +559,9 @@ class VaeRubydClient : virtual public VaeRubydIf {
   void sass(std::string& _return, const std::string& text, const std::string& load_path);
   void send_sass(const std::string& text, const std::string& load_path);
   void recv_sass(std::string& _return);
+  void scss(std::string& _return, const std::string& text, const std::string& load_path);
+  void send_scss(const std::string& text, const std::string& load_path);
+  void recv_scss(std::string& _return);
  protected:
   boost::shared_ptr<apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr<apache::thrift::protocol::TProtocol> poprot_;
@@ -468,6 +579,7 @@ class VaeRubydProcessor : virtual public apache::thrift::TProcessor {
   void process_fixDocRoot(int32_t seqid, apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot);
   void process_haml(int32_t seqid, apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot);
   void process_sass(int32_t seqid, apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot);
+  void process_scss(int32_t seqid, apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot);
  public:
   VaeRubydProcessor(boost::shared_ptr<VaeRubydIf> iface) :
     iface_(iface) {
@@ -475,6 +587,7 @@ class VaeRubydProcessor : virtual public apache::thrift::TProcessor {
     processMap_["fixDocRoot"] = &VaeRubydProcessor::process_fixDocRoot;
     processMap_["haml"] = &VaeRubydProcessor::process_haml;
     processMap_["sass"] = &VaeRubydProcessor::process_sass;
+    processMap_["scss"] = &VaeRubydProcessor::process_scss;
   }
 
   virtual bool process(boost::shared_ptr<apache::thrift::protocol::TProtocol> piprot, boost::shared_ptr<apache::thrift::protocol::TProtocol> poprot);
@@ -535,6 +648,18 @@ class VaeRubydMultiface : virtual public VaeRubydIf {
         return;
       } else {
         ifaces_[i]->sass(_return, text, load_path);
+      }
+    }
+  }
+
+  void scss(std::string& _return, const std::string& text, const std::string& load_path) {
+    uint32_t sz = ifaces_.size();
+    for (uint32_t i = 0; i < sz; ++i) {
+      if (i == sz - 1) {
+        ifaces_[i]->scss(_return, text, load_path);
+        return;
+      } else {
+        ifaces_[i]->scss(_return, text, load_path);
       }
     }
   }

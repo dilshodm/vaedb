@@ -13,6 +13,7 @@ interface VaeRubydIf {
   public function fixDocRoot($path);
   public function haml($text);
   public function sass($text, $load_path);
+  public function scss($text, $load_path);
 }
 
 class VaeRubydClient implements VaeRubydIf {
@@ -234,6 +235,61 @@ class VaeRubydClient implements VaeRubydIf {
       throw $result->se;
     }
     throw new Exception("sass failed: unknown result");
+  }
+
+  public function scss($text, $load_path)
+  {
+    $this->send_scss($text, $load_path);
+    return $this->recv_scss();
+  }
+
+  public function send_scss($text, $load_path)
+  {
+    $args = new VaeRubyd_scss_args();
+    $args->text = $text;
+    $args->load_path = $load_path;
+    $bin_accel = ($this->output_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'scss', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('scss', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_scss()
+  {
+    $bin_accel = ($this->input_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, 'VaeRubyd_scss_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new VaeRubyd_scss_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->se !== null) {
+      throw $result->se;
+    }
+    throw new Exception("scss failed: unknown result");
   }
 
 }
@@ -841,6 +897,192 @@ class VaeRubyd_sass_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('VaeRubyd_sass_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->se !== null) {
+      $xfer += $output->writeFieldBegin('se', TType::STRUCT, 1);
+      $xfer += $this->se->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class VaeRubyd_scss_args {
+  static $_TSPEC;
+
+  public $text = null;
+  public $load_path = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'text',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'load_path',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['text'])) {
+        $this->text = $vals['text'];
+      }
+      if (isset($vals['load_path'])) {
+        $this->load_path = $vals['load_path'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'VaeRubyd_scss_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->text);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->load_path);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('VaeRubyd_scss_args');
+    if ($this->text !== null) {
+      $xfer += $output->writeFieldBegin('text', TType::STRING, 1);
+      $xfer += $output->writeString($this->text);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->load_path !== null) {
+      $xfer += $output->writeFieldBegin('load_path', TType::STRING, 2);
+      $xfer += $output->writeString($this->load_path);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class VaeRubyd_scss_result {
+  static $_TSPEC;
+
+  public $success = null;
+  public $se = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
+        1 => array(
+          'var' => 'se',
+          'type' => TType::STRUCT,
+          'class' => 'VaeSyntaxError',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['se'])) {
+        $this->se = $vals['se'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'VaeRubyd_scss_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->se = new VaeSyntaxError();
+            $xfer += $this->se->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('VaeRubyd_scss_result');
     if ($this->success !== null) {
       $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
       $xfer += $output->writeString($this->success);

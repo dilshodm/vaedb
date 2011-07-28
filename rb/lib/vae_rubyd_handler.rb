@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'fileutils'
 require 'compass'
 require 'haml'
 require 'vae_rubyd'
@@ -33,6 +34,19 @@ class VaeRubydHandler
       engine.render
     rescue Sass::SyntaxError => e
       raise VaeSyntaxError.new("Sass Syntax Error on line <span class='c'>#{get_line(e)}</span>: #{e.message}")
+    end
+  end
+  
+  def scss(text, load_path)
+    begin
+      options = Compass.sass_engine_options
+      options[:load_paths] << load_path 
+      options[:style] = :compressed
+      options[:syntax] = :scss
+      engine = Sass::Engine.new(text, options)
+      engine.render
+    rescue Sass::SyntaxError => e
+      raise VaeSyntaxError.new("SCSS Syntax Error on line <span class='c'>#{get_line(e)}</span>: #{e.message}")
     end
   end
   

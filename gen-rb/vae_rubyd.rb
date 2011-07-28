@@ -73,6 +73,22 @@ module VaeRubyd
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'sass failed: unknown result')
     end
 
+    def scss(text, load_path)
+      send_scss(text, load_path)
+      return recv_scss()
+    end
+
+    def send_scss(text, load_path)
+      send_message('scss', Scss_args, :text => text, :load_path => load_path)
+    end
+
+    def recv_scss()
+      result = receive_message(Scss_result)
+      return result.success unless result.success.nil?
+      raise result.se unless result.se.nil?
+      raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'scss failed: unknown result')
+    end
+
   end
 
   class Processor
@@ -112,6 +128,17 @@ module VaeRubyd
         result.se = se
       end
       write_result(result, oprot, 'sass', seqid)
+    end
+
+    def process_scss(seqid, iprot, oprot)
+      args = read_args(iprot, Scss_args)
+      result = Scss_result.new()
+      begin
+        result.success = @handler.scss(args.text, args.load_path)
+      rescue VaeSyntaxError => se
+        result.se = se
+      end
+      write_result(result, oprot, 'scss', seqid)
     end
 
   end
@@ -233,6 +260,42 @@ module VaeRubyd
   end
 
   class Sass_result
+    include ::Thrift::Struct
+    SUCCESS = 0
+    SE = 1
+
+    ::Thrift::Struct.field_accessor self, :success, :se
+    FIELDS = {
+      SUCCESS => {:type => ::Thrift::Types::STRING, :name => 'success'},
+      SE => {:type => ::Thrift::Types::STRUCT, :name => 'se', :class => VaeSyntaxError}
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+  end
+
+  class Scss_args
+    include ::Thrift::Struct
+    TEXT = 1
+    LOAD_PATH = 2
+
+    ::Thrift::Struct.field_accessor self, :text, :load_path
+    FIELDS = {
+      TEXT => {:type => ::Thrift::Types::STRING, :name => 'text'},
+      LOAD_PATH => {:type => ::Thrift::Types::STRING, :name => 'load_path'}
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+  end
+
+  class Scss_result
     include ::Thrift::Struct
     SUCCESS = 0
     SE = 1

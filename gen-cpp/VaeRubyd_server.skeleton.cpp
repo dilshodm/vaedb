@@ -40,6 +40,11 @@ class VaeRubydHandler : virtual public VaeRubydIf {
     printf("sass\n");
   }
 
+  void scss(std::string& _return, const std::string& text, const std::string& load_path) {
+    // Your implementation goes here
+    printf("scss\n");
+  }
+
 };
 
 int main(int argc, char **argv) {

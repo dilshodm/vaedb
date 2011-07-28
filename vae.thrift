@@ -70,6 +70,9 @@ service VaeRubyd {
   
   string sass(1:string text, 2:string load_path)
     throws (1:VaeSyntaxError se)
+  
+  string scss(1:string text, 2:string load_path)
+    throws (1:VaeSyntaxError se)
 
 }
 
