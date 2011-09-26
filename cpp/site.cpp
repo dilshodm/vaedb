@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <boost/filesystem/operations.hpp>
 #include <boost/smart_ptr.hpp>
 #include <pcrecpp.h>
 
@@ -25,6 +26,8 @@ Site::Site(string su, string sk, bool testMode, bool stagingMode_) : secretKey(s
   }
   if (stagingMode) subdomain += ".staging";
   loadXmlDoc();
+  boost::filesystem::path p(filename);
+  modTime = filesystem::last_write_time(p);
   L(info) << "[" << subdomain << "] opened";
 }
   

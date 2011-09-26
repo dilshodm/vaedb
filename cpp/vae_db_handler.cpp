@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <boost/filesystem/operations.hpp>
 #include <boost/smart_ptr.hpp>
 #include <boost/thread/locks.hpp> 
 
@@ -19,13 +20,18 @@ void eatErrors(void * ctx, const char * msg, ...) { }
 
 shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey, bool stagingMode) {
   boost::mutex *siteMutex;
+  time_t modTime;
   string sitesKey;
   sitesKey = (stagingMode ? subdomain + ".staging" : subdomain);
   {
     boost::unique_lock<boost::mutex> lock(sitesMutex);
     if (sites.count(sitesKey)) {
       sites[sitesKey]->validateSecretKey(secretKey);
-      return sites[sitesKey];
+      filesystem::path p(sites[sitesKey]->filename);
+      modTime = filesystem::last_write_time(p);
+      if (modTime == sites[sitesKey]->modTime) {
+        return sites[sitesKey];
+      }
     }
     if (siteMutexes.count(sitesKey)) {
       siteMutex = siteMutexes[sitesKey];
@@ -40,7 +46,11 @@ shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey, bool 
       boost::unique_lock<boost::mutex> lock(sitesMutex);
       if (sites.count(sitesKey)) {
         sites[sitesKey]->validateSecretKey(secretKey);
-        return sites[sitesKey];
+        filesystem::path p(sites[sitesKey]->filename);
+        modTime = filesystem::last_write_time(p);
+        if (modTime == sites[sitesKey]->modTime) {
+          return sites[sitesKey];
+        }
       }
     }
     shared_ptr<Site> site(new Site(subdomain, secretKey, testMode, stagingMode));

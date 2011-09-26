@@ -1,5 +1,7 @@
 #include <boost/thread/mutex.hpp>
 
+#include <ctime>
+
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
@@ -13,7 +15,6 @@ typedef map<int,VaeDbStructure *> StructureMap;
 
 class Site {
   
-  string filename;
   string subdomain;
   string secretKey;
   StructureMap structures;
@@ -21,6 +22,8 @@ class Site {
  public:
   ContextList associationsToInitialize;
   xmlDocPtr doc;
+  string filename;
+  time_t modTime;
   boost::mutex mutex;
   NodeIdMap nodes;
   NodeList nodesToClean;
