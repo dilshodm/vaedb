@@ -151,12 +151,18 @@ void VaeDbHandler::resetSite(const string& subdomain, const std::string& secretK
   boost::unique_lock<boost::mutex> lock(sitesMutex);
   if (sites.count(subdomain)) {
     sites[subdomain]->validateSecretKey(secretKey);
-    sites.erase(subdomain);
+    filesystem::path p(sites[subdomain]->filename);
+    if (boost::filesystem::exists(p)) {
+      sites.erase(subdomain);
+    }
   }
   string staging = subdomain + ".staging";
   if (sites.count(staging)) {
     sites[staging]->validateSecretKey(secretKey);
-    sites.erase(staging);
+    filesystem::path p(sites[staging]->filename);
+    if (boost::filesystem::exists(p)) {
+      sites.erase(staging);
+    }
   }
 }
 
