@@ -20,7 +20,6 @@ void eatErrors(void * ctx, const char * msg, ...) { }
 
 shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey, bool stagingMode) {
   boost::mutex *siteMutex;
-  time_t modTime;
   string sitesKey;
   sitesKey = (stagingMode ? subdomain + ".staging" : subdomain);
   {
@@ -28,8 +27,7 @@ shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey, bool 
     if (sites.count(sitesKey)) {
       sites[sitesKey]->validateSecretKey(secretKey);
       filesystem::path p(sites[sitesKey]->filename);
-      modTime = filesystem::last_write_time(p);
-      if (modTime == sites[sitesKey]->modTime) {
+      if (!boost::filesystem::exists(p) || (filesystem::last_write_time(p) == sites[sitesKey]->modTime)) {
         return sites[sitesKey];
       }
     }
@@ -46,9 +44,8 @@ shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey, bool 
       boost::unique_lock<boost::mutex> lock(sitesMutex);
       if (sites.count(sitesKey)) {
         sites[sitesKey]->validateSecretKey(secretKey);
-        filesystem::path p(sites[sitesKey]->filename);
-        modTime = filesystem::last_write_time(p);
-        if (modTime == sites[sitesKey]->modTime) {
+        filesystem::path p(sites[sitesKey]->filename);      
+        if (!boost::filesystem::exists(p) || (filesystem::last_write_time(p) == sites[sitesKey]->modTime)) {
           return sites[sitesKey];
         }
       }
