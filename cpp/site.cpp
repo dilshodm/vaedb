@@ -21,6 +21,9 @@ Site::Site(string su, string sk, bool testMode, bool stagingMode_) : secretKey(s
     subdomain = "test";
   } else {
     filename = "/var/www/vhosts/" + su + ".verb/data/feed.xml";
+    if (!boost::filesystem::exists(filename)) {
+      filename = "/var/www/vhosts/" + su + ".verb/conf/feed.xml";
+    }
     subdomain = su;
     validateSecretKeyAgainstConfig(sk);
   }
