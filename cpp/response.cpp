@@ -214,10 +214,17 @@ void Response::query(Context *context, const string &q, const map<string, string
   } else {
     if (page_ == -1) {
       page_ = (int)ceil((float)(size - skip_) / paginate_);
-    } else if (page_ <= 0) {
+    }
+    if (page_ <= 0) {
       page_ = 1;
     }
     skip_ += (int)ceil((page_ - 1) * paginate_);
+  }
+  if (paginate_ < 1) {
+    paginate_ = 1;
+  }
+  if (skip_ < 0) {
+    skip_ = 0;
   }
   end = size;
   if (sortType == None) {
