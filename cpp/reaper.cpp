@@ -1,6 +1,6 @@
 // not to be feared
 
-#define SESSION_REAP_TIME 30
+#define SESSION_REAP_TIME 300
 
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
