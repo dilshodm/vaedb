@@ -8,7 +8,7 @@ exec_prefix = @exec_prefix@
 bindir = $(exec_prefix)/bin
 
 CXX = @CXX@
-CXXFLAGS = @CXXFLAGS@ @BOOST_CXXFLAGS@ -I/usr/local/include/thrift -I../gen-cpp `/usr/local/libxml2/bin/xml2-config --cflags` -c
+CXXFLAGS = -rdynamic -g @CXXFLAGS@ @BOOST_CXXFLAGS@ -I/usr/local/include/thrift -I../gen-cpp `xml2-config --cflags` -c
 LDFLAGS = -L/usr/local/libxml2/lib -L/usr/local/lib @LDFLAGS@ @BOOST_LDFLAGS@ -g
 LIBS = @LIBS@ -lboost_filesystem -lboost_program_options -lboost_system -lboost_thread -lpcrecpp -Wl,-Bstatic -lxml2 -Wl,-Bdynamic -lthrift -lm -lz -g 
 #LIBS = @LIBS@ -lboost_filesystem-mt -lboost_program_options -lboost_system-mt -lboost_thread -lpcrecpp -lxml2 -lthrift -lm -lz -g 

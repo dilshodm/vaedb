@@ -1,6 +1,8 @@
 #define THREADED
 
 #include <iostream>
+#include <signal.h>
+#include <execinfo.h>
 #include <boost/program_options.hpp> 
 #include <thrift/concurrency/ThreadManager.h>
 #include <thrift/concurrency/PosixThreadFactory.h>
@@ -27,8 +29,24 @@ namespace po = boost::program_options;
 #include "session.h"
 #include "vae_db_handler.h"
 
+void crash_handler(int signal) {
+  const int MAX_STACK_DEPTH = 100;
+
+  void *stack_entries[MAX_STACK_DEPTH];
+  size_t size = backtrace(stack_entries, MAX_STACK_DEPTH);
+
+  cerr << "caught signal " << signal << endl;
+  backtrace_symbols_fd(stack_entries, size, 2);
+
+  if(signal == SIGSEGV)
+    exit(-1);
+}
+
 int main(int argc, char **argv) {
-  
+
+  signal(SIGSEGV, crash_handler);
+  signal(SIGUSR1, crash_handler);
+
   int opt, workers;
   po::options_description desc("vaedb options", 80);
   desc.add_options()
