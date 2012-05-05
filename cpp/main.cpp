@@ -36,7 +36,7 @@ void crash_handler(int signal) {
   size_t size = backtrace(stack_entries, MAX_STACK_DEPTH);
 
   cerr << "caught signal " << signal << endl;
-  backtrace_symbols_fd(stack_entries, size, 2);
+  backtrace_symbols_fd(stack_entries, size, 1);
 
   if(signal == SIGSEGV)
     exit(-1);
