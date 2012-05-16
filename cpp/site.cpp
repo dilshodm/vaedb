@@ -143,15 +143,18 @@ void Site::validateSecretKey(string testSecretKey) {
 void Site::validateSecretKeyAgainstConfig(string testSecretKey) {
   ifstream conf;
   string filename = "/var/www/vhosts/" + subdomain + ".verb/conf/config.php";
-  conf.open(filename.c_str(), ios::ate);
+  conf.open(filename.c_str(), ios::binary | ios::ate);
   if (!conf.is_open()) {
     L(warning) << "[" << subdomain << "] could not open configuration file: " << filename;
     throw VaeDbInternalError("could not open configuration file!");
   }
+  
   ifstream::pos_type size = conf.tellg();
-  char *memblock = new char[size];
+  char *memblock = new char[size + ifstream::pos_type(1)];
   conf.seekg(0, ios::beg);
   conf.read(memblock, size);
+  memblock[size] = 0;
+
   if (!pcrecpp::RE("\\['secret_key'\\] = \"" + testSecretKey + "\"").PartialMatch(memblock)) {
     delete[] memblock;
     L(warning) << "[" << subdomain << "] secret key did not match: " << testSecretKey;
