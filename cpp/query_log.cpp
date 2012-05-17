@@ -1,4 +1,5 @@
 #include "query_log.h"
+
 boost::mutex QueryLog::_mutex;
 
 QueryLogEntry::QueryLogEntry(QueryLog & log)
@@ -27,18 +28,24 @@ QueryLogEntry & QueryLogEntry::operator<< (QueryEntryManipulator manip) {
   return *this;
 }
 
-QueryLogEntry QueryLog::entry() {
-  return QueryLogEntry(*this);
-}
-
 void end(QueryLogEntry & entry) {
-  QueryLog & ql(entry._log);
   if(!entry.is_logging())
     return;
 
+  QueryLog & ql(entry._log);
   boost::mutex::scoped_lock(ql._mutex);
+
   (*ql._p_out) << entry._sslog.str();
   ql._p_out->flush();
 
   entry.clear();
-} 
+}
+
+QueryLog::QueryLog(std::ostream * p_out)
+  : _p_out(p_out) {}
+
+QueryLogEntry QueryLog::entry() {
+  return QueryLogEntry(*this);
+}
+
+ 

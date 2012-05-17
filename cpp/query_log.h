@@ -92,7 +92,7 @@ struct QueryLog {
   friend void end (QueryLogEntry &);
   friend struct QueryLogEntry;
 
-  QueryLog(std::ostream * p_out) : _p_out(p_out) {}
+  QueryLog(std::ostream * p_out);
   QueryLogEntry entry();
 
   private:
@@ -111,7 +111,7 @@ struct QueryLogEntry {
 
   template <typename T>
   QueryLogEntry & operator<< (T const & value) {
-    if(_log._p_out)
+    if(is_logging())
       _sslog << "  " 
         << typename_of(value) << ":"
         << valuerep_of(value)
