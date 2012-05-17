@@ -1,6 +1,7 @@
 #define THREADED
 
 #include <iostream>
+#include <fstream>
 #include <signal.h>
 #include <execinfo.h>
 #include <boost/program_options.hpp> 
@@ -52,6 +53,7 @@ int main(int argc, char **argv) {
   desc.add_options()
     ("help,H", "outputs this help message")
     ("log_level,L", po::value<string>(), "log level.  Acceptable values: error, warning, info, debug")
+    ("query_log,Q", po::value<string>(), "file to log queries to")
     ("port,P", po::value<int>(&opt)->default_value(9091), "port to run the server on")
     ("test,T", "runs the server in test mode, which allows clients to specify full XML paths and does not validate secret keys.  It is insecure to run a server in test mode on a production machine!")
     ("workers,w", po::value<int>(&workers)->default_value(12), "number of worker threads to spawn")
@@ -71,9 +73,20 @@ int main(int argc, char **argv) {
     else if (vm["log_level"].as<string>() == "debug") Logger::displayLevel = debug;
     else L(warning) << "Invalid log_level specified: '" << vm["log_level"].as<string>() << "', defaulting to 'warning'.";
   }
+
+  auto_ptr<ostream> p_querylog_stream;
+  if(vm.count("query_log")) {
+    p_querylog_stream.reset(new ofstream(vm["query_log"].as<string>().c_str()));
+    if(p_querylog_stream->fail()) {
+      L(warning) << "Unable to write to query log file: '" << vm["query_log"].as<string>() << "'.";
+      p_querylog_stream.reset();
+    }
+  }
   
+  QueryLog query_log(p_querylog_stream.get());
+
   shared_ptr<PosixThreadFactory> threadFactory = shared_ptr<PosixThreadFactory>(new PosixThreadFactory());
-  shared_ptr<VaeDbHandler> handler(new VaeDbHandler(vm.count("test")));
+  shared_ptr<VaeDbHandler> handler(new VaeDbHandler(vm.count("test"), query_log));
   shared_ptr<TProcessor> processor(new VaeDbProcessor(handler));
   shared_ptr<TServerSocket> serverSocket(new TServerSocket(vm["port"].as<int>()));
   shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());

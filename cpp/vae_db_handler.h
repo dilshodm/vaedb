@@ -1,9 +1,10 @@
 #include <boost/thread/mutex.hpp>
+#include "query_log.h"
 
 typedef map<int,shared_ptr<class Session> > SessionMap;
 typedef map<string,shared_ptr<class Site> > SiteMap;
 typedef map<string,boost::mutex*> SiteMutexesMap;
-  
+
 class VaeDbHandler : virtual public VaeDbIf {
 
  private:
@@ -14,11 +15,12 @@ class VaeDbHandler : virtual public VaeDbIf {
   SiteMap sites;
   SiteMutexesMap siteMutexes;
   boost::mutex sitesMutex;
+  QueryLog & queryLog;
   
   shared_ptr<class Site> getSite(string subdomain, string secretKey, bool stagingMode);
-  
+
  public:
-  VaeDbHandler(bool t);
+  VaeDbHandler(bool t, QueryLog & queryLog);
   ~VaeDbHandler();
   void closeSession(const int32_t sessionId, const std::string& secretKey);
   void createInfo(VaeDbCreateInfoResponse& _return, const int32_t session_id, const int32_t response_id, const std::string& query);
