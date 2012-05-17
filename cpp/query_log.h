@@ -2,10 +2,12 @@
 #define _VAE_THRIFT_QUERY__LOG_H_
 
 #include <map>
+#include <sstream>
 
 template <typename T> 
 struct TypeHelper {
   static std::string Name();
+  static std::string ValueRep(const T & val);
 };
 
 template <>
@@ -14,16 +16,33 @@ struct TypeHelper<std::map<K,V> > {
   static std::string Name() {
     return std::string("map<"+TypeHelper<K>::Name()+","+TypeHelper<V>::Name()+">");
   } 
+
+  static std::string ValueRep(const std::map<K,V> & val) {
+    std::stringstream ss;
+
+    ss << "{";
+
+    typename std::map<K,V>::const_iterator iter = val.begin();
+    for(; iter != val.end(); ++iter)
+        ss << TypeHelper<K>::ValueRep(iter->first) << ":" << TypeHelper<V>::ValueRep(iter->second) << ",";
+
+    ss << "}";
+    return ss.str();
+  }
 };
 
-#define NAME(name) #name
-#define DEFINE_SIMPLE_LOGNAME(type, name) \
-template <>                         \
-struct TypeHelper< type > {         \
-  static std::string Name() {       \
-    return NAME(name);              \
-  }                                 \
-}
+#define DEFINE_SIMPLE_LOGNAME(T, name)         \
+template <>                                    \
+struct TypeHelper< T > {                       \
+  static std::string Name() {                  \
+    return name ;                              \
+  }                                            \
+  static std::string ValueRep(const T & val) { \
+    std::stringstream ss;                      \
+    ss << val;                                 \
+    return ss.str();                           \
+  }                                            \
+}                                              \
 
 
 DEFINE_SIMPLE_LOGNAME(bool, "bool");
@@ -35,7 +54,7 @@ struct QueryLog {
 
   QueryLog & method_call(std::string const & methodName) {
     if(_p_out)
-      (*_p_out) << "method_call(methodName):" << std::endl;
+      (*_p_out) << "method_call(" << methodName << "):" << std::endl;
 
     return *this;
   }
@@ -43,24 +62,13 @@ struct QueryLog {
   template <typename T>
   QueryLog & operator<< (const T & value) {
     if(_p_out)
-      (*_p_out) << "  " << TypeHelper<T>::Name() << ":" << value << std::endl;
+      (*_p_out) << "  " << TypeHelper<T>::Name() << ":" 
+                        << TypeHelper<T>::ValueRep(value) << std::endl;
     return *this;
   }
 
   private:
   ostream * _p_out;
 };
-
-template <typename K, typename V>
-ostream& operator<< (ostream& out, std::map<K,V> const & sermap)
-{
-  typename std::map<K,V>::const_iterator iter = sermap.begin();
-  out << "{";
-  for(; iter != sermap.end(); ++iter) {
-    out << iter->first << ":" << iter->second << ",";
-  }
-  out << "}";
-  return out;
-}
 
 #endif // #ifndef _VAE_THRIFT_QUERY__LOG_H_
