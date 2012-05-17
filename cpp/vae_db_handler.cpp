@@ -139,16 +139,17 @@ SessionMap& VaeDbHandler::getSessions() {
   return sessions;
 }
 
-int32_t VaeDbHandler::openSession(const string& subdomain, const string& secretKey, const bool stagingMode) {
-  queryLog.method_call("openSession") << subdomain << secretKey << stagingMode;
+int32_t VaeDbHandler::openSession(const string& subdomain, const string& secretKey, const bool stagingMode, const int32_t suggestedSessionId) {
+  queryLog.method_call("openSession") << subdomain << secretKey << stagingMode << suggestedSessionId;
 
   int32_t sessionId; 
+  sessionId = suggestedSessionId;
   shared_ptr<Site> site = getSite(subdomain, secretKey, stagingMode);
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    do { 
+    while (sessions.count(sessionId)) {
       sessionId = rand();
-    } while (sessions.count(sessionId));
+    }
     shared_ptr<Session> session(new Session(site));
     sessions[sessionId] = session;
   }

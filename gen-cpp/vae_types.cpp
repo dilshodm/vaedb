@@ -10,28 +10,28 @@
 const char* VaeDbInternalError::ascii_fingerprint = "EFB929595D312AC8F305D5A794CFEDA1";
 const uint8_t VaeDbInternalError::binary_fingerprint[16] = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
 
-uint32_t VaeDbInternalError::read(apache::thrift::protocol::TProtocol* iprot) {
+uint32_t VaeDbInternalError::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
-  apache::thrift::protocol::TType ftype;
+  ::apache::thrift::protocol::TType ftype;
   int16_t fid;
 
   xfer += iprot->readStructBegin(fname);
 
-  using apache::thrift::protocol::TProtocolException;
+  using ::apache::thrift::protocol::TProtocolException;
 
 
   while (true)
   {
     xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == apache::thrift::protocol::T_STOP) {
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
     switch (fid)
     {
       case 1:
-        if (ftype == apache::thrift::protocol::T_STRING) {
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->message);
           this->__isset.message = true;
         } else {
@@ -50,10 +50,10 @@ uint32_t VaeDbInternalError::read(apache::thrift::protocol::TProtocol* iprot) {
   return xfer;
 }
 
-uint32_t VaeDbInternalError::write(apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t VaeDbInternalError::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("VaeDbInternalError");
-  xfer += oprot->writeFieldBegin("message", apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("message", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->message);
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
@@ -64,28 +64,28 @@ uint32_t VaeDbInternalError::write(apache::thrift::protocol::TProtocol* oprot) c
 const char* VaeDbQueryError::ascii_fingerprint = "EFB929595D312AC8F305D5A794CFEDA1";
 const uint8_t VaeDbQueryError::binary_fingerprint[16] = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
 
-uint32_t VaeDbQueryError::read(apache::thrift::protocol::TProtocol* iprot) {
+uint32_t VaeDbQueryError::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
-  apache::thrift::protocol::TType ftype;
+  ::apache::thrift::protocol::TType ftype;
   int16_t fid;
 
   xfer += iprot->readStructBegin(fname);
 
-  using apache::thrift::protocol::TProtocolException;
+  using ::apache::thrift::protocol::TProtocolException;
 
 
   while (true)
   {
     xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == apache::thrift::protocol::T_STOP) {
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
     switch (fid)
     {
       case 1:
-        if (ftype == apache::thrift::protocol::T_STRING) {
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->message);
           this->__isset.message = true;
         } else {
@@ -104,10 +104,10 @@ uint32_t VaeDbQueryError::read(apache::thrift::protocol::TProtocol* iprot) {
   return xfer;
 }
 
-uint32_t VaeDbQueryError::write(apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t VaeDbQueryError::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("VaeDbQueryError");
-  xfer += oprot->writeFieldBegin("message", apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("message", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->message);
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
@@ -118,28 +118,28 @@ uint32_t VaeDbQueryError::write(apache::thrift::protocol::TProtocol* oprot) cons
 const char* VaeSyntaxError::ascii_fingerprint = "EFB929595D312AC8F305D5A794CFEDA1";
 const uint8_t VaeSyntaxError::binary_fingerprint[16] = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
 
-uint32_t VaeSyntaxError::read(apache::thrift::protocol::TProtocol* iprot) {
+uint32_t VaeSyntaxError::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
-  apache::thrift::protocol::TType ftype;
+  ::apache::thrift::protocol::TType ftype;
   int16_t fid;
 
   xfer += iprot->readStructBegin(fname);
 
-  using apache::thrift::protocol::TProtocolException;
+  using ::apache::thrift::protocol::TProtocolException;
 
 
   while (true)
   {
     xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == apache::thrift::protocol::T_STOP) {
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
     switch (fid)
     {
       case 1:
-        if (ftype == apache::thrift::protocol::T_STRING) {
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->message);
           this->__isset.message = true;
         } else {
@@ -158,10 +158,10 @@ uint32_t VaeSyntaxError::read(apache::thrift::protocol::TProtocol* iprot) {
   return xfer;
 }
 
-uint32_t VaeSyntaxError::write(apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t VaeSyntaxError::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("VaeSyntaxError");
-  xfer += oprot->writeFieldBegin("message", apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("message", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->message);
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
@@ -172,28 +172,28 @@ uint32_t VaeSyntaxError::write(apache::thrift::protocol::TProtocol* oprot) const
 const char* VaeDbContext::ascii_fingerprint = "BEAB2D31539CC6DEBF1F0ACAE335AFB3";
 const uint8_t VaeDbContext::binary_fingerprint[16] = {0xBE,0xAB,0x2D,0x31,0x53,0x9C,0xC6,0xDE,0xBF,0x1F,0x0A,0xCA,0xE3,0x35,0xAF,0xB3};
 
-uint32_t VaeDbContext::read(apache::thrift::protocol::TProtocol* iprot) {
+uint32_t VaeDbContext::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
-  apache::thrift::protocol::TType ftype;
+  ::apache::thrift::protocol::TType ftype;
   int16_t fid;
 
   xfer += iprot->readStructBegin(fname);
 
-  using apache::thrift::protocol::TProtocolException;
+  using ::apache::thrift::protocol::TProtocolException;
 
 
   while (true)
   {
     xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == apache::thrift::protocol::T_STOP) {
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
     switch (fid)
     {
       case 1:
-        if (ftype == apache::thrift::protocol::T_I32) {
+        if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->id);
           this->__isset.id = true;
         } else {
@@ -201,7 +201,7 @@ uint32_t VaeDbContext::read(apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 2:
-        if (ftype == apache::thrift::protocol::T_I32) {
+        if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->structure_id);
           this->__isset.structure_id = true;
         } else {
@@ -209,7 +209,7 @@ uint32_t VaeDbContext::read(apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 3:
-        if (ftype == apache::thrift::protocol::T_STRING) {
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->type);
           this->__isset.type = true;
         } else {
@@ -217,7 +217,7 @@ uint32_t VaeDbContext::read(apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 4:
-        if (ftype == apache::thrift::protocol::T_STRING) {
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->permalink);
           this->__isset.permalink = true;
         } else {
@@ -225,7 +225,7 @@ uint32_t VaeDbContext::read(apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 5:
-        if (ftype == apache::thrift::protocol::T_STRING) {
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->data);
           this->__isset.data = true;
         } else {
@@ -233,12 +233,12 @@ uint32_t VaeDbContext::read(apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 6:
-        if (ftype == apache::thrift::protocol::T_MAP) {
+        if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->dataMap.clear();
             uint32_t _size0;
-            apache::thrift::protocol::TType _ktype1;
-            apache::thrift::protocol::TType _vtype2;
+            ::apache::thrift::protocol::TType _ktype1;
+            ::apache::thrift::protocol::TType _vtype2;
             iprot->readMapBegin(_ktype1, _vtype2, _size0);
             uint32_t _i4;
             for (_i4 = 0; _i4 < _size0; ++_i4)
@@ -267,27 +267,27 @@ uint32_t VaeDbContext::read(apache::thrift::protocol::TProtocol* iprot) {
   return xfer;
 }
 
-uint32_t VaeDbContext::write(apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t VaeDbContext::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("VaeDbContext");
-  xfer += oprot->writeFieldBegin("id", apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeFieldBegin("id", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32(this->id);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("structure_id", apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeFieldBegin("structure_id", ::apache::thrift::protocol::T_I32, 2);
   xfer += oprot->writeI32(this->structure_id);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("type", apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeFieldBegin("type", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString(this->type);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("permalink", apache::thrift::protocol::T_STRING, 4);
+  xfer += oprot->writeFieldBegin("permalink", ::apache::thrift::protocol::T_STRING, 4);
   xfer += oprot->writeString(this->permalink);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("data", apache::thrift::protocol::T_STRING, 5);
+  xfer += oprot->writeFieldBegin("data", ::apache::thrift::protocol::T_STRING, 5);
   xfer += oprot->writeString(this->data);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("dataMap", apache::thrift::protocol::T_MAP, 6);
+  xfer += oprot->writeFieldBegin("dataMap", ::apache::thrift::protocol::T_MAP, 6);
   {
-    xfer += oprot->writeMapBegin(apache::thrift::protocol::T_STRING, apache::thrift::protocol::T_STRING, this->dataMap.size());
+    xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, this->dataMap.size());
     std::map<std::string, std::string> ::const_iterator _iter7;
     for (_iter7 = this->dataMap.begin(); _iter7 != this->dataMap.end(); ++_iter7)
     {
@@ -305,28 +305,28 @@ uint32_t VaeDbContext::write(apache::thrift::protocol::TProtocol* oprot) const {
 const char* VaeDbCreateInfo::ascii_fingerprint = "989D1F1AE8D148D5E2119FFEC4BBBEE3";
 const uint8_t VaeDbCreateInfo::binary_fingerprint[16] = {0x98,0x9D,0x1F,0x1A,0xE8,0xD1,0x48,0xD5,0xE2,0x11,0x9F,0xFE,0xC4,0xBB,0xBE,0xE3};
 
-uint32_t VaeDbCreateInfo::read(apache::thrift::protocol::TProtocol* iprot) {
+uint32_t VaeDbCreateInfo::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
-  apache::thrift::protocol::TType ftype;
+  ::apache::thrift::protocol::TType ftype;
   int16_t fid;
 
   xfer += iprot->readStructBegin(fname);
 
-  using apache::thrift::protocol::TProtocolException;
+  using ::apache::thrift::protocol::TProtocolException;
 
 
   while (true)
   {
     xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == apache::thrift::protocol::T_STOP) {
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
     switch (fid)
     {
       case 1:
-        if (ftype == apache::thrift::protocol::T_I32) {
+        if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->structure_id);
           this->__isset.structure_id = true;
         } else {
@@ -334,7 +334,7 @@ uint32_t VaeDbCreateInfo::read(apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 2:
-        if (ftype == apache::thrift::protocol::T_I32) {
+        if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->row_id);
           this->__isset.row_id = true;
         } else {
@@ -353,13 +353,13 @@ uint32_t VaeDbCreateInfo::read(apache::thrift::protocol::TProtocol* iprot) {
   return xfer;
 }
 
-uint32_t VaeDbCreateInfo::write(apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t VaeDbCreateInfo::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("VaeDbCreateInfo");
-  xfer += oprot->writeFieldBegin("structure_id", apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeFieldBegin("structure_id", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32(this->structure_id);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("row_id", apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeFieldBegin("row_id", ::apache::thrift::protocol::T_I32, 2);
   xfer += oprot->writeI32(this->row_id);
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
@@ -370,28 +370,28 @@ uint32_t VaeDbCreateInfo::write(apache::thrift::protocol::TProtocol* oprot) cons
 const char* VaeDbStructure::ascii_fingerprint = "C4A8A7FE71C2DB9CB73D92862AA4C591";
 const uint8_t VaeDbStructure::binary_fingerprint[16] = {0xC4,0xA8,0xA7,0xFE,0x71,0xC2,0xDB,0x9C,0xB7,0x3D,0x92,0x86,0x2A,0xA4,0xC5,0x91};
 
-uint32_t VaeDbStructure::read(apache::thrift::protocol::TProtocol* iprot) {
+uint32_t VaeDbStructure::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
-  apache::thrift::protocol::TType ftype;
+  ::apache::thrift::protocol::TType ftype;
   int16_t fid;
 
   xfer += iprot->readStructBegin(fname);
 
-  using apache::thrift::protocol::TProtocolException;
+  using ::apache::thrift::protocol::TProtocolException;
 
 
   while (true)
   {
     xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == apache::thrift::protocol::T_STOP) {
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
     switch (fid)
     {
       case 1:
-        if (ftype == apache::thrift::protocol::T_I32) {
+        if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->id);
           this->__isset.id = true;
         } else {
@@ -399,7 +399,7 @@ uint32_t VaeDbStructure::read(apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 2:
-        if (ftype == apache::thrift::protocol::T_STRING) {
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->name);
           this->__isset.name = true;
         } else {
@@ -407,7 +407,7 @@ uint32_t VaeDbStructure::read(apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 3:
-        if (ftype == apache::thrift::protocol::T_STRING) {
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->type);
           this->__isset.type = true;
         } else {
@@ -415,7 +415,7 @@ uint32_t VaeDbStructure::read(apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 4:
-        if (ftype == apache::thrift::protocol::T_STRING) {
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->permalink);
           this->__isset.permalink = true;
         } else {
@@ -434,19 +434,19 @@ uint32_t VaeDbStructure::read(apache::thrift::protocol::TProtocol* iprot) {
   return xfer;
 }
 
-uint32_t VaeDbStructure::write(apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t VaeDbStructure::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("VaeDbStructure");
-  xfer += oprot->writeFieldBegin("id", apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeFieldBegin("id", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32(this->id);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("name", apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("name", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->name);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("type", apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeFieldBegin("type", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString(this->type);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("permalink", apache::thrift::protocol::T_STRING, 4);
+  xfer += oprot->writeFieldBegin("permalink", ::apache::thrift::protocol::T_STRING, 4);
   xfer += oprot->writeString(this->permalink);
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
@@ -457,32 +457,32 @@ uint32_t VaeDbStructure::write(apache::thrift::protocol::TProtocol* oprot) const
 const char* VaeDbResponseForContext::ascii_fingerprint = "13CC73A95A000EF77F4B4496C5AF9110";
 const uint8_t VaeDbResponseForContext::binary_fingerprint[16] = {0x13,0xCC,0x73,0xA9,0x5A,0x00,0x0E,0xF7,0x7F,0x4B,0x44,0x96,0xC5,0xAF,0x91,0x10};
 
-uint32_t VaeDbResponseForContext::read(apache::thrift::protocol::TProtocol* iprot) {
+uint32_t VaeDbResponseForContext::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
-  apache::thrift::protocol::TType ftype;
+  ::apache::thrift::protocol::TType ftype;
   int16_t fid;
 
   xfer += iprot->readStructBegin(fname);
 
-  using apache::thrift::protocol::TProtocolException;
+  using ::apache::thrift::protocol::TProtocolException;
 
 
   while (true)
   {
     xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == apache::thrift::protocol::T_STOP) {
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
     switch (fid)
     {
       case 1:
-        if (ftype == apache::thrift::protocol::T_LIST) {
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->contexts.clear();
             uint32_t _size8;
-            apache::thrift::protocol::TType _etype11;
+            ::apache::thrift::protocol::TType _etype11;
             iprot->readListBegin(_etype11, _size8);
             this->contexts.resize(_size8);
             uint32_t _i12;
@@ -498,7 +498,7 @@ uint32_t VaeDbResponseForContext::read(apache::thrift::protocol::TProtocol* ipro
         }
         break;
       case 2:
-        if (ftype == apache::thrift::protocol::T_I32) {
+        if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->totalItems);
           this->__isset.totalItems = true;
         } else {
@@ -517,12 +517,12 @@ uint32_t VaeDbResponseForContext::read(apache::thrift::protocol::TProtocol* ipro
   return xfer;
 }
 
-uint32_t VaeDbResponseForContext::write(apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t VaeDbResponseForContext::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("VaeDbResponseForContext");
-  xfer += oprot->writeFieldBegin("contexts", apache::thrift::protocol::T_LIST, 1);
+  xfer += oprot->writeFieldBegin("contexts", ::apache::thrift::protocol::T_LIST, 1);
   {
-    xfer += oprot->writeListBegin(apache::thrift::protocol::T_STRUCT, this->contexts.size());
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, this->contexts.size());
     std::vector<VaeDbContext> ::const_iterator _iter13;
     for (_iter13 = this->contexts.begin(); _iter13 != this->contexts.end(); ++_iter13)
     {
@@ -531,7 +531,7 @@ uint32_t VaeDbResponseForContext::write(apache::thrift::protocol::TProtocol* opr
     xfer += oprot->writeListEnd();
   }
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("totalItems", apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeFieldBegin("totalItems", ::apache::thrift::protocol::T_I32, 2);
   xfer += oprot->writeI32(this->totalItems);
   xfer += oprot->writeFieldEnd();
   xfer += oprot->writeFieldStop();
@@ -542,28 +542,28 @@ uint32_t VaeDbResponseForContext::write(apache::thrift::protocol::TProtocol* opr
 const char* VaeDbResponse::ascii_fingerprint = "B320F1DEA4E350B3E7584683A294D8CA";
 const uint8_t VaeDbResponse::binary_fingerprint[16] = {0xB3,0x20,0xF1,0xDE,0xA4,0xE3,0x50,0xB3,0xE7,0x58,0x46,0x83,0xA2,0x94,0xD8,0xCA};
 
-uint32_t VaeDbResponse::read(apache::thrift::protocol::TProtocol* iprot) {
+uint32_t VaeDbResponse::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
-  apache::thrift::protocol::TType ftype;
+  ::apache::thrift::protocol::TType ftype;
   int16_t fid;
 
   xfer += iprot->readStructBegin(fname);
 
-  using apache::thrift::protocol::TProtocolException;
+  using ::apache::thrift::protocol::TProtocolException;
 
 
   while (true)
   {
     xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == apache::thrift::protocol::T_STOP) {
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
     switch (fid)
     {
       case 1:
-        if (ftype == apache::thrift::protocol::T_I32) {
+        if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->id);
           this->__isset.id = true;
         } else {
@@ -571,11 +571,11 @@ uint32_t VaeDbResponse::read(apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 2:
-        if (ftype == apache::thrift::protocol::T_LIST) {
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->contexts.clear();
             uint32_t _size14;
-            apache::thrift::protocol::TType _etype17;
+            ::apache::thrift::protocol::TType _etype17;
             iprot->readListBegin(_etype17, _size14);
             this->contexts.resize(_size14);
             uint32_t _i18;
@@ -602,15 +602,15 @@ uint32_t VaeDbResponse::read(apache::thrift::protocol::TProtocol* iprot) {
   return xfer;
 }
 
-uint32_t VaeDbResponse::write(apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t VaeDbResponse::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("VaeDbResponse");
-  xfer += oprot->writeFieldBegin("id", apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeFieldBegin("id", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32(this->id);
   xfer += oprot->writeFieldEnd();
-  xfer += oprot->writeFieldBegin("contexts", apache::thrift::protocol::T_LIST, 2);
+  xfer += oprot->writeFieldBegin("contexts", ::apache::thrift::protocol::T_LIST, 2);
   {
-    xfer += oprot->writeListBegin(apache::thrift::protocol::T_STRUCT, this->contexts.size());
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, this->contexts.size());
     std::vector<VaeDbResponseForContext> ::const_iterator _iter19;
     for (_iter19 = this->contexts.begin(); _iter19 != this->contexts.end(); ++_iter19)
     {
@@ -627,32 +627,32 @@ uint32_t VaeDbResponse::write(apache::thrift::protocol::TProtocol* oprot) const 
 const char* VaeDbCreateInfoResponse::ascii_fingerprint = "2F9B604E54610FE2F0CD6865A57000F9";
 const uint8_t VaeDbCreateInfoResponse::binary_fingerprint[16] = {0x2F,0x9B,0x60,0x4E,0x54,0x61,0x0F,0xE2,0xF0,0xCD,0x68,0x65,0xA5,0x70,0x00,0xF9};
 
-uint32_t VaeDbCreateInfoResponse::read(apache::thrift::protocol::TProtocol* iprot) {
+uint32_t VaeDbCreateInfoResponse::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
-  apache::thrift::protocol::TType ftype;
+  ::apache::thrift::protocol::TType ftype;
   int16_t fid;
 
   xfer += iprot->readStructBegin(fname);
 
-  using apache::thrift::protocol::TProtocolException;
+  using ::apache::thrift::protocol::TProtocolException;
 
 
   while (true)
   {
     xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == apache::thrift::protocol::T_STOP) {
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
     switch (fid)
     {
       case 1:
-        if (ftype == apache::thrift::protocol::T_LIST) {
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->contexts.clear();
             uint32_t _size20;
-            apache::thrift::protocol::TType _etype23;
+            ::apache::thrift::protocol::TType _etype23;
             iprot->readListBegin(_etype23, _size20);
             this->contexts.resize(_size20);
             uint32_t _i24;
@@ -679,12 +679,12 @@ uint32_t VaeDbCreateInfoResponse::read(apache::thrift::protocol::TProtocol* ipro
   return xfer;
 }
 
-uint32_t VaeDbCreateInfoResponse::write(apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t VaeDbCreateInfoResponse::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("VaeDbCreateInfoResponse");
-  xfer += oprot->writeFieldBegin("contexts", apache::thrift::protocol::T_LIST, 1);
+  xfer += oprot->writeFieldBegin("contexts", ::apache::thrift::protocol::T_LIST, 1);
   {
-    xfer += oprot->writeListBegin(apache::thrift::protocol::T_STRUCT, this->contexts.size());
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, this->contexts.size());
     std::vector<VaeDbCreateInfo> ::const_iterator _iter25;
     for (_iter25 = this->contexts.begin(); _iter25 != this->contexts.end(); ++_iter25)
     {
@@ -701,33 +701,33 @@ uint32_t VaeDbCreateInfoResponse::write(apache::thrift::protocol::TProtocol* opr
 const char* VaeDbDataForContext::ascii_fingerprint = "5EA2D527ECA3BA20C77AFC023EE8C05F";
 const uint8_t VaeDbDataForContext::binary_fingerprint[16] = {0x5E,0xA2,0xD5,0x27,0xEC,0xA3,0xBA,0x20,0xC7,0x7A,0xFC,0x02,0x3E,0xE8,0xC0,0x5F};
 
-uint32_t VaeDbDataForContext::read(apache::thrift::protocol::TProtocol* iprot) {
+uint32_t VaeDbDataForContext::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
-  apache::thrift::protocol::TType ftype;
+  ::apache::thrift::protocol::TType ftype;
   int16_t fid;
 
   xfer += iprot->readStructBegin(fname);
 
-  using apache::thrift::protocol::TProtocolException;
+  using ::apache::thrift::protocol::TProtocolException;
 
 
   while (true)
   {
     xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == apache::thrift::protocol::T_STOP) {
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
     switch (fid)
     {
       case 1:
-        if (ftype == apache::thrift::protocol::T_MAP) {
+        if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->data.clear();
             uint32_t _size26;
-            apache::thrift::protocol::TType _ktype27;
-            apache::thrift::protocol::TType _vtype28;
+            ::apache::thrift::protocol::TType _ktype27;
+            ::apache::thrift::protocol::TType _vtype28;
             iprot->readMapBegin(_ktype27, _vtype28, _size26);
             uint32_t _i30;
             for (_i30 = 0; _i30 < _size26; ++_i30)
@@ -756,12 +756,12 @@ uint32_t VaeDbDataForContext::read(apache::thrift::protocol::TProtocol* iprot) {
   return xfer;
 }
 
-uint32_t VaeDbDataForContext::write(apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t VaeDbDataForContext::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("VaeDbDataForContext");
-  xfer += oprot->writeFieldBegin("data", apache::thrift::protocol::T_MAP, 1);
+  xfer += oprot->writeFieldBegin("data", ::apache::thrift::protocol::T_MAP, 1);
   {
-    xfer += oprot->writeMapBegin(apache::thrift::protocol::T_STRING, apache::thrift::protocol::T_STRING, this->data.size());
+    xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, this->data.size());
     std::map<std::string, std::string> ::const_iterator _iter33;
     for (_iter33 = this->data.begin(); _iter33 != this->data.end(); ++_iter33)
     {
@@ -779,32 +779,32 @@ uint32_t VaeDbDataForContext::write(apache::thrift::protocol::TProtocol* oprot) 
 const char* VaeDbDataResponse::ascii_fingerprint = "BE55D8897E850D1BD32BA6AF9C21D55F";
 const uint8_t VaeDbDataResponse::binary_fingerprint[16] = {0xBE,0x55,0xD8,0x89,0x7E,0x85,0x0D,0x1B,0xD3,0x2B,0xA6,0xAF,0x9C,0x21,0xD5,0x5F};
 
-uint32_t VaeDbDataResponse::read(apache::thrift::protocol::TProtocol* iprot) {
+uint32_t VaeDbDataResponse::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
-  apache::thrift::protocol::TType ftype;
+  ::apache::thrift::protocol::TType ftype;
   int16_t fid;
 
   xfer += iprot->readStructBegin(fname);
 
-  using apache::thrift::protocol::TProtocolException;
+  using ::apache::thrift::protocol::TProtocolException;
 
 
   while (true)
   {
     xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == apache::thrift::protocol::T_STOP) {
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
     switch (fid)
     {
       case 1:
-        if (ftype == apache::thrift::protocol::T_LIST) {
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->contexts.clear();
             uint32_t _size34;
-            apache::thrift::protocol::TType _etype37;
+            ::apache::thrift::protocol::TType _etype37;
             iprot->readListBegin(_etype37, _size34);
             this->contexts.resize(_size34);
             uint32_t _i38;
@@ -831,12 +831,12 @@ uint32_t VaeDbDataResponse::read(apache::thrift::protocol::TProtocol* iprot) {
   return xfer;
 }
 
-uint32_t VaeDbDataResponse::write(apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t VaeDbDataResponse::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("VaeDbDataResponse");
-  xfer += oprot->writeFieldBegin("contexts", apache::thrift::protocol::T_LIST, 1);
+  xfer += oprot->writeFieldBegin("contexts", ::apache::thrift::protocol::T_LIST, 1);
   {
-    xfer += oprot->writeListBegin(apache::thrift::protocol::T_STRUCT, this->contexts.size());
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, this->contexts.size());
     std::vector<VaeDbDataForContext> ::const_iterator _iter39;
     for (_iter39 = this->contexts.begin(); _iter39 != this->contexts.end(); ++_iter39)
     {
@@ -853,32 +853,32 @@ uint32_t VaeDbDataResponse::write(apache::thrift::protocol::TProtocol* oprot) co
 const char* VaeDbStructureResponse::ascii_fingerprint = "73A02F4BDDF88CFC86E812F6F0C36638";
 const uint8_t VaeDbStructureResponse::binary_fingerprint[16] = {0x73,0xA0,0x2F,0x4B,0xDD,0xF8,0x8C,0xFC,0x86,0xE8,0x12,0xF6,0xF0,0xC3,0x66,0x38};
 
-uint32_t VaeDbStructureResponse::read(apache::thrift::protocol::TProtocol* iprot) {
+uint32_t VaeDbStructureResponse::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
-  apache::thrift::protocol::TType ftype;
+  ::apache::thrift::protocol::TType ftype;
   int16_t fid;
 
   xfer += iprot->readStructBegin(fname);
 
-  using apache::thrift::protocol::TProtocolException;
+  using ::apache::thrift::protocol::TProtocolException;
 
 
   while (true)
   {
     xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == apache::thrift::protocol::T_STOP) {
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
     switch (fid)
     {
       case 1:
-        if (ftype == apache::thrift::protocol::T_LIST) {
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->contexts.clear();
             uint32_t _size40;
-            apache::thrift::protocol::TType _etype43;
+            ::apache::thrift::protocol::TType _etype43;
             iprot->readListBegin(_etype43, _size40);
             this->contexts.resize(_size40);
             uint32_t _i44;
@@ -905,12 +905,12 @@ uint32_t VaeDbStructureResponse::read(apache::thrift::protocol::TProtocol* iprot
   return xfer;
 }
 
-uint32_t VaeDbStructureResponse::write(apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t VaeDbStructureResponse::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("VaeDbStructureResponse");
-  xfer += oprot->writeFieldBegin("contexts", apache::thrift::protocol::T_LIST, 1);
+  xfer += oprot->writeFieldBegin("contexts", ::apache::thrift::protocol::T_LIST, 1);
   {
-    xfer += oprot->writeListBegin(apache::thrift::protocol::T_STRUCT, this->contexts.size());
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, this->contexts.size());
     std::vector<VaeDbStructure> ::const_iterator _iter45;
     for (_iter45 = this->contexts.begin(); _iter45 != this->contexts.end(); ++_iter45)
     {

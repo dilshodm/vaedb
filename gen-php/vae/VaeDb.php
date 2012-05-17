@@ -14,7 +14,7 @@ interface VaeDbIf {
   public function createInfo($session_id, $response_id, $query);
   public function data($session_id, $response_id);
   public function get($session_id, $response_id, $query, $options);
-  public function openSession($site, $secret_key, $staging_mode);
+  public function openSession($site, $secret_key, $staging_mode, $suggested_session_id);
   public function resetSite($site, $secret_key);
   public function structure($session_id, $response_id);
 }
@@ -306,18 +306,19 @@ class VaeDbClient implements VaeDbIf {
     throw new Exception("get failed: unknown result");
   }
 
-  public function openSession($site, $secret_key, $staging_mode)
+  public function openSession($site, $secret_key, $staging_mode, $suggested_session_id)
   {
-    $this->send_openSession($site, $secret_key, $staging_mode);
+    $this->send_openSession($site, $secret_key, $staging_mode, $suggested_session_id);
     return $this->recv_openSession();
   }
 
-  public function send_openSession($site, $secret_key, $staging_mode)
+  public function send_openSession($site, $secret_key, $staging_mode, $suggested_session_id)
   {
     $args = new VaeDb_openSession_args();
     $args->site = $site;
     $args->secret_key = $secret_key;
     $args->staging_mode = $staging_mode;
+    $args->suggested_session_id = $suggested_session_id;
     $bin_accel = ($this->output_ instanceof TProtocol::$TBINARYPROTOCOLACCELERATED) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -1478,6 +1479,7 @@ class VaeDb_openSession_args {
   public $site = null;
   public $secret_key = null;
   public $staging_mode = null;
+  public $suggested_session_id = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1494,6 +1496,10 @@ class VaeDb_openSession_args {
           'var' => 'staging_mode',
           'type' => TType::BOOL,
           ),
+        4 => array(
+          'var' => 'suggested_session_id',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -1505,6 +1511,9 @@ class VaeDb_openSession_args {
       }
       if (isset($vals['staging_mode'])) {
         $this->staging_mode = $vals['staging_mode'];
+      }
+      if (isset($vals['suggested_session_id'])) {
+        $this->suggested_session_id = $vals['suggested_session_id'];
       }
     }
   }
@@ -1549,6 +1558,13 @@ class VaeDb_openSession_args {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 4:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->suggested_session_id);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1575,6 +1591,11 @@ class VaeDb_openSession_args {
     if ($this->staging_mode !== null) {
       $xfer += $output->writeFieldBegin('staging_mode', TType::BOOL, 3);
       $xfer += $output->writeBool($this->staging_mode);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->suggested_session_id !== null) {
+      $xfer += $output->writeFieldBegin('suggested_session_id', TType::I32, 4);
+      $xfer += $output->writeI32($this->suggested_session_id);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

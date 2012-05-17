@@ -91,13 +91,13 @@ module VaeDb
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'get failed: unknown result')
     end
 
-    def openSession(site, secret_key, staging_mode)
-      send_openSession(site, secret_key, staging_mode)
+    def openSession(site, secret_key, staging_mode, suggested_session_id)
+      send_openSession(site, secret_key, staging_mode, suggested_session_id)
       return recv_openSession()
     end
 
-    def send_openSession(site, secret_key, staging_mode)
-      send_message('openSession', OpenSession_args, :site => site, :secret_key => secret_key, :staging_mode => staging_mode)
+    def send_openSession(site, secret_key, staging_mode, suggested_session_id)
+      send_message('openSession', OpenSession_args, :site => site, :secret_key => secret_key, :staging_mode => staging_mode, :suggested_session_id => suggested_session_id)
     end
 
     def recv_openSession()
@@ -202,7 +202,7 @@ module VaeDb
       args = read_args(iprot, OpenSession_args)
       result = OpenSession_result.new()
       begin
-        result.success = @handler.openSession(args.site, args.secret_key, args.staging_mode)
+        result.success = @handler.openSession(args.site, args.secret_key, args.staging_mode, args.suggested_session_id)
       rescue VaeDbInternalError => e
         result.e = e
       end
@@ -422,12 +422,14 @@ module VaeDb
     SITE = 1
     SECRET_KEY = 2
     STAGING_MODE = 3
+    SUGGESTED_SESSION_ID = 4
 
-    ::Thrift::Struct.field_accessor self, :site, :secret_key, :staging_mode
+    ::Thrift::Struct.field_accessor self, :site, :secret_key, :staging_mode, :suggested_session_id
     FIELDS = {
       SITE => {:type => ::Thrift::Types::STRING, :name => 'site'},
       SECRET_KEY => {:type => ::Thrift::Types::STRING, :name => 'secret_key'},
-      STAGING_MODE => {:type => ::Thrift::Types::BOOL, :name => 'staging_mode'}
+      STAGING_MODE => {:type => ::Thrift::Types::BOOL, :name => 'staging_mode'},
+      SUGGESTED_SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'suggested_session_id'}
     }
 
     def struct_fields; FIELDS; end

@@ -14,7 +14,7 @@
 
 
 
-class VaeDbInternalError : public apache::thrift::TException {
+class VaeDbInternalError : public ::apache::thrift::TException {
  public:
 
   static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
@@ -46,12 +46,12 @@ class VaeDbInternalError : public apache::thrift::TException {
 
   bool operator < (const VaeDbInternalError & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-class VaeDbQueryError : public apache::thrift::TException {
+class VaeDbQueryError : public ::apache::thrift::TException {
  public:
 
   static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
@@ -83,12 +83,12 @@ class VaeDbQueryError : public apache::thrift::TException {
 
   bool operator < (const VaeDbQueryError & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-class VaeSyntaxError : public apache::thrift::TException {
+class VaeSyntaxError : public ::apache::thrift::TException {
  public:
 
   static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
@@ -118,8 +118,8 @@ class VaeSyntaxError : public apache::thrift::TException {
 
   bool operator < (const VaeSyntaxError & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -173,8 +173,8 @@ class VaeDbContext {
 
   bool operator < (const VaeDbContext & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -212,8 +212,8 @@ class VaeDbCreateInfo {
 
   bool operator < (const VaeDbCreateInfo & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -259,8 +259,8 @@ class VaeDbStructure {
 
   bool operator < (const VaeDbStructure & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -298,8 +298,8 @@ class VaeDbResponseForContext {
 
   bool operator < (const VaeDbResponseForContext & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -337,8 +337,8 @@ class VaeDbResponse {
 
   bool operator < (const VaeDbResponse & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -372,8 +372,8 @@ class VaeDbCreateInfoResponse {
 
   bool operator < (const VaeDbCreateInfoResponse & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -407,8 +407,8 @@ class VaeDbDataForContext {
 
   bool operator < (const VaeDbDataForContext & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -442,8 +442,8 @@ class VaeDbDataResponse {
 
   bool operator < (const VaeDbDataResponse & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -477,8 +477,8 @@ class VaeDbStructureResponse {
 
   bool operator < (const VaeDbStructureResponse & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 

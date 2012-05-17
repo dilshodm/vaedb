@@ -62,8 +62,8 @@ class VaeRubyd_ping_args {
 
   bool operator < (const VaeRubyd_ping_args & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -74,7 +74,7 @@ class VaeRubyd_ping_pargs {
   virtual ~VaeRubyd_ping_pargs() throw() {}
 
 
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -105,8 +105,8 @@ class VaeRubyd_ping_result {
 
   bool operator < (const VaeRubyd_ping_result & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -123,7 +123,7 @@ class VaeRubyd_ping_presult {
     bool success;
   } __isset;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
@@ -154,8 +154,8 @@ class VaeRubyd_fixDocRoot_args {
 
   bool operator < (const VaeRubyd_fixDocRoot_args & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -167,7 +167,7 @@ class VaeRubyd_fixDocRoot_pargs {
 
   const std::string* path;
 
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -198,8 +198,8 @@ class VaeRubyd_fixDocRoot_result {
 
   bool operator < (const VaeRubyd_fixDocRoot_result & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -216,7 +216,7 @@ class VaeRubyd_fixDocRoot_presult {
     bool success;
   } __isset;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
@@ -247,8 +247,8 @@ class VaeRubyd_haml_args {
 
   bool operator < (const VaeRubyd_haml_args & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -260,7 +260,7 @@ class VaeRubyd_haml_pargs {
 
   const std::string* text;
 
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -295,8 +295,8 @@ class VaeRubyd_haml_result {
 
   bool operator < (const VaeRubyd_haml_result & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -315,7 +315,7 @@ class VaeRubyd_haml_presult {
     bool se;
   } __isset;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
@@ -350,8 +350,8 @@ class VaeRubyd_sass_args {
 
   bool operator < (const VaeRubyd_sass_args & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -364,7 +364,7 @@ class VaeRubyd_sass_pargs {
   const std::string* text;
   const std::string* load_path;
 
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -399,8 +399,8 @@ class VaeRubyd_sass_result {
 
   bool operator < (const VaeRubyd_sass_result & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -419,7 +419,7 @@ class VaeRubyd_sass_presult {
     bool se;
   } __isset;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
@@ -454,8 +454,8 @@ class VaeRubyd_scss_args {
 
   bool operator < (const VaeRubyd_scss_args & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -468,7 +468,7 @@ class VaeRubyd_scss_pargs {
   const std::string* text;
   const std::string* load_path;
 
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -503,8 +503,8 @@ class VaeRubyd_scss_result {
 
   bool operator < (const VaeRubyd_scss_result & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -523,28 +523,28 @@ class VaeRubyd_scss_presult {
     bool se;
   } __isset;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
 class VaeRubydClient : virtual public VaeRubydIf {
  public:
-  VaeRubydClient(boost::shared_ptr<apache::thrift::protocol::TProtocol> prot) :
+  VaeRubydClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
     piprot_(prot),
     poprot_(prot) {
     iprot_ = prot.get();
     oprot_ = prot.get();
   }
-  VaeRubydClient(boost::shared_ptr<apache::thrift::protocol::TProtocol> iprot, boost::shared_ptr<apache::thrift::protocol::TProtocol> oprot) :
+  VaeRubydClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> iprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> oprot) :
     piprot_(iprot),
     poprot_(oprot) {
     iprot_ = iprot.get();
     oprot_ = oprot.get();
   }
-  boost::shared_ptr<apache::thrift::protocol::TProtocol> getInputProtocol() {
+  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getInputProtocol() {
     return piprot_;
   }
-  boost::shared_ptr<apache::thrift::protocol::TProtocol> getOutputProtocol() {
+  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
   int8_t ping();
@@ -563,23 +563,23 @@ class VaeRubydClient : virtual public VaeRubydIf {
   void send_scss(const std::string& text, const std::string& load_path);
   void recv_scss(std::string& _return);
  protected:
-  boost::shared_ptr<apache::thrift::protocol::TProtocol> piprot_;
-  boost::shared_ptr<apache::thrift::protocol::TProtocol> poprot_;
-  apache::thrift::protocol::TProtocol* iprot_;
-  apache::thrift::protocol::TProtocol* oprot_;
+  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
+  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
+  ::apache::thrift::protocol::TProtocol* iprot_;
+  ::apache::thrift::protocol::TProtocol* oprot_;
 };
 
-class VaeRubydProcessor : virtual public apache::thrift::TProcessor {
+class VaeRubydProcessor : virtual public ::apache::thrift::TProcessor {
  protected:
   boost::shared_ptr<VaeRubydIf> iface_;
-  virtual bool process_fn(apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot, std::string& fname, int32_t seqid);
+  virtual bool process_fn(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, std::string& fname, int32_t seqid);
  private:
-  std::map<std::string, void (VaeRubydProcessor::*)(int32_t, apache::thrift::protocol::TProtocol*, apache::thrift::protocol::TProtocol*)> processMap_;
-  void process_ping(int32_t seqid, apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot);
-  void process_fixDocRoot(int32_t seqid, apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot);
-  void process_haml(int32_t seqid, apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot);
-  void process_sass(int32_t seqid, apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot);
-  void process_scss(int32_t seqid, apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot);
+  std::map<std::string, void (VaeRubydProcessor::*)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*)> processMap_;
+  void process_ping(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot);
+  void process_fixDocRoot(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot);
+  void process_haml(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot);
+  void process_sass(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot);
+  void process_scss(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot);
  public:
   VaeRubydProcessor(boost::shared_ptr<VaeRubydIf> iface) :
     iface_(iface) {
@@ -590,7 +590,7 @@ class VaeRubydProcessor : virtual public apache::thrift::TProcessor {
     processMap_["scss"] = &VaeRubydProcessor::process_scss;
   }
 
-  virtual bool process(boost::shared_ptr<apache::thrift::protocol::TProtocol> piprot, boost::shared_ptr<apache::thrift::protocol::TProtocol> poprot);
+  virtual bool process(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot);
   virtual ~VaeRubydProcessor() {}
 };
 
