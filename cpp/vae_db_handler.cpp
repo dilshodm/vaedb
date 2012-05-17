@@ -185,7 +185,7 @@ void VaeDbHandler::resetSite(const string& subdomain, const std::string& secretK
 }
 
 void VaeDbHandler::structure(VaeDbStructureResponse& _return, const int32_t sessionId, const int32_t responseId) {
-  queryLog.entry().method_call("resetSite") << sessionId << responseId << end;
+  queryLog.entry().method_call("structure") << sessionId << responseId << end;
 
   shared_ptr<class Session> session;
   {
