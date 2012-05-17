@@ -56,14 +56,12 @@ class VaeReplayBot
   end
 
   def method_call(method_name, args)
-    success = true
     begin
+      puts "#{method_name} <- #{args.join(',')}"
       @vaedb.send(method_name.to_sym, *args)
-    rescue
-      success = false
+    rescue VaeDbInternalError => e
+      puts "  VaeDbInternalError: #{e.message}"
     end
-
-    puts "#{method_name} <- #{args.join(',')}"
   end
 
   def classify_line(line)
@@ -117,22 +115,28 @@ class VaeReplayBot
 end
 
 begin
-    log_filename = ARGV[0]
-    port = ARGV[1] || 9090
-    puts port
+  if ARGV.count != 3
+    puts "usage: bot.rb {hostname} {port} {inputfile}"
+    exit(-1)
+  end
 
-    transport = Thrift::BufferedTransport.new(Thrift::Socket.new('localhost', port))
-    protocol = Thrift::BinaryProtocol.new(transport)
-    client = VaeDb::Client.new(protocol)
+  host = ARGV[0]
+  port = ARGV[1]
+  log_filename = ARGV[2]
 
-    transport.open()
+  socket = Thrift::Socket.new(host, port)
+  transport = Thrift::BufferedTransport.new(socket)
+  protocol = Thrift::BinaryProtocol.new(transport)
+  client = VaeDb::Client.new(protocol)
+
+  transport.open()
  
-    bot = VaeReplayBot.new(client)
-    File.open(log_filename, "r") do 
-      |file| bot.process_stream(file)
-    end
+  bot = VaeReplayBot.new(client)
+  File.open(log_filename, "r") do 
+    |file| bot.process_stream(file)
+  end
     
-    transport.close()
+  transport.close()
 rescue
     puts $!
 end
