@@ -88,56 +88,47 @@ struct QueryLogEntry;
 
 typedef void (&QueryEntryManipulator)(QueryLogEntry&);
 
-struct QueryLogEntry {
-  friend void end (QueryLogEntry &);
-
-  QueryLogEntry(QueryLog & log) : _log(log) { }
-  QueryLogEntry(QueryLogEntry const & entry) : _log(entry._log) { 
-    _sslog << entry._sslog.rdbuf();
-  }
-
-  QueryLogEntry & method_call(std::string const & method_name) {
-    _sslog << "method_call(" << method_name << "):" << std::endl;
-    return *this;
-  }
-
-  template <typename T>
-  QueryLogEntry & operator<< (T const & value) {
-    _sslog << "  " 
-      << typename_of(value) << ":"
-      << valuerep_of(value)
-      << std::endl;
-
-    return *this;
-  }
-
-  QueryLogEntry & operator<< (QueryEntryManipulator manipulator) {
-    manipulator(*this);
-    return *this;
-  }
-
-  void clear() { _sslog.clear(); }
-
-  private:
-  QueryLog & _log;
-  std::stringstream _sslog;
-};
-
-void end(QueryLogEntry & entry);
-
 struct QueryLog {
   friend void end (QueryLogEntry &);
+  friend struct QueryLogEntry;
 
   QueryLog(std::ostream * p_out) : _p_out(p_out) {}
-
-  QueryLogEntry entry() {
-    return QueryLogEntry(*this);
-  }
+  QueryLogEntry entry();
 
   private:
   std::ostream * _p_out;
   static boost::mutex _mutex;
 };
 
+struct QueryLogEntry {
+  friend void end (QueryLogEntry &);
+
+  QueryLogEntry(QueryLog & log);
+  QueryLogEntry(QueryLogEntry const & entry);
+
+  QueryLogEntry & method_call(std::string const & method_name);
+  QueryLogEntry & operator<< (QueryEntryManipulator manipulator);
+
+  template <typename T>
+  QueryLogEntry & operator<< (T const & value) {
+    if(_log._p_out)
+      _sslog << "  " 
+        << typename_of(value) << ":"
+        << valuerep_of(value)
+        << std::endl;
+
+    return *this;
+  }
+
+
+  private:
+  void clear();
+  bool is_logging();
+
+  QueryLog & _log;
+  std::stringstream _sslog;
+};
+
+void end(QueryLogEntry & entry);
 
 #endif // #ifndef _VAE_THRIFT_QUERY__LOG_H_
