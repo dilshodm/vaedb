@@ -136,7 +136,7 @@ struct QueryLog {
 
   private:
   std::ostream * _p_out;
-  boost::mutex _mutex;
+  static boost::mutex _mutex;
 };
 
 

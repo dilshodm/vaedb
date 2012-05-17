@@ -1,4 +1,5 @@
 #include "query_log.h"
+boost::mutex QueryLog::_mutex;
 
 void end(QueryLogEntry & entry) {
   QueryLog & ql(entry._log);
