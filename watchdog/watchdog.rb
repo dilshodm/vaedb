@@ -29,8 +29,6 @@ OptionParser.new do |o|
   o.parse!
 end
 
-puts options.inspect
-
 ping_thread = Thread.new do
   begin
     socket = Thrift::Socket.new(options[:host], options[:port])
@@ -39,7 +37,7 @@ ping_thread = Thread.new do
     client = VaeDb::Client.new(protocol)
 
     transport.open()
-    puts client.ping() 
+    client.ping() 
     transport.close()
 
   rescue
