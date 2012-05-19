@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 $:.push(File.join(File.dirname(__FILE__),'../gen-rb'))
 
+require 'rubygems'
 require 'optparse'
 require 'vae_db'
 
