@@ -77,7 +77,7 @@ VaeDbHandler::~VaeDbHandler() {
 }
 
 void VaeDbHandler::closeSession(const int32_t sessionId, const string& secretKey) {
-  queryLog.entry().method_call("closeSession") << sessionId << secretKey << end;
+  QueryLogEntry(queryLog).method_call("closeSession") << sessionId << secretKey << end;
 
   boost::unique_lock<boost::mutex> lock(sessionsMutex);
   if (sessions.count(sessionId)) {
@@ -88,7 +88,7 @@ void VaeDbHandler::closeSession(const int32_t sessionId, const string& secretKey
 }
 
 void VaeDbHandler::createInfo(VaeDbCreateInfoResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query) {
-  queryLog.entry().method_call("createInfo") << sessionId << responseId << query << end;
+  QueryLogEntry(queryLog).method_call("createInfo") << sessionId << responseId << query << end;
 
   shared_ptr<class Session> session;
   {
@@ -104,7 +104,7 @@ void VaeDbHandler::createInfo(VaeDbCreateInfoResponse& _return, const int32_t se
 }
 
 void VaeDbHandler::data(VaeDbDataResponse& _return, const int32_t sessionId, const int32_t responseId) {
-  queryLog.entry().method_call("data") << sessionId << responseId << end;
+  QueryLogEntry(queryLog).method_call("data") << sessionId << responseId << end;
 
   shared_ptr<class Session> session;
   {
@@ -120,7 +120,7 @@ void VaeDbHandler::data(VaeDbDataResponse& _return, const int32_t sessionId, con
 }
   
 void VaeDbHandler::get(VaeDbResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query, const map<string, string> & options) {
-  queryLog.entry().method_call("get") << sessionId << responseId << query << options << end;
+  QueryLogEntry(queryLog).method_call("get") << sessionId << responseId << query << options << end;
 
   shared_ptr<class Session> session;
   {
@@ -140,7 +140,7 @@ SessionMap& VaeDbHandler::getSessions() {
 }
 
 int32_t VaeDbHandler::openSession(const string& subdomain, const string& secretKey, const bool stagingMode, const int32_t suggestedSessionId) {
-  queryLog.entry().method_call("openSession") << subdomain << secretKey << stagingMode << suggestedSessionId << end;
+  QueryLogEntry(queryLog).method_call("openSession") << subdomain << secretKey << stagingMode << suggestedSessionId << end;
 
   int32_t sessionId; 
   sessionId = suggestedSessionId;
@@ -157,14 +157,14 @@ int32_t VaeDbHandler::openSession(const string& subdomain, const string& secretK
 }
 
 int8_t VaeDbHandler::ping() {
-  queryLog.entry().method_call("ping") << end;
+  QueryLogEntry(queryLog).method_call("ping") << end;
 
   L(info) << "[ping]";
   return 0;
 }
 
 void VaeDbHandler::resetSite(const string& subdomain, const std::string& secretKey) {
-  queryLog.entry().method_call("resetSite") << subdomain << secretKey << end;
+  QueryLogEntry(queryLog).method_call("resetSite") << subdomain << secretKey << end;
 
   boost::unique_lock<boost::mutex> lock(sitesMutex);
   if (sites.count(subdomain)) {
@@ -185,7 +185,7 @@ void VaeDbHandler::resetSite(const string& subdomain, const std::string& secretK
 }
 
 void VaeDbHandler::structure(VaeDbStructureResponse& _return, const int32_t sessionId, const int32_t responseId) {
-  queryLog.entry().method_call("structure") << sessionId << responseId << end;
+  QueryLogEntry(queryLog).method_call("structure") << sessionId << responseId << end;
 
   shared_ptr<class Session> session;
   {

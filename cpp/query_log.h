@@ -4,6 +4,7 @@
 #include <map>
 #include <sstream>
 #include <boost/thread/mutex.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 inline
 void str_replace(std::string &str,
@@ -93,11 +94,11 @@ struct QueryLog {
   friend struct QueryLogEntry;
 
   QueryLog(std::ostream * p_out);
-  QueryLogEntry entry();
 
   private:
   std::ostream * _p_out;
-  static boost::mutex _mutex;
+  boost::mutex _mutex;
+  unsigned _query_id;
 };
 
 struct QueryLogEntry {
@@ -105,6 +106,7 @@ struct QueryLogEntry {
 
   QueryLogEntry(QueryLog & log);
   QueryLogEntry(QueryLogEntry const & entry);
+  ~QueryLogEntry();
 
   QueryLogEntry & method_call(std::string const & method_name);
   QueryLogEntry & operator<< (QueryEntryManipulator manipulator);
@@ -124,9 +126,13 @@ struct QueryLogEntry {
   private:
   void clear();
   bool is_logging();
+  void flush();
 
   QueryLog & _log;
+  unsigned _query_id;
+  boost::posix_time::ptime _start_time;
   std::stringstream _sslog;
+
 };
 
 void end(QueryLogEntry & entry);
