@@ -108,6 +108,8 @@ struct QueryLogEntry {
   QueryLogEntry(QueryLogEntry const & entry);
   ~QueryLogEntry();
 
+  QueryLogEntry & set_subdomain(std::string const & subdomain);
+
   QueryLogEntry & method_call(std::string const & method_name);
   QueryLogEntry & operator<< (QueryEntryManipulator manipulator);
 
@@ -132,7 +134,7 @@ struct QueryLogEntry {
   unsigned _query_id;
   boost::posix_time::ptime _start_time;
   std::stringstream _sslog;
-
+  std::string _subdomain;
 };
 
 void end(QueryLogEntry & entry);
