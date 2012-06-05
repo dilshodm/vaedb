@@ -1,7 +1,7 @@
 #include "query_log.h"
 
 QueryLogEntry::QueryLogEntry(QueryLog & log)
-  : _log(log), _subdomain("") { 
+  : _log(log), _subdomain(""), _method_name("") { 
   boost::mutex::scoped_lock(_log._mutex);
   _query_id = _log._query_id++;
 }
@@ -13,7 +13,7 @@ QueryLogEntry::~QueryLogEntry() {
   boost::posix_time::time_duration delta 
     = boost::posix_time::microsec_clock::universal_time() - _start_time;
 
-  _sslog << "# end query " << _query_id << " after " 
+  _sslog << "# end " << _method_name << " query " << _query_id << " after " 
          << delta.total_microseconds() << " microseconds";
 
   if(_subdomain.size() > 0)
@@ -30,10 +30,11 @@ QueryLogEntry & QueryLogEntry::set_subdomain(std::string const & subdomain) {
 
 QueryLogEntry & QueryLogEntry::method_call(std::string const & method_name) {
   if(is_logging()) {
+    _method_name = method_name;
     _sslog << "# begin query " << _query_id << std::endl;
     _sslog << "method_call(" << method_name << "):" << std::endl;
+    _start_time = boost::posix_time::microsec_clock::universal_time();
   }
-  _start_time = boost::posix_time::microsec_clock::universal_time();
 
   return *this;
 }

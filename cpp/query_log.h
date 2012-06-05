@@ -135,6 +135,7 @@ struct QueryLogEntry {
   boost::posix_time::ptime _start_time;
   std::stringstream _sslog;
   std::string _subdomain;
+  std::string _method_name;
 };
 
 void end(QueryLogEntry & entry);
