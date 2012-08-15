@@ -54,11 +54,13 @@ bool str_compare_nat(string const & s1, string const & s2) {
     string tok2 = s2.substr(b2, e2-b2);
 
     if(!mstr) {
-      double d1 = boost::lexical_cast<double>(tok1);
-      double d2 = boost::lexical_cast<double>(tok2);
+      try {
+        double d1 = boost::lexical_cast<double>(tok1);
+        double d2 = boost::lexical_cast<double>(tok2);
 
-      if(abs(d1-d2) < EPS) continue;
-      return d1 < d2;
+        if(abs(d1-d2) < EPS) continue;
+        return d1 < d2;
+      } catch (boost::bad_lexical_cast &) {};
     }
 
     if(tok1 == tok2) continue;
