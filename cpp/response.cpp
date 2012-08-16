@@ -293,8 +293,9 @@ bool Response::sortCallback(Context *lhs, Context *rhs) {
     } else {
       string ldata = lhs->getData((*it).field);
       string rdata = rhs->getData((*it).field);
-      if (ldata == rdata) continue;
-      comp = str_compare_nat(ldata, rdata);
+      int icomp = str_compare_nat(ldata, rdata);
+      if (icomp == 0) continue;
+      comp = icomp > 0;
     }
     if ((*it).direction == Desc) {
       comp = !comp;

@@ -36,7 +36,7 @@ ptrdiff_t token_end(string const &s, ptrdiff_t b, bool strmode) {
   return b;
 }
 
-bool str_compare_nat(string const & s1, string const & s2) {
+int str_compare_nat(string const & s1, string const & s2) {
   ptrdiff_t e1 = 0;
   ptrdiff_t e2 = 0;
   ptrdiff_t comp_len = min(s1.size(), s2.size());
@@ -59,14 +59,15 @@ bool str_compare_nat(string const & s1, string const & s2) {
         double d2 = boost::lexical_cast<double>(tok2);
 
         if(abs(d1-d2) < EPS) continue;
-        return d1 < d2;
+        return d1 < d2 ? 1 : -1;
       } catch (boost::bad_lexical_cast &) {};
+
     }
 
     if(tok1 == tok2) continue;
-    return tok1 < tok2;
+    return tok1 < tok2 ? 1 : -1;
   }
 
-  return false;
+  return 0; // equality
 }
 
