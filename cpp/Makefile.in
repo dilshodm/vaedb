@@ -8,14 +8,14 @@ exec_prefix = @exec_prefix@
 bindir = $(exec_prefix)/bin
 
 CXX = @CXX@
-CXXFLAGS = @CXXFLAGS@ @BOOST_CXXFLAGS@ -I/usr/local/include/thrift -I../gen-cpp `/usr/local/libxml2/bin/xml2-config --cflags` -c
+CXXFLAGS = -rdynamic -g @CXXFLAGS@ @BOOST_CXXFLAGS@ -I/usr/local/include/thrift -I../gen-cpp `xml2-config --cflags` -c
 LDFLAGS = -L/usr/local/libxml2/lib -L/usr/local/lib @LDFLAGS@ @BOOST_LDFLAGS@ -g
 LIBS = @LIBS@ -lboost_filesystem -lboost_program_options -lboost_system -lboost_thread -lpcrecpp -Wl,-Bstatic -lxml2 -Wl,-Bdynamic -lthrift -lm -lz -g 
 #LIBS = @LIBS@ -lboost_filesystem-mt -lboost_program_options -lboost_system-mt -lboost_thread -lpcrecpp -lxml2 -lthrift -lm -lz -g 
 
 GEN_SRC = ../gen-cpp/vae_types.cpp ../gen-cpp/VaeDb.cpp
-OBJS = context.o logger.o main.o query.o reaper.o response.o session.o site.o util.o vae_db_handler.o vae_types.o VaeDb.o
-HEADERS = context.h logger.h query.h reaper.h response.h session.h site.h util.h vae_db_handler.h ../gen-cpp/vae_types.h ../gen-cpp/vae_constants.h ../gen-cpp/VaeDb.h
+OBJS = context.o logger.o main.o query.o query_log.o reaper.o response.o session.o site.o util.o vae_db_handler.o vae_types.o VaeDb.o
+HEADERS = context.h logger.h query.h query_log.h reaper.h response.h session.h site.h util.h vae_db_handler.h ../gen-cpp/vae_types.h ../gen-cpp/vae_constants.h ../gen-cpp/VaeDb.h
 	
 default: server
 
@@ -39,6 +39,9 @@ main.o: main.cpp ${HEADERS}
 	
 query.o: query.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} query.cpp
+
+query_log.o: query_log.cpp ${HEADERS}
+	${CXX} ${CXXFLAGS} query_log.cpp
 
 patch:
 	patch ../gen-cpp/vae_types.h < vae_types.h.patch

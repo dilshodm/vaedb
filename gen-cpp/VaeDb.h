@@ -19,7 +19,7 @@ class VaeDbIf {
   virtual void createInfo(VaeDbCreateInfoResponse& _return, const int32_t session_id, const int32_t response_id, const std::string& query) = 0;
   virtual void data(VaeDbDataResponse& _return, const int32_t session_id, const int32_t response_id) = 0;
   virtual void get(VaeDbResponse& _return, const int32_t session_id, const int32_t response_id, const std::string& query, const std::map<std::string, std::string> & options) = 0;
-  virtual int32_t openSession(const std::string& site, const std::string& secret_key, const bool staging_mode) = 0;
+  virtual int32_t openSession(const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id) = 0;
   virtual void resetSite(const std::string& site, const std::string& secret_key) = 0;
   virtual void structure(VaeDbStructureResponse& _return, const int32_t session_id, const int32_t response_id) = 0;
 };
@@ -43,7 +43,7 @@ class VaeDbNull : virtual public VaeDbIf {
   void get(VaeDbResponse& /* _return */, const int32_t /* session_id */, const int32_t /* response_id */, const std::string& /* query */, const std::map<std::string, std::string> & /* options */) {
     return;
   }
-  int32_t openSession(const std::string& /* site */, const std::string& /* secret_key */, const bool /* staging_mode */) {
+  int32_t openSession(const std::string& /* site */, const std::string& /* secret_key */, const bool /* staging_mode */, const int32_t /* suggested_session_id */) {
     int32_t _return = 0;
     return _return;
   }
@@ -74,8 +74,8 @@ class VaeDb_ping_args {
 
   bool operator < (const VaeDb_ping_args & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -86,7 +86,7 @@ class VaeDb_ping_pargs {
   virtual ~VaeDb_ping_pargs() throw() {}
 
 
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -117,8 +117,8 @@ class VaeDb_ping_result {
 
   bool operator < (const VaeDb_ping_result & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -135,7 +135,7 @@ class VaeDb_ping_presult {
     bool success;
   } __isset;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
@@ -170,8 +170,8 @@ class VaeDb_closeSession_args {
 
   bool operator < (const VaeDb_closeSession_args & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -184,7 +184,7 @@ class VaeDb_closeSession_pargs {
   const int32_t* session_id;
   const std::string* secret_key;
 
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -215,8 +215,8 @@ class VaeDb_closeSession_result {
 
   bool operator < (const VaeDb_closeSession_result & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -233,7 +233,7 @@ class VaeDb_closeSession_presult {
     bool e;
   } __isset;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
@@ -272,8 +272,8 @@ class VaeDb_createInfo_args {
 
   bool operator < (const VaeDb_createInfo_args & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -287,7 +287,7 @@ class VaeDb_createInfo_pargs {
   const int32_t* response_id;
   const std::string* query;
 
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -326,8 +326,8 @@ class VaeDb_createInfo_result {
 
   bool operator < (const VaeDb_createInfo_result & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -348,7 +348,7 @@ class VaeDb_createInfo_presult {
     bool qe;
   } __isset;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
@@ -383,8 +383,8 @@ class VaeDb_data_args {
 
   bool operator < (const VaeDb_data_args & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -397,7 +397,7 @@ class VaeDb_data_pargs {
   const int32_t* session_id;
   const int32_t* response_id;
 
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -432,8 +432,8 @@ class VaeDb_data_result {
 
   bool operator < (const VaeDb_data_result & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -452,7 +452,7 @@ class VaeDb_data_presult {
     bool ie;
   } __isset;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
@@ -495,8 +495,8 @@ class VaeDb_get_args {
 
   bool operator < (const VaeDb_get_args & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -511,7 +511,7 @@ class VaeDb_get_pargs {
   const std::string* query;
   const std::map<std::string, std::string> * options;
 
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -550,8 +550,8 @@ class VaeDb_get_result {
 
   bool operator < (const VaeDb_get_result & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -572,14 +572,14 @@ class VaeDb_get_presult {
     bool qe;
   } __isset;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
 class VaeDb_openSession_args {
  public:
 
-  VaeDb_openSession_args() : site(""), secret_key(""), staging_mode(0) {
+  VaeDb_openSession_args() : site(""), secret_key(""), staging_mode(0), suggested_session_id(0) {
   }
 
   virtual ~VaeDb_openSession_args() throw() {}
@@ -587,12 +587,14 @@ class VaeDb_openSession_args {
   std::string site;
   std::string secret_key;
   bool staging_mode;
+  int32_t suggested_session_id;
 
   struct __isset {
-    __isset() : site(false), secret_key(false), staging_mode(false) {}
+    __isset() : site(false), secret_key(false), staging_mode(false), suggested_session_id(false) {}
     bool site;
     bool secret_key;
     bool staging_mode;
+    bool suggested_session_id;
   } __isset;
 
   bool operator == (const VaeDb_openSession_args & rhs) const
@@ -603,6 +605,8 @@ class VaeDb_openSession_args {
       return false;
     if (!(staging_mode == rhs.staging_mode))
       return false;
+    if (!(suggested_session_id == rhs.suggested_session_id))
+      return false;
     return true;
   }
   bool operator != (const VaeDb_openSession_args &rhs) const {
@@ -611,8 +615,8 @@ class VaeDb_openSession_args {
 
   bool operator < (const VaeDb_openSession_args & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -625,8 +629,9 @@ class VaeDb_openSession_pargs {
   const std::string* site;
   const std::string* secret_key;
   const bool* staging_mode;
+  const int32_t* suggested_session_id;
 
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -661,8 +666,8 @@ class VaeDb_openSession_result {
 
   bool operator < (const VaeDb_openSession_result & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -681,7 +686,7 @@ class VaeDb_openSession_presult {
     bool e;
   } __isset;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
@@ -716,8 +721,8 @@ class VaeDb_resetSite_args {
 
   bool operator < (const VaeDb_resetSite_args & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -730,7 +735,7 @@ class VaeDb_resetSite_pargs {
   const std::string* site;
   const std::string* secret_key;
 
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -761,8 +766,8 @@ class VaeDb_resetSite_result {
 
   bool operator < (const VaeDb_resetSite_result & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -779,7 +784,7 @@ class VaeDb_resetSite_presult {
     bool e;
   } __isset;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
@@ -814,8 +819,8 @@ class VaeDb_structure_args {
 
   bool operator < (const VaeDb_structure_args & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -828,7 +833,7 @@ class VaeDb_structure_pargs {
   const int32_t* session_id;
   const int32_t* response_id;
 
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -863,8 +868,8 @@ class VaeDb_structure_result {
 
   bool operator < (const VaeDb_structure_result & ) const;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
@@ -883,28 +888,28 @@ class VaeDb_structure_presult {
     bool ie;
   } __isset;
 
-  uint32_t read(apache::thrift::protocol::TProtocol* iprot);
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
 };
 
 class VaeDbClient : virtual public VaeDbIf {
  public:
-  VaeDbClient(boost::shared_ptr<apache::thrift::protocol::TProtocol> prot) :
+  VaeDbClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
     piprot_(prot),
     poprot_(prot) {
     iprot_ = prot.get();
     oprot_ = prot.get();
   }
-  VaeDbClient(boost::shared_ptr<apache::thrift::protocol::TProtocol> iprot, boost::shared_ptr<apache::thrift::protocol::TProtocol> oprot) :
+  VaeDbClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> iprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> oprot) :
     piprot_(iprot),
     poprot_(oprot) {
     iprot_ = iprot.get();
     oprot_ = oprot.get();
   }
-  boost::shared_ptr<apache::thrift::protocol::TProtocol> getInputProtocol() {
+  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getInputProtocol() {
     return piprot_;
   }
-  boost::shared_ptr<apache::thrift::protocol::TProtocol> getOutputProtocol() {
+  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
   int8_t ping();
@@ -922,8 +927,8 @@ class VaeDbClient : virtual public VaeDbIf {
   void get(VaeDbResponse& _return, const int32_t session_id, const int32_t response_id, const std::string& query, const std::map<std::string, std::string> & options);
   void send_get(const int32_t session_id, const int32_t response_id, const std::string& query, const std::map<std::string, std::string> & options);
   void recv_get(VaeDbResponse& _return);
-  int32_t openSession(const std::string& site, const std::string& secret_key, const bool staging_mode);
-  void send_openSession(const std::string& site, const std::string& secret_key, const bool staging_mode);
+  int32_t openSession(const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id);
+  void send_openSession(const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id);
   int32_t recv_openSession();
   void resetSite(const std::string& site, const std::string& secret_key);
   void send_resetSite(const std::string& site, const std::string& secret_key);
@@ -932,26 +937,26 @@ class VaeDbClient : virtual public VaeDbIf {
   void send_structure(const int32_t session_id, const int32_t response_id);
   void recv_structure(VaeDbStructureResponse& _return);
  protected:
-  boost::shared_ptr<apache::thrift::protocol::TProtocol> piprot_;
-  boost::shared_ptr<apache::thrift::protocol::TProtocol> poprot_;
-  apache::thrift::protocol::TProtocol* iprot_;
-  apache::thrift::protocol::TProtocol* oprot_;
+  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
+  boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
+  ::apache::thrift::protocol::TProtocol* iprot_;
+  ::apache::thrift::protocol::TProtocol* oprot_;
 };
 
-class VaeDbProcessor : virtual public apache::thrift::TProcessor {
+class VaeDbProcessor : virtual public ::apache::thrift::TProcessor {
  protected:
   boost::shared_ptr<VaeDbIf> iface_;
-  virtual bool process_fn(apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot, std::string& fname, int32_t seqid);
+  virtual bool process_fn(::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, std::string& fname, int32_t seqid);
  private:
-  std::map<std::string, void (VaeDbProcessor::*)(int32_t, apache::thrift::protocol::TProtocol*, apache::thrift::protocol::TProtocol*)> processMap_;
-  void process_ping(int32_t seqid, apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot);
-  void process_closeSession(int32_t seqid, apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot);
-  void process_createInfo(int32_t seqid, apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot);
-  void process_data(int32_t seqid, apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot);
-  void process_get(int32_t seqid, apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot);
-  void process_openSession(int32_t seqid, apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot);
-  void process_resetSite(int32_t seqid, apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot);
-  void process_structure(int32_t seqid, apache::thrift::protocol::TProtocol* iprot, apache::thrift::protocol::TProtocol* oprot);
+  std::map<std::string, void (VaeDbProcessor::*)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*)> processMap_;
+  void process_ping(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot);
+  void process_closeSession(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot);
+  void process_createInfo(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot);
+  void process_data(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot);
+  void process_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot);
+  void process_openSession(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot);
+  void process_resetSite(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot);
+  void process_structure(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot);
  public:
   VaeDbProcessor(boost::shared_ptr<VaeDbIf> iface) :
     iface_(iface) {
@@ -965,7 +970,7 @@ class VaeDbProcessor : virtual public apache::thrift::TProcessor {
     processMap_["structure"] = &VaeDbProcessor::process_structure;
   }
 
-  virtual bool process(boost::shared_ptr<apache::thrift::protocol::TProtocol> piprot, boost::shared_ptr<apache::thrift::protocol::TProtocol> poprot);
+  virtual bool process(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot, boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot);
   virtual ~VaeDbProcessor() {}
 };
 
@@ -1035,13 +1040,13 @@ class VaeDbMultiface : virtual public VaeDbIf {
     }
   }
 
-  int32_t openSession(const std::string& site, const std::string& secret_key, const bool staging_mode) {
+  int32_t openSession(const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id) {
     uint32_t sz = ifaces_.size();
     for (uint32_t i = 0; i < sz; ++i) {
       if (i == sz - 1) {
-        return ifaces_[i]->openSession(site, secret_key, staging_mode);
+        return ifaces_[i]->openSession(site, secret_key, staging_mode, suggested_session_id);
       } else {
-        ifaces_[i]->openSession(site, secret_key, staging_mode);
+        ifaces_[i]->openSession(site, secret_key, staging_mode, suggested_session_id);
       }
     }
   }

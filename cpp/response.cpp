@@ -294,14 +294,9 @@ bool Response::sortCallback(Context *lhs, Context *rhs) {
     } else {
       string ldata = lhs->getData((*it).field);
       string rdata = rhs->getData((*it).field);
-      if (ldata == rdata) continue;
-      if (pcrecpp::RE("([0-9.]*)").FullMatch(ldata)) {
-        ldata.insert(0, ZERO_PADDING_AMOUNT - ldata.size(), '0');
-      }
-      if (pcrecpp::RE("([0-9.]*)").FullMatch(rdata)) {
-        rdata.insert(0, ZERO_PADDING_AMOUNT - rdata.size(), '0');
-      }
-      comp = (ldata < rdata);
+      int icomp = str_compare_nat(ldata, rdata);
+      if (icomp == 0) continue;
+      comp = icomp > 0;
     }
     if ((*it).direction == Desc) {
       comp = !comp;
