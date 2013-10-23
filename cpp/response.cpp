@@ -242,6 +242,7 @@ void Response::query(Context *context, const string &q, const map<string, string
     int skipped = 0;
     int included = 0;
     _return.total = 0;
+    uniqueFields.clear();
     for (int i = 0; i < size; i++) {
   	  xmlNode *node = _query.getNode(i);
       if ((!filter || filterMatch(node)) && (!unique || uniqueMatch(node))) {
