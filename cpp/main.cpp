@@ -29,6 +29,7 @@ namespace po = boost::program_options;
 #include "response.h"
 #include "session.h"
 #include "vae_db_handler.h"
+#include "bus.h"
 
 void crash_handler(int signal) {
   const int MAX_STACK_DEPTH = 100;
@@ -92,7 +93,10 @@ int main(int argc, char **argv) {
   shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
   shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
-#ifdef THREADED  
+#ifdef THREADED 
+  shared_ptr<Bus> bus(new Bus(handler));
+  threadFactory->newThread(bus)->start();
+
   shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(workers);
   threadManager->threadFactory(threadFactory);
   threadManager->start();

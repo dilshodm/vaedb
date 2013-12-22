@@ -1,11 +1,14 @@
 
+
 # /cpp/
+/cpp/vaedb
 /cpp/verbdb
 /cpp/Makefile
 /cpp/config.h
 /cpp/config.log
 /cpp/config.status
 /cpp/*.o
+/cpp/autom4te.cache
 
 *.swp
 .DS_Store

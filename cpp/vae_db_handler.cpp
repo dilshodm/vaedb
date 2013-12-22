@@ -7,7 +7,6 @@
 using namespace boost;
 using namespace std;
 
-#include "../gen-cpp/VaeDb.h"
 #include "site.h"
 #include "context.h"
 #include "logger.h"
@@ -20,45 +19,42 @@ void eatErrors(void * ctx, const char * msg, ...) { }
 
 shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey, bool stagingMode) {
   boost::mutex *siteMutex;
-  string sitesKey;
-  sitesKey = (stagingMode ? subdomain + ".staging" : subdomain);
+  string sitesKey(stagingMode ? subdomain + ".staging" : subdomain);
+  shared_ptr<Site> site(_getSite(sitesKey, secretKey));
+
+  if(site)
+      return site;
+
   {
-    boost::unique_lock<boost::mutex> lock(sitesMutex);
-    if (sites.count(sitesKey)) {
-      sites[sitesKey]->validateSecretKey(secretKey);
-      filesystem::path p(sites[sitesKey]->filename);
-      if (!boost::filesystem::exists(p) || (filesystem::last_write_time(p) == sites[sitesKey]->modTime)) {
-        return sites[sitesKey];
-      }
-    }
-    if (siteMutexes.count(sitesKey)) {
+    boost::unique_lock<boost::mutex> lockSites(sitesMutex);
+    if(siteMutexes.count(sitesKey))
       siteMutex = siteMutexes[sitesKey];
-    } else {
-      siteMutex = new boost::mutex;
-      siteMutexes[sitesKey] = siteMutex;
-    }
+    else 
+      siteMutexes[sitesKey] = siteMutex = new boost::mutex;     
   }
+
   {
-    boost::unique_lock<boost::mutex> lock(*siteMutex);
-    {
-      boost::unique_lock<boost::mutex> lock(sitesMutex);
-      if (sites.count(sitesKey)) {
-        sites[sitesKey]->validateSecretKey(secretKey);
-        filesystem::path p(sites[sitesKey]->filename);      
-        if (!boost::filesystem::exists(p) || (filesystem::last_write_time(p) == sites[sitesKey]->modTime)) {
-          return sites[sitesKey];
-        }
-      }
-    }
-    shared_ptr<Site> site(new Site(subdomain, secretKey, testMode, stagingMode));
-    {
-      boost::unique_lock<boost::mutex> lock(sitesMutex);
-      sites[sitesKey] = site;
-    }
-    return site;
+    boost::unique_lock<boost::mutex> lockSite(*siteMutex);
+    site.reset(new Site(subdomain, secretKey, testMode, stagingMode));
+
+    boost::unique_lock<boost::mutex> lockSites(sitesMutex);
+    sites[sitesKey] = site;
   }
+
+  return site;
 }
  
+shared_ptr<Site> VaeDbHandler::_getSite(string const & sitesKey, string const & secretKey) {
+  boost::unique_lock<boost::mutex> lock(sitesMutex);
+
+  if(sites.count(sitesKey)) {
+    sites[sitesKey]->validateSecretKey(secretKey);
+    return sites[sitesKey];
+  }
+
+  return shared_ptr<Site>();
+}
+
 VaeDbHandler::VaeDbHandler(bool t, QueryLog & queryLog) 
   : testMode(t), 
     queryLog(queryLog) {
@@ -173,26 +169,37 @@ int8_t VaeDbHandler::ping() {
   return 0;
 }
 
-void VaeDbHandler::resetSite(const string& subdomain, const std::string& secretKey) {
+void VaeDbHandler::resetSite(string const & subdomain, string const & secretKey) {
   QueryLogEntry entry(queryLog);
   entry.method_call("resetSite") << subdomain << secretKey << end;
+  _resetSite(subdomain, secretKey, false);
+}
 
+void VaeDbHandler::reloadSite(string const & subdomain) {
+  _resetSite(subdomain, "", true);
+}
+
+inline
+void VaeDbHandler::_resetSite(string const & subdomain, string const & secretKey, bool force) {
   boost::unique_lock<boost::mutex> lock(sitesMutex);
-  if (sites.count(subdomain)) {
-    sites[subdomain]->validateSecretKey(secretKey);
-    filesystem::path p(sites[subdomain]->filename);
-    if (boost::filesystem::exists(p)) {
-      sites.erase(subdomain);
-    }
-  }
-  string staging = subdomain + ".staging";
-  if (sites.count(staging)) {
-    sites[staging]->validateSecretKey(secretKey);
-    filesystem::path p(sites[staging]->filename);
-    if (boost::filesystem::exists(p)) {
-      sites.erase(staging);
-    }
-  }
+  if(sites.count(subdomain)) 
+    _eraseSite(subdomain, secretKey, force);
+
+  string staging(subdomain + ".staging");
+  if(sites.count(staging))
+    _eraseSite(staging, secretKey, force); 
+}
+
+inline
+void VaeDbHandler::_eraseSite(string const & sitesKey, string const & secretKey, bool force) {
+  //expects siteMutex held
+  filesystem::path p(sites[sitesKey]->filename);
+
+  if(!force)
+    sites[sitesKey]->validateSecretKey(secretKey);
+
+  if(boost::filesystem::exists(p))
+    sites.erase(sitesKey);
 }
 
 void VaeDbHandler::structure(VaeDbStructureResponse& _return, const int32_t sessionId, const int32_t responseId) {

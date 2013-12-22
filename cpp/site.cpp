@@ -14,8 +14,7 @@ using namespace std;
 #include "response.h"
 #include "query.h"
 
-Site::Site(string su, string sk, bool testMode, bool stagingMode_) : secretKey(sk) {
-  stagingMode = stagingMode_;
+Site::Site(string su, string sk, bool testMode, bool stagingMode_) : secretKey(sk), stagingMode(stagingMode_) {
   if (testMode && su.find(".")) {
     filename = su;
     subdomain = "test";

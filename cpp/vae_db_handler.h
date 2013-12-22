@@ -1,9 +1,14 @@
-#include <boost/thread/mutex.hpp>
-#include "query_log.h"
+#ifndef _VAE_THRIFT_DB_HANDLER_H_
+#define _VAE_THRIFT_DB_HANDLER_H_
 
-typedef map<int,shared_ptr<class Session> > SessionMap;
-typedef map<string,shared_ptr<class Site> > SiteMap;
-typedef map<string,boost::mutex*> SiteMutexesMap;
+#include <boost/thread/mutex.hpp>
+#include "../gen-cpp/VaeDb.h"
+#include "query_log.h"
+#include "site.h"
+
+typedef std::map<int,boost::shared_ptr<class Session> > SessionMap;
+typedef std::map<std::string,boost::shared_ptr<class Site> > SiteMap;
+typedef std::map<std::string,boost::mutex*> SiteMutexesMap;
 
 class VaeDbHandler : virtual public VaeDbIf {
 
@@ -17,7 +22,10 @@ class VaeDbHandler : virtual public VaeDbIf {
   boost::mutex sitesMutex;
   QueryLog & queryLog;
   
-  shared_ptr<class Site> getSite(string subdomain, string secretKey, bool stagingMode);
+  boost::shared_ptr<class Site> getSite(std::string subdomain, std::string secretKey, bool stagingMode);
+  inline boost::shared_ptr<class Site> _getSite(std::string const & sitesKey, std::string const & secretKey);
+  inline void _resetSite(std::string const & sitesKey, std::string const & secretKey, bool force);
+  inline void _eraseSite(std::string const & sitesKey, std::string const & secretKey, bool force);
 
  public:
   VaeDbHandler(bool t, QueryLog & queryLog);
@@ -30,7 +38,10 @@ class VaeDbHandler : virtual public VaeDbIf {
   int32_t openSession(const std::string& subdomain, const std::string& secretKey, const bool stagingMode, const int32_t suggestedSessionId);
   int8_t ping();
   void resetSite(const std::string& subdomain, const std::string& secret_key);
+  void reloadSite(std::string const & subdomain);
   void structure(VaeDbStructureResponse& _return, const int32_t session_id, const int32_t response_id);
   void writePid();
   
 };
+
+#endif

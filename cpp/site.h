@@ -1,3 +1,6 @@
+#ifndef _VAE_THRIFT_SITE_H_
+#define _VAE_THRIFT_SITE_H_
+
 #include <boost/thread/mutex.hpp>
 
 #include <ctime>
@@ -6,6 +9,8 @@
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
+
+#include "../gen-cpp/VaeDb.h"
 
 typedef vector<class Context *> ContextList;
 typedef map<int,xmlNodePtr> NodeIdMap;
@@ -46,3 +51,5 @@ class Site {
   void validateSecretKeyAgainstConfig(string testSecretKey);
 
 };
+
+#endif
