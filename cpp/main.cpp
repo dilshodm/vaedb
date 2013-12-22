@@ -50,12 +50,15 @@ int main(int argc, char **argv) {
   signal(SIGUSR1, crash_handler);
 
   int opt, workers;
+  string bus_bindaddress;
+
   po::options_description desc("vaedb options", 80);
   desc.add_options()
     ("help,H", "outputs this help message")
     ("log_level,L", po::value<string>(), "log level.  Acceptable values: error, warning, info, debug")
     ("query_log,Q", po::value<string>(), "file to log queries to")
     ("port,P", po::value<int>(&opt)->default_value(9091), "port to run the server on")
+    ("busaddress,B", po::value<string>(&bus_bindaddress)->default_value("tcp://*:5091"), "bind address for the zmq subscriber")
     ("test,T", "runs the server in test mode, which allows clients to specify full XML paths and does not validate secret keys.  It is insecure to run a server in test mode on a production machine!")
     ("workers,w", po::value<int>(&workers)->default_value(12), "number of worker threads to spawn")
   ;
@@ -94,7 +97,7 @@ int main(int argc, char **argv) {
   shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
 #ifdef THREADED 
-  shared_ptr<Bus> bus(new Bus(handler));
+  shared_ptr<Bus> bus(new Bus(handler, vm["busaddress"].as<string>()));
   threadFactory->newThread(bus)->start();
 
   shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(workers);
