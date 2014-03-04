@@ -27,6 +27,7 @@ namespace po = boost::program_options;
 #include "context.h"
 #include "logger.h"
 #include "response.h"
+#include "s3.h"
 #include "session.h"
 #include "vae_db_handler.h"
 #include "bus.h"
@@ -51,6 +52,12 @@ int main(int argc, char **argv) {
 
   int opt, workers;
   string bus_bindaddress;
+  char * _access_key = getenv("AWS_ACCESS_KEY");
+  char * _secret_key = getenv("AWS_SECRET_KEY");
+
+  string aws_access_key(_access_key ? _access_key : "");
+  string aws_secret_key(_secret_key ? _secret_key : "");
+  string feed_cache_path;
 
   po::options_description desc("vaedb options", 80);
   desc.add_options()
@@ -59,7 +66,9 @@ int main(int argc, char **argv) {
     ("query_log,Q", po::value<string>(), "file to log queries to")
     ("port,P", po::value<int>(&opt)->default_value(9091), "port to run the server on")
     ("busaddress,B", po::value<string>(&bus_bindaddress)->default_value("tcp://*:5091"), "bind address for the zmq subscriber")
-    ("test,T", "runs the server in test mode, which allows clients to specify full XML paths and does not validate secret keys.  It is insecure to run a server in test mode on a production machine!")
+    ("aws_access_key,A", po::value<string>(&aws_access_key)->default_value(aws_access_key), "AWS ACCESS KEY")
+    ("aws_secret_key,S", po::value<string>(&aws_secret_key)->default_value(aws_secret_key), "AWS SECRET KEY")
+    ("feed_cache_path", po::value<string>(&feed_cache_path)->default_value("/tmp"), "feed cache path") 
     ("workers,w", po::value<int>(&workers)->default_value(12), "number of worker threads to spawn")
   ;
   po::variables_map vm;
@@ -89,8 +98,13 @@ int main(int argc, char **argv) {
   
   QueryLog query_log(p_querylog_stream.get());
 
+  if(!initialize_s3(aws_access_key, aws_secret_key)) {
+    L(error) << "S3 failed to initialize.";
+    return -1;
+  }
+  
   shared_ptr<PosixThreadFactory> threadFactory = shared_ptr<PosixThreadFactory>(new PosixThreadFactory());
-  shared_ptr<VaeDbHandler> handler(new VaeDbHandler(vm.count("test"), query_log));
+  shared_ptr<VaeDbHandler> handler(new VaeDbHandler(query_log));
   shared_ptr<TProcessor> processor(new VaeDbProcessor(handler));
   shared_ptr<TServerSocket> serverSocket(new TServerSocket(vm["port"].as<int>()));
   shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());

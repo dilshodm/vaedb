@@ -27,8 +27,6 @@ class Site {
  public:
   ContextList associationsToInitialize;
   xmlDocPtr doc;
-  string filename;
-  time_t modTime;
   boost::mutex mutex;
   NodeIdMap nodes;
   NodeList nodesToClean;
@@ -38,7 +36,7 @@ class Site {
   xmlNodePtr rootNode;
   bool stagingMode;
   
-  Site(string su, string sk, bool testMode, bool stagingMode);
+  Site(string su, string sk, bool stagingMode);
   ~Site();
   string getSubdomain();
   void reset();

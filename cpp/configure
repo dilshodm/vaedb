@@ -3712,7 +3712,52 @@ as_fn_error $? "Could not find usable ZMQ library
 See \`config.log' for more details" "$LINENO" 5; }
 fi
 
-#AC_CHECK_LIB([pcrecpp], [pcre_exec], , AC_MSG_ERROR(could not find libpcrecpp))
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for S3_initialize in -ls3" >&5
+$as_echo_n "checking for S3_initialize in -ls3... " >&6; }
+if ${ac_cv_lib_s3_S3_initialize+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ls3  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char S3_initialize ();
+int
+main ()
+{
+return S3_initialize ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_s3_S3_initialize=yes
+else
+  ac_cv_lib_s3_S3_initialize=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_s3_S3_initialize" >&5
+$as_echo "$ac_cv_lib_s3_S3_initialize" >&6; }
+if test "x$ac_cv_lib_s3_S3_initialize" = xyes; then :
+  true
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "libs3 not found
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+#AC_CHECK_LIB([pcrecpp], [pcre_compile], [], [AC_MSG_FAILURE([pcre not found])])
 #AC_CHECK_LIB([thrift], [thrift_main], , AC_MSG_ERROR(could not find libthrift))
 
 ac_ext=c

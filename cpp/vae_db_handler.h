@@ -13,7 +13,6 @@ typedef std::map<std::string,boost::mutex*> SiteMutexesMap;
 class VaeDbHandler : virtual public VaeDbIf {
 
  private:
-  bool testMode;
   int nextSessionId;
   SessionMap sessions;
   boost::mutex sessionsMutex;
@@ -28,7 +27,7 @@ class VaeDbHandler : virtual public VaeDbIf {
   inline void _eraseSite(std::string const & sitesKey, std::string const & secretKey, bool force);
 
  public:
-  VaeDbHandler(bool t, QueryLog & queryLog);
+  VaeDbHandler(QueryLog & queryLog);
   ~VaeDbHandler();
   void closeSession(const int32_t sessionId, const std::string& secretKey);
   void createInfo(VaeDbCreateInfoResponse& _return, const int32_t session_id, const int32_t response_id, const std::string& query);

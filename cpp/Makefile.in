@@ -10,11 +10,10 @@ bindir = $(exec_prefix)/bin
 CXX = @CXX@
 CXXFLAGS = -rdynamic -g @CXXFLAGS@ @BOOST_CXXFLAGS@ -I/usr/local/include/thrift -I../gen-cpp `xml2-config --cflags` -c
 LDFLAGS = -L/usr/local/libxml2/lib -L/usr/local/lib @LDFLAGS@ @BOOST_LDFLAGS@ -g
-LIBS = @LIBS@ -lboost_filesystem -lboost_program_options -lboost_system -lboost_thread -lpcrecpp -lz -lxml2 -lthrift -lm -g 
-#LIBS = @LIBS@ -lboost_filesystem-mt -lboost_program_options -lboost_system-mt -lboost_thread -lpcrecpp -lxml2 -lthrift -lm -lz -g 
+LIBS = @LIBS@ -ls3 -lboost_filesystem -lboost_program_options -lboost_system -lboost_thread -lpcrecpp -lz -lxml2 -lthrift -lm -g 
 
 GEN_SRC = ../gen-cpp/vae_types.cpp ../gen-cpp/VaeDb.cpp
-OBJS = context.o bus.o logger.o main.o query.o query_log.o reaper.o response.o session.o site.o util.o vae_db_handler.o vae_types.o VaeDb.o
+OBJS = context.o bus.o s3.o logger.o main.o query.o query_log.o reaper.o response.o session.o site.o util.o vae_db_handler.o vae_types.o VaeDb.o
 HEADERS = context.h bus.h logger.h query.h query_log.h reaper.h response.h session.h site.h util.h vae_db_handler.h ../gen-cpp/vae_types.h ../gen-cpp/vae_constants.h ../gen-cpp/VaeDb.h
 	
 default: server
@@ -33,6 +32,9 @@ install: server
 	
 bus.o: bus.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} bus.cpp
+	
+s3.o: s3.cpp ${HEADERS}
+	${CXX} ${CXXFLAGS} s3.cpp
 	
 logger.o: logger.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} logger.cpp

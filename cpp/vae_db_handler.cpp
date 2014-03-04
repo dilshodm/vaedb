@@ -35,7 +35,7 @@ shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey, bool 
 
   {
     boost::unique_lock<boost::mutex> lockSite(*siteMutex);
-    site.reset(new Site(subdomain, secretKey, testMode, stagingMode));
+    site.reset(new Site(subdomain, secretKey, stagingMode));
 
     boost::unique_lock<boost::mutex> lockSites(sitesMutex);
     sites[sitesKey] = site;
@@ -55,16 +55,15 @@ shared_ptr<Site> VaeDbHandler::_getSite(string const & sitesKey, string const & 
   return shared_ptr<Site>();
 }
 
-VaeDbHandler::VaeDbHandler(bool t, QueryLog & queryLog) 
-  : testMode(t), 
-    queryLog(queryLog) {
+VaeDbHandler::VaeDbHandler(QueryLog & queryLog) 
+  :  queryLog(queryLog) {
 
   nextSessionId = 1;
   xmlInitParser();
   xmlSetGenericErrorFunc(NULL, eatErrors);
   writePid();
   new Reaper(this);  
-  L(info) << "VaeDB Running (" << (testMode ? "TEST" : "production") << " environment)";
+  L(info) << "VaeDB Running";
 }
 
 VaeDbHandler::~VaeDbHandler() { 
@@ -193,13 +192,11 @@ void VaeDbHandler::_resetSite(string const & subdomain, string const & secretKey
 inline
 void VaeDbHandler::_eraseSite(string const & sitesKey, string const & secretKey, bool force) {
   //expects siteMutex held
-  filesystem::path p(sites[sitesKey]->filename);
 
   if(!force)
     sites[sitesKey]->validateSecretKey(secretKey);
 
-  if(boost::filesystem::exists(p))
-    sites.erase(sitesKey);
+  sites.erase(sitesKey);
 }
 
 void VaeDbHandler::structure(VaeDbStructureResponse& _return, const int32_t sessionId, const int32_t responseId) {

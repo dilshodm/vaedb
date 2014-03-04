@@ -2,7 +2,6 @@
 #include <fstream>
 #include <boost/filesystem/operations.hpp>
 #include <boost/smart_ptr.hpp>
-#include <pcrecpp.h>
 
 using namespace boost;
 using namespace std;
@@ -13,23 +12,13 @@ using namespace std;
 #include "logger.h"
 #include "response.h"
 #include "query.h"
+#include "s3.h"
 
-Site::Site(string su, string sk, bool testMode, bool stagingMode_) : secretKey(sk), stagingMode(stagingMode_) {
-  if (testMode && su.find(".")) {
-    filename = su;
-    subdomain = "test";
-  } else {
-    filename = "/var/www/vhosts/" + su + ".verb/data/feed.xml";
-    if (!boost::filesystem::exists(filename)) {
-      filename = "/var/www/vhosts/" + su + ".verb/conf/feed.xml";
-    }
-    subdomain = su;
-    validateSecretKeyAgainstConfig(sk);
-  }
+Site::Site(string su, string sk, bool stagingMode_) : secretKey(sk), stagingMode(stagingMode_) {
+  subdomain = su;
+  validateSecretKeyAgainstConfig(sk);
   if (stagingMode) subdomain += ".staging";
   loadXmlDoc();
-  boost::filesystem::path p(filename);
-  modTime = filesystem::last_write_time(p);
   L(info) << "[" << subdomain << "] opened";
 }
   
@@ -73,8 +62,10 @@ string Site::getSubdomain() {
 }
 
 void Site::loadXmlDoc() {
-  if ((doc = xmlParseFile(filename.c_str())) == NULL) {
-    L(warning) << "[" << subdomain << "] could not open XML file: " << filename;
+  string feedfile(subdomain+"-feed.xml");
+  string rawxml(read_s3(feedfile));
+  if ((doc = xmlReadMemory(rawxml.c_str(), rawxml.size(), feedfile.c_str(), NULL, 0)) == NULL) {
+    L(warning) << "[" << subdomain << "] could not open XML file: " << feedfile;
     throw VaeDbInternalError("Could not open XML file!");
   }
   xmlXPathOrderDocElems(doc);
@@ -140,24 +131,6 @@ void Site::validateSecretKey(string testSecretKey) {
 }
   
 void Site::validateSecretKeyAgainstConfig(string testSecretKey) {
-  ifstream conf;
-  string filename = "/var/www/vhosts/" + subdomain + ".verb/conf/config.php";
-  conf.open(filename.c_str(), ios::binary | ios::ate);
-  if (!conf.is_open()) {
-    L(warning) << "[" << subdomain << "] could not open configuration file: " << filename;
-    throw VaeDbInternalError("could not open configuration file!");
-  }
-  
-  ifstream::pos_type size = conf.tellg();
-  char *memblock = new char[size + ifstream::pos_type(1)];
-  conf.seekg(0, ios::beg);
-  conf.read(memblock, size);
-  memblock[size] = 0;
-
-  if (!pcrecpp::RE("\\['secret_key'\\] = \"" + testSecretKey + "\"").PartialMatch(memblock)) {
-    delete[] memblock;
-    L(warning) << "[" << subdomain << "] secret key did not match: " << testSecretKey;
+  if(read_s3(subdomain+"-secret") != testSecretKey)
     throw VaeDbInternalError("Secret Key did not match!");
-  }
-  delete[] memblock;
 }
