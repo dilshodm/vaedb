@@ -9,6 +9,7 @@ using namespace boost;
 #include <iostream>
 #include <sstream>
 #include <zmq.hpp>
+#include "logger.h"
 
 Bus::Bus(shared_ptr<VaeDbHandler> handler, string bindaddress) 
     : _handler(handler), _bindaddress(bindaddress) { }
@@ -27,6 +28,7 @@ void Bus::run() {
     std::string subdomain;
     iss >> subdomain;
 
+    L(info) << "reloading " << subdomain;
     _handler->reloadSite(subdomain);
   }
 }

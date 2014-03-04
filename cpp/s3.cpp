@@ -21,7 +21,8 @@ namespace boostfs = boost::filesystem;
 
 struct transfer {
   transfer(string const & objectname)
-    : cachename(object_cache_path(objectname)),
+    : failed(false),
+      cachename(object_cache_path(objectname)),
       tempname(boostfs::unique_path("/tmp/vaedb-%%%%-%%%%-%%%%-%%%%")),
       error_message("unknown error."), 
       objectname(objectname) {
@@ -122,7 +123,7 @@ void responseCompleteCallback(
        void *data) {
   transfer * ts = static_cast<transfer *>(data);
   if(status != S3StatusOK)
-      ts->failed = true;
+    ts->failed = true;
 
   if (s3error && s3error->message) {
     ts->error_message = s3error->message;

@@ -103,8 +103,6 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  std::cout << read_s3("alfred-secret") << std::endl;
-  
   shared_ptr<PosixThreadFactory> threadFactory = shared_ptr<PosixThreadFactory>(new PosixThreadFactory());
   shared_ptr<VaeDbHandler> handler(new VaeDbHandler(query_log));
   shared_ptr<TProcessor> processor(new VaeDbProcessor(handler));
