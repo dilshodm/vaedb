@@ -17,8 +17,10 @@ using namespace std;
 Site::Site(string su, string sk, bool stagingMode_) : secretKey(sk), stagingMode(stagingMode_) {
   subdomain = su;
   validateSecretKeyAgainstConfig(sk);
+  string feedfile(subdomain+"-feed.xml");
   if (stagingMode) subdomain += ".staging";
-  loadXmlDoc();
+  string rawxml(read_s3(feedfile));
+  loadXmlDoc(rawxml);
   L(info) << "[" << subdomain << "] opened";
 }
   
@@ -61,12 +63,10 @@ string Site::getSubdomain() {
   return subdomain;
 }
 
-void Site::loadXmlDoc() {
-  string feedfile(subdomain+"-feed.xml");
-  string rawxml(read_s3(feedfile));
-  if ((doc = xmlReadMemory(rawxml.c_str(), rawxml.size(), feedfile.c_str(), NULL, 0)) == NULL) {
-    L(warning) << "[" << subdomain << "] could not open XML file: " << feedfile;
-    throw VaeDbInternalError("Could not open XML file!");
+void Site::loadXmlDoc(string const & rawxml) {
+  if ((doc = xmlReadMemory(rawxml.c_str(), rawxml.size(), subdomain.c_str(), NULL, 0)) == NULL) {
+    L(warning) << "[" << subdomain << "] could not open/parse XML";
+    throw VaeDbInternalError("Could not open/parse XML file!");
   }
   xmlXPathOrderDocElems(doc);
   rootNode = rootDesignNode = NULL;

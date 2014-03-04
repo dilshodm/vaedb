@@ -45,7 +45,7 @@ class Site {
 
  private:
   void freeContexts(xmlNodePtr node);
-  void loadXmlDoc();
+  void loadXmlDoc(const string & rawxml);
   void validateSecretKeyAgainstConfig(string testSecretKey);
 
 };
