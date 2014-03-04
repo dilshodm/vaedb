@@ -98,10 +98,12 @@ int main(int argc, char **argv) {
   
   QueryLog query_log(p_querylog_stream.get());
 
-  if(!initialize_s3(aws_access_key, aws_secret_key)) {
+  if(!initialize_s3(aws_access_key, aws_secret_key, feed_cache_path)) {
     L(error) << "S3 failed to initialize.";
     return -1;
   }
+
+  std::cout << read_s3("alfred-secret") << std::endl;
   
   shared_ptr<PosixThreadFactory> threadFactory = shared_ptr<PosixThreadFactory>(new PosixThreadFactory());
   shared_ptr<VaeDbHandler> handler(new VaeDbHandler(query_log));
