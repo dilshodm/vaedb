@@ -40,13 +40,11 @@ struct transfer {
   }
 
   bool commit_buffer(int bfrsize, char const * bfr) {
-    boost::scoped_array<char> cbfr(new char[bfrsize+1]);
-    memcpy(&cbfr[0], bfr, bfrsize);
-    cbfr[bfrsize] = 0;
-    ss << cbfr.get();
-    
+    string cbfr(bfr, bfrsize);
+
+    ss << cbfr;
     if(tempfs.is_open())
-        tempfs << cbfr.get();
+        tempfs << cbfr;
 
     return true;
   }
@@ -95,14 +93,16 @@ struct transfer {
 
 string _access_key;
 string _secret_key;
-string _bucket("private-data.vaeplatform.com");
+string _bucket;
 boostfs::path _cache_path;
 
 bool initialize_s3(string const & access_key,
                    string const & secret_key, 
+                   string const & bucket,
                    string const & cache_path) {
   _access_key = access_key;
   _secret_key = secret_key;
+  _bucket = bucket;
   _cache_path = cache_path;
 
   return S3_initialize("s3", S3_INIT_ALL, _bucket.c_str()) == S3StatusOK;

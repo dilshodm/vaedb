@@ -6,6 +6,7 @@
 
 bool initialize_s3(std::string const & access_key,
                    std::string const & secret_key,
+                   std::string const & bucket,
                    std::string const & cache_path);
 
 void shutdown_s3();

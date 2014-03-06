@@ -57,6 +57,7 @@ int main(int argc, char **argv) {
 
   string aws_access_key(_access_key ? _access_key : "");
   string aws_secret_key(_secret_key ? _secret_key : "");
+  string aws_bucket;
   string feed_cache_path;
 
   po::options_description desc("vaedb options", 80);
@@ -66,8 +67,9 @@ int main(int argc, char **argv) {
     ("query_log,Q", po::value<string>(), "file to log queries to")
     ("port,P", po::value<int>(&opt)->default_value(9091), "port to run the server on")
     ("busaddress,B", po::value<string>(&bus_bindaddress)->default_value("tcp://*:5091"), "bind address for the zmq subscriber")
-    ("aws_access_key,A", po::value<string>(&aws_access_key)->default_value(aws_access_key), "AWS ACCESS KEY")
-    ("aws_secret_key,S", po::value<string>(&aws_secret_key)->default_value(aws_secret_key), "AWS SECRET KEY")
+    ("aws_access_key,A", po::value<string>(&aws_access_key)->default_value(aws_access_key), "AWS access key")
+    ("aws_secret_key,S", po::value<string>(&aws_secret_key)->default_value(aws_secret_key), "AWS secret key")
+    ("aws_bucket,S", po::value<string>(&aws_secret_key)->default_value(aws_bucket), "AWS bucket")
     ("feed_cache_path", po::value<string>(&feed_cache_path)->default_value("/tmp"), "feed cache path") 
     ("workers,w", po::value<int>(&workers)->default_value(12), "number of worker threads to spawn")
   ;
@@ -98,7 +100,7 @@ int main(int argc, char **argv) {
   
   QueryLog query_log(p_querylog_stream.get());
 
-  if(!initialize_s3(aws_access_key, aws_secret_key, feed_cache_path)) {
+  if(!initialize_s3(aws_access_key, aws_secret_key, aws_bucket, feed_cache_path)) {
     L(error) << "S3 failed to initialize.";
     return -1;
   }
