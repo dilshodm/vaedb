@@ -14,12 +14,10 @@ using namespace std;
 #include "query.h"
 #include "s3.h"
 
-Site::Site(string su, string sk, bool stagingMode_) : secretKey(sk), stagingMode(stagingMode_) {
+Site::Site(string su, bool stagingMode_, string const & rawxml) : stagingMode(stagingMode_) {
   subdomain = su;
-  validateSecretKeyAgainstConfig(sk);
-  string feedfile(subdomain+"-feed.xml");
-  if (stagingMode) subdomain += ".staging";
-  string rawxml(read_s3(feedfile));
+  secretKey = read_s3(subdomain+"-secret");
+  if (stagingMode) subdomain += ".staging"; 
   loadXmlDoc(rawxml);
   L(info) << "[" << subdomain << "] opened";
 }
@@ -128,9 +126,4 @@ void Site::validateSecretKey(string testSecretKey) {
     L(warning) << "[" << subdomain << "] secret key mismatch: " << secretKey << " <> " << testSecretKey;
     throw VaeDbInternalError("Secret key mismatch");
   }
-}
-  
-void Site::validateSecretKeyAgainstConfig(string testSecretKey) {
-  if(read_s3(subdomain+"-secret") != testSecretKey)
-    throw VaeDbInternalError("Secret Key did not match!");
 }
