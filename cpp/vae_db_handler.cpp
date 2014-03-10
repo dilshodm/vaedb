@@ -13,6 +13,7 @@ using namespace std;
 #include "reaper.h"
 #include "response.h"
 #include "session.h"
+#include "s3.h"
 #include "vae_db_handler.h"
 
 void eatErrors(void * ctx, const char * msg, ...) { }
@@ -24,6 +25,19 @@ shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey, bool 
 
   if(site)
       return site;
+  
+  string feedfile(subdomain+"-feed.xml");
+  string xml(read_s3(feedfile));
+  site = _loadSite(subdomain, stagingMode, xml);
+  site->validateSecretKey(secretKey);
+  return site;
+}
+
+inline boost::shared_ptr<class Site>
+VaeDbHandler::_loadSite(string const & subdomain, bool stagingMode, string const & xml) {
+  boost::mutex *siteMutex;
+  string sitesKey(stagingMode ? subdomain + ".staging" : subdomain);
+  shared_ptr<Site> site;
 
   {
     boost::unique_lock<boost::mutex> lockSites(sitesMutex);
@@ -35,7 +49,7 @@ shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey, bool 
 
   {
     boost::unique_lock<boost::mutex> lockSite(*siteMutex);
-    site.reset(new Site(subdomain, secretKey, stagingMode));
+    site.reset(new Site(subdomain, stagingMode, xml));
 
     boost::unique_lock<boost::mutex> lockSites(sitesMutex);
     sites[sitesKey] = site;
@@ -175,7 +189,23 @@ void VaeDbHandler::resetSite(string const & subdomain, string const & secretKey)
 }
 
 void VaeDbHandler::reloadSite(string const & subdomain) {
+  bool reload_prod;
+  bool reload_staging;
+
+  {
+    boost::unique_lock<boost::mutex> lock(sitesMutex);
+    reload_prod = sites.count(subdomain) > 0;
+    reload_staging = sites.count(subdomain + ".staging") > 0;
+  }
+
+  string rawxml(read_s3(subdomain+"-feed.xml"));
   _resetSite(subdomain, "", true);
+
+  if(reload_prod)
+    _loadSite(subdomain, 0, rawxml);
+
+  if(reload_staging)
+    _loadSite(subdomain, 1, rawxml);
 }
 
 inline

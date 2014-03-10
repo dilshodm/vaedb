@@ -12,6 +12,7 @@ class Bus : public apache::thrift::concurrency::Runnable {
   boost::shared_ptr<VaeDbHandler> _handler;
 
   void run();
+  void reload(std::string subdomain);
 
 public:
   Bus(boost::shared_ptr<VaeDbHandler> handler, std::string bindaddress);

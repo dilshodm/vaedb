@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
     ("busaddress,B", po::value<string>(&bus_bindaddress)->default_value("tcp://*:5091"), "bind address for the zmq subscriber")
     ("aws_access_key,A", po::value<string>(&aws_access_key)->default_value(aws_access_key), "AWS access key")
     ("aws_secret_key,S", po::value<string>(&aws_secret_key)->default_value(aws_secret_key), "AWS secret key")
-    ("aws_bucket,S", po::value<string>(&aws_secret_key)->default_value(aws_bucket), "AWS bucket")
+    ("aws_bucket,U", po::value<string>(&aws_bucket)->default_value(aws_bucket), "AWS bucket")
     ("feed_cache_path", po::value<string>(&feed_cache_path)->default_value("/tmp"), "feed cache path") 
     ("workers,w", po::value<int>(&workers)->default_value(12), "number of worker threads to spawn")
   ;

@@ -36,7 +36,7 @@ class Site {
   xmlNodePtr rootNode;
   bool stagingMode;
   
-  Site(string su, string sk, bool stagingMode);
+  Site(string su, bool stagingMode, string const & rawxml);
   ~Site();
   string getSubdomain();
   void reset();
@@ -46,7 +46,6 @@ class Site {
  private:
   void freeContexts(xmlNodePtr node);
   void loadXmlDoc(const string & rawxml);
-  void validateSecretKeyAgainstConfig(string testSecretKey);
 
 };
 
