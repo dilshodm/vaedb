@@ -9,6 +9,7 @@ enum LogLevel {error, warning, info, debug};
 
 class Logger {
  public:
+  Logger();
   ~Logger();
   std::ostringstream& log(LogLevel level = info);
   LogLevel logLevel;
