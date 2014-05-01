@@ -14,7 +14,7 @@ using namespace std;
 #include "query.h"
 #include "s3.h"
 
-Site::Site(string su, bool stagingMode_, string const & rawxml) : stagingMode(stagingMode_), query_cache(128) {
+Site::Site(string su, bool stagingMode_, string const & rawxml) : stagingMode(stagingMode_), query_cache(1024) {
   subdomain = su;
   secretKey = read_s3(subdomain+"-secret");
   if (stagingMode) subdomain += ".staging"; 
