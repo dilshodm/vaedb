@@ -14,7 +14,7 @@ using namespace std;
 #include "query.h"
 #include "s3.h"
 
-Site::Site(string su, bool stagingMode_, string const & rawxml) : stagingMode(stagingMode_) {
+Site::Site(string su, bool stagingMode_, string const & rawxml) : stagingMode(stagingMode_), query_cache(128) {
   subdomain = su;
   secretKey = read_s3(subdomain+"-secret");
   if (stagingMode) subdomain += ".staging"; 
@@ -126,4 +126,14 @@ void Site::validateSecretKey(string testSecretKey) {
     L(warning) << "[" << subdomain << "] secret key mismatch: " << secretKey << " <> " << testSecretKey;
     throw VaeDbInternalError("Secret key mismatch");
   }
+}
+
+boost::shared_ptr<Query> Site::fetch_query(LRUKey const & key) {
+  boost::shared_ptr<Query> * pp_query = query_cache.fetch_ptr(key, false);
+  if(pp_query)
+    return *pp_query;
+
+  boost::shared_ptr<Query> p_query(new Query(this, key.p, key.s));
+  query_cache.insert(key, p_query);
+  return p_query;
 }

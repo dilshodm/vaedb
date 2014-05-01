@@ -145,9 +145,10 @@ void Response::createInfo(Context *context, const string &query) {
     // query was something like /artists
     context = NULL;
   } else if (mainQuery != "") {
-    Query _query(site.get(), context, mainQuery);
-    if (_query.getSize() > 0) {
-      context = (Context *)_query.getNode(0)->_private;
+    LRUKey key = {context, mainQuery};
+    shared_ptr<Query> p_query = site->fetch_query(key);
+    if (p_query->getSize() > 0) {
+      context = (Context *)p_query->getNode(0)->_private;
     }
   }
   if (context) {
@@ -196,9 +197,10 @@ void Response::filterMatchRecursive(xmlNode *node, int reentry) {
 
 void Response::query(Context *context, const string &q, const map<string, string> &options) {
   int size, start, end, skip_, paginate_, page_;
-  Query _query(site.get(), context, q);
+  LRUKey key = {context, q};
+  boost::shared_ptr<Query> p_query = site->fetch_query(key);
   ResponseContext _return;
-  _return.total = size = _query.getSize();
+  _return.total = size = p_query->getSize();
   skip_ = skip;
   paginate_ = paginate;
   page_ = page;
@@ -244,7 +246,7 @@ void Response::query(Context *context, const string &q, const map<string, string
     _return.total = 0;
     uniqueFound.clear();
     for (int i = 0; i < size; i++) {
-  	  xmlNode *node = _query.getNode(i);
+  	  xmlNode *node = p_query->getNode(i);
       if ((!filter || filterMatch(node)) && (!unique || uniqueMatch(node))) {
         _return.total++;
         if (skipped < start) {
@@ -260,7 +262,7 @@ void Response::query(Context *context, const string &q, const map<string, string
     }
   } else {
     for (int i = start; i < end; i++) {
-  	  xmlNode *node = _query.getNode(i);
+  	  xmlNode *node = p_query->getNode(i);
       Context *ctxt = (Context *)node->_private;
       if (ctxt) _return.contexts.push_back(ctxt);
     }

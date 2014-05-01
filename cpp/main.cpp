@@ -12,6 +12,7 @@
 #include <thrift/server/TThreadPoolServer.h>
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
+#include <malloc.h>
 
 using namespace apache::thrift;
 using namespace apache::thrift::concurrency;
@@ -49,6 +50,9 @@ int main(int argc, char **argv) {
 
   signal(SIGSEGV, crash_handler);
   signal(SIGUSR1, crash_handler);
+
+  //abuse of libxml internal pointers results in doublefree;
+  mallopt(M_CHECK_ACTION, 0);
 
   int opt, workers;
   string bus_bindaddress;

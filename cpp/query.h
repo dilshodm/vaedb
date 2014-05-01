@@ -1,3 +1,6 @@
+#ifndef _VAE_THRIFT_QUERY_H_
+#define _VAE_THRIFT_QUERY_H_
+
 #include <boost/thread/mutex.hpp>
 #include <libxml/tree.h>
 #include <libxml/parser.h>
@@ -28,3 +31,5 @@ class Query {
   void result(xmlNode *node);
 
 };
+
+#endif

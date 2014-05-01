@@ -14,7 +14,7 @@ LIBS = @LIBS@ -ls3 -lboost_filesystem -lboost_program_options -lboost_system -lb
 
 GEN_SRC = ../gen-cpp/vae_types.cpp ../gen-cpp/VaeDb.cpp
 OBJS = context.o bus.o s3.o logger.o main.o query.o query_log.o reaper.o response.o session.o site.o util.o vae_db_handler.o vae_types.o VaeDb.o
-HEADERS = context.h bus.h logger.h query.h query_log.h reaper.h response.h session.h site.h util.h vae_db_handler.h ../gen-cpp/vae_types.h ../gen-cpp/vae_constants.h ../gen-cpp/VaeDb.h
+HEADERS = context.h bus.h logger.h lru_cache.h query.h query_log.h reaper.h response.h s3.h session.h site.h util.h vae_db_handler.h ../gen-cpp/vae_types.h ../gen-cpp/vae_constants.h ../gen-cpp/VaeDb.h
 	
 default: server
 

@@ -10,6 +10,10 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
+
+#include "context.h"
+#include "query.h"
+#include "lru_cache.h"
 #include "../gen-cpp/VaeDb.h"
 
 typedef vector<class Context *> ContextList;
@@ -18,14 +22,27 @@ typedef vector<xmlNodePtr> NodeList;
 typedef map<string,xmlNodePtr> PermalinkMap;
 typedef map<int,VaeDbStructure *> StructureMap;
 
+struct LRUKey {
+  Context * p;
+  string s;
+};
+
+inline
+bool operator<(LRUKey const & a, LRUKey const & b) {
+  return (a.p < b.p) || (a.p == b.p && a.s < b.s);
+}
+
+typedef LRUCache<LRUKey, boost::shared_ptr<Query> > QueryCache;
+
 class Site {
   
   string subdomain;
   string secretKey;
   StructureMap structures;
-  
+ 
  public:
   ContextList associationsToInitialize;
+  QueryCache query_cache;
   xmlDocPtr doc;
   boost::mutex mutex;
   NodeIdMap nodes;
@@ -42,6 +59,7 @@ class Site {
   void reset();
   VaeDbStructure *structureFromStructureId(int structureId);
   void validateSecretKey(string testSecretKey);
+  boost::shared_ptr<Query> fetch_query(LRUKey const & key);
 
  private:
   void freeContexts(xmlNodePtr node);

@@ -1,3 +1,6 @@
+#ifndef _VAE_THRIFT_CONTEXT_H_
+#define _VAE_THRIFT_CONTEXT_H_
+
 #include <boost/thread/mutex.hpp>
 #include <libxml/tree.h>
 
@@ -42,3 +45,5 @@ class Context {
   VaeDbDataForContext toVaeDbDataForContext();
   VaeDbStructure toVaeDbStructureForContext();
 };
+
+#endif
