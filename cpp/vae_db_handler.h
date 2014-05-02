@@ -26,7 +26,7 @@ class VaeDbHandler : virtual public VaeDbIf {
   inline void _resetSite(std::string const & sitesKey, std::string const & secretKey, bool force);
   inline void _eraseSite(std::string const & sitesKey, std::string const & secretKey, bool force);
   inline boost::shared_ptr<class Site> _loadSite(std::string const & subdomain, bool stagingMode, std::string const & xml);
-  inline boost::mutex * _get_site_mutex(std::string const & sitesKey);
+  inline boost::mutex & _get_site_mutex(std::string const & subdomain, bool stagingMode);
 
  public:
   VaeDbHandler(QueryLog & queryLog);

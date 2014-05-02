@@ -20,9 +20,7 @@ void eatErrors(void * ctx, const char * msg, ...) { }
 
 shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey, bool stagingMode) {
   string sitesKey(stagingMode ? subdomain + ".staging" : subdomain);
-  
-  boost::mutex* siteMutex(_get_site_mutex(sitesKey));
-  boost::unique_lock<boost::mutex> lockSite(*siteMutex);
+  boost::unique_lock<boost::mutex> lockSite(_get_site_mutex(subdomain, stagingMode));
 
   shared_ptr<Site> site(_getSite(sitesKey, secretKey));
 
@@ -37,30 +35,22 @@ shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey, bool 
 }
 
 inline
-boost::mutex * VaeDbHandler::_get_site_mutex(std::string const & sitesKey) {
+boost::mutex & VaeDbHandler::_get_site_mutex(std::string const & subdomain, bool stagingMode) {
+  string sitesKey(stagingMode ? subdomain + ".staging" : subdomain);
   boost::unique_lock<boost::mutex> lockSites(sitesMutex);  
   if(siteMutexes.count(sitesKey))
-    return siteMutexes[sitesKey];
+    return *siteMutexes[sitesKey];
   else 
-    return siteMutexes[sitesKey] = new boost::mutex;     
+    return *(siteMutexes[sitesKey] = new boost::mutex);     
 }
 
 inline boost::shared_ptr<class Site>
 VaeDbHandler::_loadSite(string const & subdomain, bool stagingMode, string const & xml) {
-  string sitesKey(stagingMode ? subdomain + ".staging" : subdomain);
   shared_ptr<Site> site;
-
-  boost::mutex* siteMutex(_get_site_mutex(sitesKey));
-
-  {
-    boost::unique_lock<boost::mutex> lockSite(*siteMutex);
-    site.reset(new Site(subdomain, stagingMode, xml));
-
-    boost::unique_lock<boost::mutex> lockSites(sitesMutex);
-    sites[sitesKey] = site;
-  }
-
-  return site;
+  site.reset(new Site(subdomain, stagingMode, xml));
+  boost::unique_lock<boost::mutex> lockSites(sitesMutex);
+  string sitesKey(stagingMode ? subdomain + ".staging" : subdomain);
+  return sites[sitesKey] = site;
 }
  
 shared_ptr<Site> VaeDbHandler::_getSite(string const & sitesKey, string const & secretKey) {
@@ -206,11 +196,16 @@ void VaeDbHandler::reloadSite(string const & subdomain) {
   string rawxml(read_s3(subdomain+"-feed.xml"));
   _resetSite(subdomain, "", true);
 
-  if(reload_prod)
-    _loadSite(subdomain, 0, rawxml);
 
-  if(reload_staging)
+  if(reload_prod) {
+     boost::unique_lock<boost::mutex> lockSite(_get_site_mutex(subdomain, 0));
+    _loadSite(subdomain, 0, rawxml);
+  }
+
+  if(reload_staging) {
+     boost::unique_lock<boost::mutex> lockSite(_get_site_mutex(subdomain, 1));
     _loadSite(subdomain, 1, rawxml);
+  }
 }
 
 inline
