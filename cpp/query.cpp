@@ -16,10 +16,10 @@ const char EMPTY_STRING[] = "";
 
 boost::mutex Query::mutex;
 
-Query::Query(Site *s) : site(s) { 
+Query::Query(Site *s) : site(s), xpathObj(NULL) { 
 }
 
-Query::Query(Site *s, Context *context, const string &q) : site(s) {
+Query::Query(Site *s, Context *context, const string &q) : site(s), xpathObj(NULL) {
   string id, permalink, query = q;
   if (pcrecpp::RE("^/").Replace("", &query)) {
     context = NULL; 
@@ -190,6 +190,7 @@ void Query::runRawQuery(xmlNodePtr node, const string &q, const string &displayQ
   size = (xpathObj->nodesetval) ? xpathObj->nodesetval->nodeNr : 0;
   if (size && (getNode(0) == site->rootNode)) {
     xmlXPathFreeObject(xpathObj);
+    xpathObj=NULL;
     result(NULL);
   }
 }

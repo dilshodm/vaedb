@@ -7,6 +7,7 @@
 using namespace boost;
 using namespace std;
 
+#include "vae_db_handler.h"
 #include "site.h"
 #include "context.h"
 #include "logger.h"
@@ -14,7 +15,6 @@ using namespace std;
 #include "response.h"
 #include "session.h"
 #include "s3.h"
-#include "vae_db_handler.h"
 
 void eatErrors(void * ctx, const char * msg, ...) { }
 
