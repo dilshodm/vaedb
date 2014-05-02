@@ -19,8 +19,11 @@ using namespace std;
 void eatErrors(void * ctx, const char * msg, ...) { }
 
 shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey, bool stagingMode) {
-  boost::mutex *siteMutex;
   string sitesKey(stagingMode ? subdomain + ".staging" : subdomain);
+  
+  boost::mutex* siteMutex(_get_site_mutex(sitesKey));
+  boost::unique_lock<boost::mutex> lockSite(*siteMutex);
+
   shared_ptr<Site> site(_getSite(sitesKey, secretKey));
 
   if(site)
@@ -33,19 +36,21 @@ shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey, bool 
   return site;
 }
 
+inline
+boost::mutex * VaeDbHandler::_get_site_mutex(std::string const & sitesKey) {
+  boost::unique_lock<boost::mutex> lockSites(sitesMutex);  
+  if(siteMutexes.count(sitesKey))
+    return siteMutexes[sitesKey];
+  else 
+    return siteMutexes[sitesKey] = new boost::mutex;     
+}
+
 inline boost::shared_ptr<class Site>
 VaeDbHandler::_loadSite(string const & subdomain, bool stagingMode, string const & xml) {
-  boost::mutex *siteMutex;
   string sitesKey(stagingMode ? subdomain + ".staging" : subdomain);
   shared_ptr<Site> site;
 
-  {
-    boost::unique_lock<boost::mutex> lockSites(sitesMutex);
-    if(siteMutexes.count(sitesKey))
-      siteMutex = siteMutexes[sitesKey];
-    else 
-      siteMutexes[sitesKey] = siteMutex = new boost::mutex;     
-  }
+  boost::mutex* siteMutex(_get_site_mutex(sitesKey));
 
   {
     boost::unique_lock<boost::mutex> lockSite(*siteMutex);
