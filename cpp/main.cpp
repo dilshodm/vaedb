@@ -65,6 +65,7 @@ int main(int argc, char **argv) {
   string aws_secret_key(_secret_key ? _secret_key : "");
   string aws_bucket;
   string feed_cache_path;
+  string mysql_username, mysql_password, mysql_database, mysql_host, memcached_host;
 
   po::options_description desc("vaedb options", 80);
   desc.add_options()
@@ -78,6 +79,11 @@ int main(int argc, char **argv) {
     ("aws_bucket,U", po::value<string>(&aws_bucket)->default_value(aws_bucket), "AWS bucket")
     ("feed_cache_path", po::value<string>(&feed_cache_path)->default_value("/tmp"), "feed cache path") 
     ("workers,w", po::value<int>(&workers)->default_value(12), "number of worker threads to spawn")
+    ("mysql_username", po::value<string>(&mysql_username), "MySQL username")
+    ("mysql_password", po::value<string>(&mysql_password), "MySQL password")
+    ("mysql_database", po::value<string>(&mysql_database), "MySQL database name")
+    ("mysql_host", po::value<string>(&mysql_host), "MySQL hostname or IP Address")
+    ("memcached_host", po::value<string>(&memcached_host), "Memcached hostname or IP Address")
   ;
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
