@@ -259,14 +259,14 @@ void VaeDbHandler::writePid() {
 }
 
 void VaeDbHandler::shortTermCacheGet(string &_return, string const & key) {
-  _return = "";
+  _return = "Short Term Value";
 }
 
 void VaeDbHandler::shortTermCacheSet(string const & key, string const & value) {
 }
 
 void VaeDbHandler::longTermCacheGet(string &_return, string const & key) {
-  _return = "";
+  _return = "Long Term Value";
 }
 
 void VaeDbHandler::longTermCacheSet(string const & key, string const & value) {
