@@ -42,7 +42,12 @@ class VaeDbHandler : virtual public VaeDbIf {
   void reloadSite(std::string const & subdomain);
   void structure(VaeDbStructureResponse& _return, const int32_t session_id, const int32_t response_id);
   void writePid();
-  
+
+  void shortTermCacheGet(string &_return, string const & key);
+  void shortTermCacheSet(string const & key, string const & value);
+  void longTermCacheGet(string &_return, string const & key);
+  void longTermCacheSet(string const & key, string const & value);
+
 };
 
 #endif

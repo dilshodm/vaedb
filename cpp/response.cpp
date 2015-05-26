@@ -18,7 +18,7 @@ using namespace boost;
 
 #define ZERO_PADDING_AMOUNT 12
 
-Response::Response(shared_ptr<Site> s, shared_ptr<Response> parent, const string &q, const map<string, string> &options) : site(s) {
+Response::Response(boost::shared_ptr<Site> s, boost::shared_ptr<Response> parent, const string &q, const map<string, string> &options) : site(s) {
   filter = unique = false;
   groups = skip = 0;
   page = 1;
@@ -111,7 +111,7 @@ Response::Response(shared_ptr<Site> s, shared_ptr<Response> parent, const string
   }
 }
 
-Response::Response(shared_ptr<Site> s, shared_ptr<Response> parent, const string &query) : site(s) {
+Response::Response(boost::shared_ptr<Site> s, boost::shared_ptr<Response> parent, const string &query) : site(s) {
   filter = false;
   if (parent) {
     for (ResponseContextList::const_iterator it = parent->contexts.begin(); it != parent->contexts.end(); it++) {
@@ -146,7 +146,7 @@ void Response::createInfo(Context *context, const string &query) {
     context = NULL;
   } else if (mainQuery != "") {
     LRUKey key = {context, mainQuery};
-    shared_ptr<Query> p_query = site->fetch_query(key);
+    boost::shared_ptr<Query> p_query = site->fetch_query(key);
     if (p_query->getSize() > 0) {
       context = (Context *)p_query->getNode(0)->_private;
     }

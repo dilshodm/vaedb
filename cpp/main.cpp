@@ -52,7 +52,9 @@ int main(int argc, char **argv) {
   signal(SIGUSR1, crash_handler);
 
   //abuse of libxml internal pointers results in doublefree;
+#ifdef M_CHECK_ACTION
   mallopt(M_CHECK_ACTION, 0);
+#endif
 
   int opt, workers;
   string bus_bindaddress;
@@ -109,23 +111,23 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  shared_ptr<PosixThreadFactory> threadFactory = shared_ptr<PosixThreadFactory>(new PosixThreadFactory());
-  shared_ptr<VaeDbHandler> handler(new VaeDbHandler(query_log));
-  shared_ptr<TProcessor> processor(new VaeDbProcessor(handler));
-  shared_ptr<TServerSocket> serverSocket(new TServerSocket(vm["port"].as<int>()));
-  shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
-  shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
+  boost::shared_ptr<PosixThreadFactory> threadFactory = boost::shared_ptr<PosixThreadFactory>(new PosixThreadFactory());
+  boost::shared_ptr<VaeDbHandler> handler(new VaeDbHandler(query_log));
+  boost::shared_ptr<TProcessor> processor(new VaeDbProcessor(handler));
+  boost::shared_ptr<TServerSocket> serverSocket(new TServerSocket(vm["port"].as<int>()));
+  boost::shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
+  boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
 #ifdef THREADED 
-  shared_ptr<Bus> bus(new Bus(handler, vm["busaddress"].as<string>()));
+  boost::shared_ptr<Bus> bus(new Bus(handler, vm["busaddress"].as<string>()));
   threadFactory->newThread(bus)->start();
 
-  shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(workers);
+  boost::shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(workers);
   threadManager->threadFactory(threadFactory);
   threadManager->start();
-  shared_ptr<TServer> server(new TThreadPoolServer(processor, serverSocket, transportFactory, protocolFactory, threadManager));
+  boost::shared_ptr<TServer> server(new TThreadPoolServer(processor, serverSocket, transportFactory, protocolFactory, threadManager));
 #else
-  shared_ptr<TServer> server(new TSimpleServer(processor, serverSocket, transportFactory, protocolFactory));
+  boost::shared_ptr<TServer> server(new TSimpleServer(processor, serverSocket, transportFactory, protocolFactory));
 #endif
 
   server->serve();

@@ -30,7 +30,7 @@ class Response {
   int groups;
   int page;
   int paginate;
-  shared_ptr<Site> site;
+  boost::shared_ptr<Site> site;
   vector<SortField> sortFields;
   SortType sortType;
   int skip;
@@ -39,8 +39,8 @@ class Response {
   set<string> uniqueFound;
   
  public:
-  Response(shared_ptr<Site> s, shared_ptr<Response> parent, const string &q, const map<string, string> &options);
-  Response(shared_ptr<Site> s, shared_ptr<Response> parent, const string &query);
+  Response(boost::shared_ptr<Site> s, boost::shared_ptr<Response> parent, const string &q, const map<string, string> &options);
+  Response(boost::shared_ptr<Site> s, boost::shared_ptr<Response> parent, const string &query);
   ~Response();
   bool containsContexts();
   bool sortCallback(Context *lhs, Context *rhs);

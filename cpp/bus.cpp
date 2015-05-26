@@ -10,12 +10,12 @@ using namespace boost;
 
 #include "bus.h"
 #include <iostream>
-#include <zmq.hpp>
+#include "zmq.hpp"
 #include "logger.h"
 
 using std::string;
 
-Bus::Bus(shared_ptr<VaeDbHandler> handler, string bindaddress) 
+Bus::Bus(boost::shared_ptr<VaeDbHandler> handler, string bindaddress) 
     : _handler(handler), _bindaddress(bindaddress) { }
 
 void Bus::reload(string subdomain) {

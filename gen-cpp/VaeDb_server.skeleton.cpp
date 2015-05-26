@@ -2,10 +2,10 @@
 // You should copy it to another filename to avoid overwriting it.
 
 #include "VaeDb.h"
-#include <protocol/TBinaryProtocol.h>
-#include <server/TSimpleServer.h>
-#include <transport/TServerSocket.h>
-#include <transport/TBufferTransports.h>
+#include <thrift/protocol/TBinaryProtocol.h>
+#include <thrift/server/TSimpleServer.h>
+#include <thrift/transport/TServerSocket.h>
+#include <thrift/transport/TBufferTransports.h>
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -58,6 +58,26 @@ class VaeDbHandler : virtual public VaeDbIf {
   void structure(VaeDbStructureResponse& _return, const int32_t session_id, const int32_t response_id) {
     // Your implementation goes here
     printf("structure\n");
+  }
+
+  void shortTermCacheGet(std::string& _return, const std::string& key) {
+    // Your implementation goes here
+    printf("shortTermCacheGet\n");
+  }
+
+  void shortTermCacheSet(const std::string& key, const std::string& value) {
+    // Your implementation goes here
+    printf("shortTermCacheSet\n");
+  }
+
+  void longTermCacheGet(std::string& _return, const std::string& key) {
+    // Your implementation goes here
+    printf("longTermCacheGet\n");
+  }
+
+  void longTermCacheSet(const std::string& key, const std::string& value) {
+    // Your implementation goes here
+    printf("longTermCacheSet\n");
   }
 
 };

@@ -627,6 +627,7 @@ LIBOBJS
 EGREP
 GREP
 CPP
+BOOST_LIB_SUFFIX
 BOOST_LDFLAGS
 BOOST_CXXFLAGS
 XML2_CONFIG
@@ -1528,6 +1529,52 @@ fi
 
 } # ac_fn_c_try_link
 
+# ac_fn_cxx_try_link LINENO
+# -------------------------
+# Try to link conftest.$ac_ext, and return whether this succeeded.
+ac_fn_cxx_try_link ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  rm -f conftest.$ac_objext conftest$ac_exeext
+  if { { ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
+$as_echo "$ac_try_echo"; } >&5
+  (eval "$ac_link") 2>conftest.err
+  ac_status=$?
+  if test -s conftest.err; then
+    grep -v '^ *+' conftest.err >conftest.er1
+    cat conftest.er1 >&5
+    mv -f conftest.er1 conftest.err
+  fi
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } && {
+	 test -z "$ac_cxx_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext && {
+	 test "$cross_compiling" = yes ||
+	 test -x conftest$ac_exeext
+       }; then :
+  ac_retval=0
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_retval=1
+fi
+  # Delete the IPA/IPO (Inter Procedural Analysis/Optimization) information
+  # created by the PGI compiler (conftest_ipa8_conftest.oo), as it would
+  # interfere with the next link command; also delete a directory that is
+  # left behind by Apple's compiler.  We do this before executing the actions.
+  rm -rf conftest.dSYM conftest_ipa8_conftest.oo
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+  as_fn_set_status $ac_retval
+
+} # ac_fn_cxx_try_link
+
 # ac_fn_c_check_type LINENO TYPE VAR INCLUDES
 # -------------------------------------------
 # Tests whether TYPE exists after having included INCLUDES, setting cache
@@ -2319,6 +2366,9 @@ ac_config_headers="$ac_config_headers config.h"
 #serial 11
 
 
+
+
+# AC_CHECK_LIB
 
 
 ac_ext=cpp
@@ -3712,13 +3762,126 @@ as_fn_error $? "Could not find usable ZMQ library
 See \`config.log' for more details" "$LINENO" 5; }
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for S3_initialize in -ls3" >&5
-$as_echo_n "checking for S3_initialize in -ls3... " >&6; }
-if ${ac_cv_lib_s3_S3_initialize+:} false; then :
+#AC_CHECK_LIB([pcrecpp], [pcre_compile], [], [AC_MSG_FAILURE([pcre not found])])
+#AC_CHECK_LIB([thrift], [thrift_main], , AC_MSG_ERROR(could not find libthrift))
+
+ac_ext=cpp
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
+
+as_ac_Lib=`$as_echo "ac_cv_lib_boost_system-mt_boost::system::generic_category()" | $as_tr_sh`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for boost::system::generic_category() in -lboost_system-mt" >&5
+$as_echo_n "checking for boost::system::generic_category() in -lboost_system-mt... " >&6; }
+if eval \${$as_ac_Lib+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-ls3  $LIBS"
+LIBS="-lboost_system-mt  $LIBS"
+case "boost::system::generic_category()"
+in *::*::*\(*)
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+ namespace `echo "boost::system::generic_category()" | sed -e "s/::.*//"`
+ { class `echo "boost::system::generic_category()" | sed -e "s/.*::\\(.*\\)::.*/\\1/" -e "s/(.*//"`
+   { public: int `echo "boost::system::generic_category()" | sed -e "s/.*:://" -e "/(/!s/..*/&()/"`;
+   };
+ }
+
+int
+main ()
+{
+`echo "boost::system::generic_category()" | sed  -e "s/(.*//" -e "s/\\(.*\\)::\\(.*\\)/((\\1*)(0))->\\2/g"`()
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  eval "$as_ac_Lib=yes"
+else
+  eval "$as_ac_Lib=no"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+;; *::*::*)
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+ namespace `echo "boost::system::generic_category()" | sed -e "s/::.*//"`
+ { namespace `echo "boost::system::generic_category()" | sed -e "s/.*::\\(.*\\)::.*/\\1/"`
+   { class `echo "boost::system::generic_category()" | sed -e "s/.*:://"`
+      { public: `echo "boost::system::generic_category()" | sed -e "s/.*:://"` ();
+      };
+   }
+ }
+
+int
+main ()
+{
+new boost::system::generic_category()()
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  eval "$as_ac_Lib=yes"
+else
+  eval "$as_ac_Lib=no"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+;; *::*\(*)
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+ class `echo "boost::system::generic_category()" | sed -e "s/\\(.*\\)::.*/\\1/" -e "s/(.*//"`
+   { public: int `echo "boost::system::generic_category()" | sed -e "s/.*:://" -e "/(/!s/..*/&()/"`;
+   };
+
+int
+main ()
+{
+`echo "boost::system::generic_category()" | sed  -e "s/(.*//" -e "s/\\(.*\\)::\\(.*\\)/((\\1*)(0))->\\2/g"`()
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  eval "$as_ac_Lib=yes"
+else
+  eval "$as_ac_Lib=no"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+;; *::*)
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+ namespace `echo "boost::system::generic_category()" | sed -e "s/::.*//"`
+ { class `echo "boost::system::generic_category()" | sed -e "s/.*:://"`
+   { public: `echo "boost::system::generic_category()" | sed -e "s/.*:://"` ();
+   };
+ }
+
+int
+main ()
+{
+new boost::system::generic_category()()
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  eval "$as_ac_Lib=yes"
+else
+  eval "$as_ac_Lib=no"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+;; *)
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -3728,37 +3891,42 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 #ifdef __cplusplus
 extern "C"
 #endif
-char S3_initialize ();
+char boost::system::generic_category() ();
 int
 main ()
 {
-return S3_initialize ();
+return boost::system::generic_category() ();
   ;
   return 0;
 }
 _ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_s3_S3_initialize=yes
+if ac_fn_cxx_try_link "$LINENO"; then :
+  eval "$as_ac_Lib=yes"
 else
-  ac_cv_lib_s3_S3_initialize=no
+  eval "$as_ac_Lib=no"
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
+;; esac
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_s3_S3_initialize" >&5
-$as_echo "$ac_cv_lib_s3_S3_initialize" >&6; }
-if test "x$ac_cv_lib_s3_S3_initialize" = xyes; then :
-  true
+eval ac_res=\$$as_ac_Lib
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+if test `eval 'as_val=${'$as_ac_Lib'};$as_echo "$as_val"'` = yes; then :
+  BOOST_LIB_SUFFIX="-mt"
 else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "libs3 not found
-See \`config.log' for more details" "$LINENO" 5; }
+  BOOST_LIB_SUFFIX=""
 fi
 
-#AC_CHECK_LIB([pcrecpp], [pcre_compile], [], [AC_MSG_FAILURE([pcre not found])])
-#AC_CHECK_LIB([thrift], [thrift_main], , AC_MSG_ERROR(could not find libthrift))
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+
 
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'

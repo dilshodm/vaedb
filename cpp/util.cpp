@@ -1,6 +1,3 @@
-
-using namespace std;
-
 #include <cmath>
 #include <boost/lexical_cast.hpp>
 
@@ -8,6 +5,8 @@ using namespace std;
 #include "util.h"
  
 #define EPS 1e-10
+
+using namespace std;
 
 string& str_replace(const string &search, const string &replace, string &subject) {
   string buffer;

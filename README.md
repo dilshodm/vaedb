@@ -5,12 +5,31 @@ vaedb and it's associated goodness.
 
 ## Prerequisites
 
-vae_thrift requires thrift version 0.2.0.  You should install this
-manually on your development system.
+ - thrift
+ - pcre
+ - zeromq
+ - libs3
 
-If you're using a Mac, you should also:
 
-    brew install pcre
+### Install Prerequisites using a Mac
+
+    brew install pcre 
+    brew install zeromq
+    brew install thrift
+
+
+#### Install libs3:
+
+    git clone https://github.com/bji/libs3.git
+    cd libs3
+    mv GNUmakefile.osx GNUmakefile
+    sudo make install
+
+
+### Install Prerequisites using Linux
+
+Who the hell knows?  Someone please fill me in!
+
 
 
 ### Rebuilding the Thrift Defintion File
@@ -22,3 +41,7 @@ Whenever you need to rebuild the thrift definition file, simply run:
 When you're done, you need to patch a few files.  Run:
 
     patch gen-cpp/vae_types.h < cpp/vae_types.h.patch
+
+... except now this patch doesn't work.  Read the patch and see what it
+basically does and then manually apply a similar change and that will
+work for now.

@@ -28,8 +28,9 @@ struct transfer {
       objectname(objectname) {
 
     tempfs.open(tempname.c_str(), fstream::out);
-    if(!tempfs.is_open())
-        L(warning) << "Unable to create temporary file "<< tempname << " for object " << objectname;
+    if (!tempfs.is_open()) {
+        L(warning) << "Unable to create temporary file " << tempname << " for object " << objectname;
+    }
   }
   
   string get_error() const {

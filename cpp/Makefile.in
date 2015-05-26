@@ -8,9 +8,9 @@ exec_prefix = @exec_prefix@
 bindir = $(exec_prefix)/bin
 
 CXX = @CXX@
-CXXFLAGS = -rdynamic -g @CXXFLAGS@ @BOOST_CXXFLAGS@ -I/usr/local/include/thrift -I../gen-cpp `xml2-config --cflags` -c
-LDFLAGS = -L/usr/local/libxml2/lib -L/usr/local/lib @LDFLAGS@ @BOOST_LDFLAGS@ -g
-LIBS = @LIBS@ -ls3 -lboost_filesystem -lboost_program_options -lboost_system -lboost_thread -lpcrecpp -lz -lxml2 -lthrift -lm -g 
+CXXFLAGS = -g @CXXFLAGS@ @BOOST_CXXFLAGS@ -std=c++11 -I../gen-cpp -I/usr/include/malloc `xml2-config --cflags` -c
+LDFLAGS = -L/usr/local/lib @LDFLAGS@ @BOOST_LDFLAGS@ -g
+LIBS = @LIBS@ -ls3 -lboost_filesystem@BOOST_LIB_SUFFIX@ -lboost_program_options@BOOST_LIB_SUFFIX@ -lboost_system@BOOST_LIB_SUFFIX@ -lboost_thread@BOOST_LIB_SUFFIX@ -lpcrecpp -lz -lxml2 -lthrift -lm -g 
 
 GEN_SRC = ../gen-cpp/vae_types.cpp ../gen-cpp/VaeDb.cpp
 OBJS = context.o bus.o s3.o logger.o main.o query.o query_log.o reaper.o response.o session.o site.o util.o vae_db_handler.o vae_types.o VaeDb.o

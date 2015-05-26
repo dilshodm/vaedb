@@ -24,7 +24,7 @@ QueryLogEntry::~QueryLogEntry() {
   flush();
 }
 
-QueryLogEntry & QueryLogEntry::set_subdomain(std::string const & subdomain) {
+void QueryLogEntry::set_subdomain(std::string const & subdomain) {
   _subdomain = subdomain;
 }
 
