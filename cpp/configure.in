@@ -5,15 +5,18 @@ AC_CONFIG_HEADER([config.h])
 
 m4_include([aclocal/ax_boost_base.m4])
 m4_include([aclocal/ax_cxx_check_lib.m4])
+m4_include([aclocal/ax_lib_mysql.m4])
 
 AC_PROG_CXX
 AC_PROG_CC
 AC_PATH_PROG([XML2_CONFIG], [xml2-config], AC_MSG_ERROR(could not find libxml2))
 
 AX_BOOST_BASE
+AX_LIB_MYSQL([5.6.0])
 AC_CHECK_LIB([zmq], [zmq_socket], [], [AC_MSG_ERROR([Could not find usable ZMQ library])], [])
 AC_CHECK_LIB([thrift], [main], , AC_MSG_ERROR(could not find libthrift))
 AC_CHECK_LIB([s3], [S3_initialize], , AC_MSG_ERROR(could not find libs3))
+AC_CHECK_LIB([memcached], [memcached_get], , AC_MSG_ERROR(could not find memcached library))
 
 AC_LANG_PUSH([C++])
 

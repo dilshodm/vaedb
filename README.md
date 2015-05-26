@@ -9,6 +9,8 @@ vaedb and it's associated goodness.
  - pcre
  - zeromq
  - libs3
+ - libmysqlclient
+ - libmemcached
 
 
 ### Install Prerequisites using a Mac
@@ -16,6 +18,7 @@ vaedb and it's associated goodness.
     brew install pcre 
     brew install zeromq
     brew install thrift
+    brew install libmemcached
 
 
 #### Install libs3:
