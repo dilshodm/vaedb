@@ -105,8 +105,10 @@ service VaeDb {
 
   void shortTermCacheSet(1:string key, 2:string value)
 
-  string longTermCacheGet(1:string key)
+  string longTermCacheGet(1:string key, 2:i32 renewExpiry)
 
-  void longTermCacheSet(1:string key, 2:string value)
+  void longTermCacheSet(1:string key, 2:string value, 3:i32 expireInterval, 4:i32 isFilename)
+
+  void longTermCacheEmpty()
 
 }

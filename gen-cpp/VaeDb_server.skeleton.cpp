@@ -70,14 +70,19 @@ class VaeDbHandler : virtual public VaeDbIf {
     printf("shortTermCacheSet\n");
   }
 
-  void longTermCacheGet(std::string& _return, const std::string& key) {
+  void longTermCacheGet(std::string& _return, const std::string& key, const int32_t renewExpiry) {
     // Your implementation goes here
     printf("longTermCacheGet\n");
   }
 
-  void longTermCacheSet(const std::string& key, const std::string& value) {
+  void longTermCacheSet(const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename) {
     // Your implementation goes here
     printf("longTermCacheSet\n");
+  }
+
+  void longTermCacheEmpty() {
+    // Your implementation goes here
+    printf("longTermCacheEmpty\n");
   }
 
 };

@@ -265,9 +265,12 @@ void VaeDbHandler::shortTermCacheGet(string &_return, string const & key) {
 void VaeDbHandler::shortTermCacheSet(string const & key, string const & value) {
 }
 
-void VaeDbHandler::longTermCacheGet(string &_return, string const & key) {
+void VaeDbHandler::longTermCacheGet(string &_return, string const & key, const int32_t renewExpiry) {
   _return = "Long Term Value";
 }
 
-void VaeDbHandler::longTermCacheSet(string const & key, string const & value) {
+void VaeDbHandler::longTermCacheSet(string const & key, string const & value, const int32_t expireInterval, const int32_t isFilename) {
+}
+
+void VaeDbHandler::longTermCacheEmpty() {
 }

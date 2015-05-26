@@ -167,13 +167,13 @@ module VaeDb
       return
     end
 
-    def longTermCacheGet(key)
-      send_longTermCacheGet(key)
+    def longTermCacheGet(key, renewExpiry)
+      send_longTermCacheGet(key, renewExpiry)
       return recv_longTermCacheGet()
     end
 
-    def send_longTermCacheGet(key)
-      send_message('longTermCacheGet', LongTermCacheGet_args, :key => key)
+    def send_longTermCacheGet(key, renewExpiry)
+      send_message('longTermCacheGet', LongTermCacheGet_args, :key => key, :renewExpiry => renewExpiry)
     end
 
     def recv_longTermCacheGet()
@@ -182,17 +182,31 @@ module VaeDb
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'longTermCacheGet failed: unknown result')
     end
 
-    def longTermCacheSet(key, value)
-      send_longTermCacheSet(key, value)
+    def longTermCacheSet(key, value, expireInterval, isFilename)
+      send_longTermCacheSet(key, value, expireInterval, isFilename)
       recv_longTermCacheSet()
     end
 
-    def send_longTermCacheSet(key, value)
-      send_message('longTermCacheSet', LongTermCacheSet_args, :key => key, :value => value)
+    def send_longTermCacheSet(key, value, expireInterval, isFilename)
+      send_message('longTermCacheSet', LongTermCacheSet_args, :key => key, :value => value, :expireInterval => expireInterval, :isFilename => isFilename)
     end
 
     def recv_longTermCacheSet()
       result = receive_message(LongTermCacheSet_result)
+      return
+    end
+
+    def longTermCacheEmpty()
+      send_longTermCacheEmpty()
+      recv_longTermCacheEmpty()
+    end
+
+    def send_longTermCacheEmpty()
+      send_message('longTermCacheEmpty', LongTermCacheEmpty_args)
+    end
+
+    def recv_longTermCacheEmpty()
+      result = receive_message(LongTermCacheEmpty_result)
       return
     end
 
@@ -306,15 +320,22 @@ module VaeDb
     def process_longTermCacheGet(seqid, iprot, oprot)
       args = read_args(iprot, LongTermCacheGet_args)
       result = LongTermCacheGet_result.new()
-      result.success = @handler.longTermCacheGet(args.key)
+      result.success = @handler.longTermCacheGet(args.key, args.renewExpiry)
       write_result(result, oprot, 'longTermCacheGet', seqid)
     end
 
     def process_longTermCacheSet(seqid, iprot, oprot)
       args = read_args(iprot, LongTermCacheSet_args)
       result = LongTermCacheSet_result.new()
-      @handler.longTermCacheSet(args.key, args.value)
+      @handler.longTermCacheSet(args.key, args.value, args.expireInterval, args.isFilename)
       write_result(result, oprot, 'longTermCacheSet', seqid)
+    end
+
+    def process_longTermCacheEmpty(seqid, iprot, oprot)
+      args = read_args(iprot, LongTermCacheEmpty_args)
+      result = LongTermCacheEmpty_result.new()
+      @handler.longTermCacheEmpty()
+      write_result(result, oprot, 'longTermCacheEmpty', seqid)
     end
 
   end
@@ -682,9 +703,11 @@ module VaeDb
   class LongTermCacheGet_args
     include ::Thrift::Struct, ::Thrift::Struct_Union
     KEY = 1
+    RENEWEXPIRY = 2
 
     FIELDS = {
-      KEY => {:type => ::Thrift::Types::STRING, :name => 'key'}
+      KEY => {:type => ::Thrift::Types::STRING, :name => 'key'},
+      RENEWEXPIRY => {:type => ::Thrift::Types::I32, :name => 'renewExpiry'}
     }
 
     def struct_fields; FIELDS; end
@@ -715,10 +738,14 @@ module VaeDb
     include ::Thrift::Struct, ::Thrift::Struct_Union
     KEY = 1
     VALUE = 2
+    EXPIREINTERVAL = 3
+    ISFILENAME = 4
 
     FIELDS = {
       KEY => {:type => ::Thrift::Types::STRING, :name => 'key'},
-      VALUE => {:type => ::Thrift::Types::STRING, :name => 'value'}
+      VALUE => {:type => ::Thrift::Types::STRING, :name => 'value'},
+      EXPIREINTERVAL => {:type => ::Thrift::Types::I32, :name => 'expireInterval'},
+      ISFILENAME => {:type => ::Thrift::Types::I32, :name => 'isFilename'}
     }
 
     def struct_fields; FIELDS; end
@@ -730,6 +757,36 @@ module VaeDb
   end
 
   class LongTermCacheSet_result
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+
+    FIELDS = {
+
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class LongTermCacheEmpty_args
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+
+    FIELDS = {
+
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class LongTermCacheEmpty_result
     include ::Thrift::Struct, ::Thrift::Struct_Union
 
     FIELDS = {

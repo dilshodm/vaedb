@@ -87,14 +87,20 @@ interface VaeDbIf {
   public function shortTermCacheSet($key, $value);
   /**
    * @param string $key
+   * @param int $renewExpiry
    * @return string
    */
-  public function longTermCacheGet($key);
+  public function longTermCacheGet($key, $renewExpiry);
   /**
    * @param string $key
    * @param string $value
+   * @param int $expireInterval
+   * @param int $isFilename
    */
-  public function longTermCacheSet($key, $value);
+  public function longTermCacheSet($key, $value, $expireInterval, $isFilename);
+  /**
+   */
+  public function longTermCacheEmpty();
 }
 
 class VaeDbClient implements \VaeDbIf {
@@ -648,16 +654,17 @@ class VaeDbClient implements \VaeDbIf {
     return;
   }
 
-  public function longTermCacheGet($key)
+  public function longTermCacheGet($key, $renewExpiry)
   {
-    $this->send_longTermCacheGet($key);
+    $this->send_longTermCacheGet($key, $renewExpiry);
     return $this->recv_longTermCacheGet();
   }
 
-  public function send_longTermCacheGet($key)
+  public function send_longTermCacheGet($key, $renewExpiry)
   {
     $args = new \VaeDb_longTermCacheGet_args();
     $args->key = $key;
+    $args->renewExpiry = $renewExpiry;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -699,17 +706,19 @@ class VaeDbClient implements \VaeDbIf {
     throw new \Exception("longTermCacheGet failed: unknown result");
   }
 
-  public function longTermCacheSet($key, $value)
+  public function longTermCacheSet($key, $value, $expireInterval, $isFilename)
   {
-    $this->send_longTermCacheSet($key, $value);
+    $this->send_longTermCacheSet($key, $value, $expireInterval, $isFilename);
     $this->recv_longTermCacheSet();
   }
 
-  public function send_longTermCacheSet($key, $value)
+  public function send_longTermCacheSet($key, $value, $expireInterval, $isFilename)
   {
     $args = new \VaeDb_longTermCacheSet_args();
     $args->key = $key;
     $args->value = $value;
+    $args->expireInterval = $expireInterval;
+    $args->isFilename = $isFilename;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -742,6 +751,53 @@ class VaeDbClient implements \VaeDbIf {
         throw $x;
       }
       $result = new \VaeDb_longTermCacheSet_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    return;
+  }
+
+  public function longTermCacheEmpty()
+  {
+    $this->send_longTermCacheEmpty();
+    $this->recv_longTermCacheEmpty();
+  }
+
+  public function send_longTermCacheEmpty()
+  {
+    $args = new \VaeDb_longTermCacheEmpty_args();
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'longTermCacheEmpty', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('longTermCacheEmpty', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_longTermCacheEmpty()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\VaeDb_longTermCacheEmpty_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \VaeDb_longTermCacheEmpty_result();
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
@@ -2741,6 +2797,10 @@ class VaeDb_longTermCacheGet_args {
    * @var string
    */
   public $key = null;
+  /**
+   * @var int
+   */
+  public $renewExpiry = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -2749,11 +2809,18 @@ class VaeDb_longTermCacheGet_args {
           'var' => 'key',
           'type' => TType::STRING,
           ),
+        2 => array(
+          'var' => 'renewExpiry',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
       if (isset($vals['key'])) {
         $this->key = $vals['key'];
+      }
+      if (isset($vals['renewExpiry'])) {
+        $this->renewExpiry = $vals['renewExpiry'];
       }
     }
   }
@@ -2784,6 +2851,13 @@ class VaeDb_longTermCacheGet_args {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->renewExpiry);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -2800,6 +2874,11 @@ class VaeDb_longTermCacheGet_args {
     if ($this->key !== null) {
       $xfer += $output->writeFieldBegin('key', TType::STRING, 1);
       $xfer += $output->writeString($this->key);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->renewExpiry !== null) {
+      $xfer += $output->writeFieldBegin('renewExpiry', TType::I32, 2);
+      $xfer += $output->writeI32($this->renewExpiry);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -2895,6 +2974,14 @@ class VaeDb_longTermCacheSet_args {
    * @var string
    */
   public $value = null;
+  /**
+   * @var int
+   */
+  public $expireInterval = null;
+  /**
+   * @var int
+   */
+  public $isFilename = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -2907,6 +2994,14 @@ class VaeDb_longTermCacheSet_args {
           'var' => 'value',
           'type' => TType::STRING,
           ),
+        3 => array(
+          'var' => 'expireInterval',
+          'type' => TType::I32,
+          ),
+        4 => array(
+          'var' => 'isFilename',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -2915,6 +3010,12 @@ class VaeDb_longTermCacheSet_args {
       }
       if (isset($vals['value'])) {
         $this->value = $vals['value'];
+      }
+      if (isset($vals['expireInterval'])) {
+        $this->expireInterval = $vals['expireInterval'];
+      }
+      if (isset($vals['isFilename'])) {
+        $this->isFilename = $vals['isFilename'];
       }
     }
   }
@@ -2952,6 +3053,20 @@ class VaeDb_longTermCacheSet_args {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 3:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->expireInterval);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->isFilename);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -2973,6 +3088,16 @@ class VaeDb_longTermCacheSet_args {
     if ($this->value !== null) {
       $xfer += $output->writeFieldBegin('value', TType::STRING, 2);
       $xfer += $output->writeString($this->value);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->expireInterval !== null) {
+      $xfer += $output->writeFieldBegin('expireInterval', TType::I32, 3);
+      $xfer += $output->writeI32($this->expireInterval);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->isFilename !== null) {
+      $xfer += $output->writeFieldBegin('isFilename', TType::I32, 4);
+      $xfer += $output->writeI32($this->isFilename);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -3025,6 +3150,106 @@ class VaeDb_longTermCacheSet_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('VaeDb_longTermCacheSet_result');
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class VaeDb_longTermCacheEmpty_args {
+  static $_TSPEC;
+
+
+  public function __construct() {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        );
+    }
+  }
+
+  public function getName() {
+    return 'VaeDb_longTermCacheEmpty_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('VaeDb_longTermCacheEmpty_args');
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class VaeDb_longTermCacheEmpty_result {
+  static $_TSPEC;
+
+
+  public function __construct() {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        );
+    }
+  }
+
+  public function getName() {
+    return 'VaeDb_longTermCacheEmpty_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('VaeDb_longTermCacheEmpty_result');
     $xfer += $output->writeFieldStop();
     $xfer += $output->writeStructEnd();
     return $xfer;

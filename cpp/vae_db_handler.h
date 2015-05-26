@@ -45,8 +45,9 @@ class VaeDbHandler : virtual public VaeDbIf {
 
   void shortTermCacheGet(string &_return, string const & key);
   void shortTermCacheSet(string const & key, string const & value);
-  void longTermCacheGet(string &_return, string const & key);
-  void longTermCacheSet(string const & key, string const & value);
+  void longTermCacheGet(string &_return, string const & key, const int32_t renewExpiry);
+  void longTermCacheSet(string const & key, string const & value, const int32_t expireInterval, const int32_t isFilename);
+  void longTermCacheEmpty();
 
 };
 

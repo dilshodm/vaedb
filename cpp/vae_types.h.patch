@@ -1,9 +1,0 @@
-24a25,26
->   VaeDbInternalError(const char *m) : message(m) {
->   }
-60c62,64
-< 
----
->   VaeDbQueryError(const char *m) : message(m) {
->   }
->   
