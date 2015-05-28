@@ -197,12 +197,12 @@ void VaeDbHandler::reloadSite(string const & subdomain) {
   _resetSite(subdomain, "", true);
 
 
-  if(reload_prod) {
+  if (reload_prod) {
      boost::unique_lock<boost::mutex> lockSite(_get_site_mutex(subdomain, 0));
     _loadSite(subdomain, 0, rawxml);
   }
 
-  if(reload_staging) {
+  if (reload_staging) {
      boost::unique_lock<boost::mutex> lockSite(_get_site_mutex(subdomain, 1));
     _loadSite(subdomain, 1, rawxml);
   }
@@ -211,12 +211,15 @@ void VaeDbHandler::reloadSite(string const & subdomain) {
 inline
 void VaeDbHandler::_resetSite(string const & subdomain, string const & secretKey, bool force) {
   boost::unique_lock<boost::mutex> lock(sitesMutex);
-  if(sites.count(subdomain)) 
+  if (sites.count(subdomain)) {
     _eraseSite(subdomain, secretKey, force);
+  }
 
   string staging(subdomain + ".staging");
-  if(sites.count(staging))
+  
+  if (sites.count(staging)) {
     _eraseSite(staging, secretKey, force); 
+  }
 }
 
 inline

@@ -1,5 +1,5 @@
 AC_PREREQ(2.61)
-AC_INIT(vaedb, 20131220, info@actionverb.com)
+AC_INIT(vaedb, 20150520, info@actionverb.com)
 AC_CONFIG_SRCDIR([context.cpp])
 AC_CONFIG_HEADER([config.h])
 

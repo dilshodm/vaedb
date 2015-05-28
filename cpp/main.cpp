@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
     ("mysql_password", po::value<string>(&mysql_password), "MySQL password")
     ("mysql_database", po::value<string>(&mysql_database), "MySQL database name")
     ("mysql_host", po::value<string>(&mysql_host), "MySQL hostname or IP Address")
-    ("memcached_host", po::value<string>(&memcached_host), "Memcached hostname or IP Address.  Provide multiple server hostnames by using: this syntax \"--SERVER=memcached1.actionverb.com --SERVER=memcached2.actionverb.com\"")
+    ("memcached_host", po::value<string>(&memcached_host), "Memcached hostname or IP Address.  Provide multiple server hostnames by using: this syntax \"memcached1.actionverb.com,memcached2.actionverb.com\"")
   ;
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
