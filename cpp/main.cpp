@@ -58,14 +58,23 @@ int main(int argc, char **argv) {
 
   int opt, workers;
   string bus_bindaddress;
-  char * _access_key = getenv("AWS_ACCESS_KEY");
-  char * _secret_key = getenv("AWS_SECRET_KEY");
+  char *_access_key = getenv("AWS_ACCESS_KEY");
+  char *_secret_key = getenv("AWS_SECRET_KEY");
+  char *_mysql_username = getenv("MYSQL_USERNAME");
+  char *_mysql_password = getenv("MYSQL_PASSWORD");
+  char *_mysql_database = getenv("MYSQL_DATABASE");
+  char *_mysql_host = getenv("MYSQL_HOST");
+  char *_memcached_host = getenv("MEMCACHED_HOST");
 
   string aws_access_key(_access_key ? _access_key : "");
   string aws_secret_key(_secret_key ? _secret_key : "");
+  string mysql_username(_mysql_username ? _mysql_username : "");
+  string mysql_password(_mysql_password ? _mysql_password : "");
+  string mysql_database(_mysql_database ? _mysql_database : "");
+  string mysql_host(_mysql_host ? _mysql_host : "");
+  string memcached_host(_memcached_host ? _memcached_host : "");
   string aws_bucket;
   string feed_cache_path;
-  string mysql_username, mysql_password, mysql_database, mysql_host, memcached_host;
 
   po::options_description desc("vaedb options", 80);
   desc.add_options()
