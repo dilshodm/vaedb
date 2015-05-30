@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
     ("mysql_password", po::value<string>(&mysql_password), "MySQL password")
     ("mysql_database", po::value<string>(&mysql_database), "MySQL database name")
     ("mysql_host", po::value<string>(&mysql_host), "MySQL hostname or IP Address")
-    ("memcached_host", po::value<string>(&memcached_host), "Memcached hostname or IP Address.  Provide multiple server hostnames by using: this syntax \"memcached1.actionverb.com,memcached2.actionverb.com\"")
+    ("memcached_host", po::value<string>(&memcached_host), "Memcached hostname or IP Address.  Provide multiple server hostnames by using: this syntax \"memcached1.actionverb.com,memcached2.actionverb.com\" without the quotes")
   ;
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -120,6 +120,7 @@ int main(int argc, char **argv) {
   }
   
   QueryLog query_log(p_querylog_stream.get());
+  MemcacheProxy memcache(memcached_host);
 
   if(!initialize_s3(aws_access_key, aws_secret_key, aws_bucket, feed_cache_path)) {
     L(error) << "S3 failed to initialize.";
@@ -127,7 +128,7 @@ int main(int argc, char **argv) {
   }
 
   boost::shared_ptr<PosixThreadFactory> threadFactory = boost::shared_ptr<PosixThreadFactory>(new PosixThreadFactory());
-  boost::shared_ptr<VaeDbHandler> handler(new VaeDbHandler(query_log));
+  boost::shared_ptr<VaeDbHandler> handler(new VaeDbHandler(query_log, memcache));
   boost::shared_ptr<TProcessor> processor(new VaeDbProcessor(handler));
   boost::shared_ptr<TServerSocket> serverSocket(new TServerSocket(vm["port"].as<int>()));
   boost::shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
