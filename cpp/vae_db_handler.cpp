@@ -261,11 +261,11 @@ void VaeDbHandler::writePid() {
   pidfile.close();
 }
 
-void VaeDbHandler::shortTermCacheGet(string &_return, string const & key) {
+void VaeDbHandler::shortTermCacheGet(string &_return, string const & key, const int32_t flags) {
   _return = memcache.get(key);
 }
 
-void VaeDbHandler::shortTermCacheSet(string const & key, string const & value) {
+void VaeDbHandler::shortTermCacheSet(string const & key, string const & value, const int32_t flags, const int32_t expireInterval) {
   memcache.set(key, value);
 }
 

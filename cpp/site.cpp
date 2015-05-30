@@ -64,20 +64,26 @@ string Site::getSubdomain() {
 void Site::loadXmlDoc(string const & rawxml) {
   if ((doc = xmlReadMemory(rawxml.c_str(), rawxml.size(), subdomain.c_str(), NULL, 0)) == NULL) {
     L(warning) << "[" << subdomain << "] could not open/parse XML";
-    throw VaeDbInternalError("Could not open/parse XML file!");
+    VaeDbInternalError e;
+    e.message = "Could not open/parse XML file";
+    throw e;
   }
   xmlXPathOrderDocElems(doc);
   rootNode = rootDesignNode = NULL;
   Query _rootNodeQuery(this);
   _rootNodeQuery.runRawQuery(NULL, "/website/content", "website root node");
   if (_rootNodeQuery.getSize() != 1) {
-    throw VaeDbInternalError("Could not find root content node in XML file");
+    VaeDbInternalError e;
+    e.message = "Could not find root content node in XML file";
+    throw e;
   }
   rootNode = _rootNodeQuery.getNode(0);
   Query _rootDesignNodeQuery(this);
   _rootDesignNodeQuery.runRawQuery(NULL, "/website/design", "website design node");
   if (_rootDesignNodeQuery.getSize() != 1) {
-    throw VaeDbInternalError("Could not find root design node in XML file");
+    VaeDbInternalError e;
+    e.message = "Could not find root design node in XML file";
+    throw e;
   }
   rootDesignNode = _rootDesignNodeQuery.getNode(0);
   xmlNode *next;
@@ -124,7 +130,9 @@ VaeDbStructure *Site::structureFromStructureId(int structureId) {
 void Site::validateSecretKey(string testSecretKey) {
   if (secretKey != testSecretKey) {
     L(warning) << "[" << subdomain << "] secret key mismatch: " << secretKey << " <> " << testSecretKey;
-    throw VaeDbInternalError("Secret key mismatch");
+    VaeDbInternalError e;
+    e.message = "Secret Key Mismatch";
+    throw e;
   }
 }
 

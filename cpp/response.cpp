@@ -158,7 +158,9 @@ void Response::createInfo(Context *context, const string &query) {
   }
   if (atoi(lastPart.c_str()) != 0) {
     string error = "invalid path for creating: '" + query + "'";
-    throw VaeDbQueryError(error.c_str());
+    VaeDbQueryError e;
+    e.message = error.c_str();
+    throw e;
   }
   Query structureQuery(site.get());
   structureQuery.runDesignQuery(context, lastPart);
@@ -168,7 +170,9 @@ void Response::createInfo(Context *context, const string &query) {
     }
   } else {
     string error = "could not find path for creating: '" + query + "'";
-    throw VaeDbQueryError(error.c_str());
+    VaeDbQueryError e;
+    e.message = error.c_str();
+    throw e;
   }
   createInfos.push_back(ci);
 }

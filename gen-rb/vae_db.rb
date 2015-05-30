@@ -138,13 +138,13 @@ module VaeDb
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'structure failed: unknown result')
     end
 
-    def shortTermCacheGet(key)
-      send_shortTermCacheGet(key)
+    def shortTermCacheGet(key, flags)
+      send_shortTermCacheGet(key, flags)
       return recv_shortTermCacheGet()
     end
 
-    def send_shortTermCacheGet(key)
-      send_message('shortTermCacheGet', ShortTermCacheGet_args, :key => key)
+    def send_shortTermCacheGet(key, flags)
+      send_message('shortTermCacheGet', ShortTermCacheGet_args, :key => key, :flags => flags)
     end
 
     def recv_shortTermCacheGet()
@@ -153,13 +153,13 @@ module VaeDb
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'shortTermCacheGet failed: unknown result')
     end
 
-    def shortTermCacheSet(key, value)
-      send_shortTermCacheSet(key, value)
+    def shortTermCacheSet(key, value, flags, expireInterval)
+      send_shortTermCacheSet(key, value, flags, expireInterval)
       recv_shortTermCacheSet()
     end
 
-    def send_shortTermCacheSet(key, value)
-      send_message('shortTermCacheSet', ShortTermCacheSet_args, :key => key, :value => value)
+    def send_shortTermCacheSet(key, value, flags, expireInterval)
+      send_message('shortTermCacheSet', ShortTermCacheSet_args, :key => key, :value => value, :flags => flags, :expireInterval => expireInterval)
     end
 
     def recv_shortTermCacheSet()
@@ -306,14 +306,14 @@ module VaeDb
     def process_shortTermCacheGet(seqid, iprot, oprot)
       args = read_args(iprot, ShortTermCacheGet_args)
       result = ShortTermCacheGet_result.new()
-      result.success = @handler.shortTermCacheGet(args.key)
+      result.success = @handler.shortTermCacheGet(args.key, args.flags)
       write_result(result, oprot, 'shortTermCacheGet', seqid)
     end
 
     def process_shortTermCacheSet(seqid, iprot, oprot)
       args = read_args(iprot, ShortTermCacheSet_args)
       result = ShortTermCacheSet_result.new()
-      @handler.shortTermCacheSet(args.key, args.value)
+      @handler.shortTermCacheSet(args.key, args.value, args.flags, args.expireInterval)
       write_result(result, oprot, 'shortTermCacheSet', seqid)
     end
 
@@ -638,9 +638,11 @@ module VaeDb
   class ShortTermCacheGet_args
     include ::Thrift::Struct, ::Thrift::Struct_Union
     KEY = 1
+    FLAGS = 2
 
     FIELDS = {
-      KEY => {:type => ::Thrift::Types::STRING, :name => 'key'}
+      KEY => {:type => ::Thrift::Types::STRING, :name => 'key'},
+      FLAGS => {:type => ::Thrift::Types::I32, :name => 'flags'}
     }
 
     def struct_fields; FIELDS; end
@@ -671,10 +673,14 @@ module VaeDb
     include ::Thrift::Struct, ::Thrift::Struct_Union
     KEY = 1
     VALUE = 2
+    FLAGS = 3
+    EXPIREINTERVAL = 4
 
     FIELDS = {
       KEY => {:type => ::Thrift::Types::STRING, :name => 'key'},
-      VALUE => {:type => ::Thrift::Types::STRING, :name => 'value'}
+      VALUE => {:type => ::Thrift::Types::STRING, :name => 'value'},
+      FLAGS => {:type => ::Thrift::Types::I32, :name => 'flags'},
+      EXPIREINTERVAL => {:type => ::Thrift::Types::I32, :name => 'expireInterval'}
     }
 
     def struct_fields; FIELDS; end

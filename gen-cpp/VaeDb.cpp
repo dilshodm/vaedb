@@ -1873,6 +1873,14 @@ uint32_t VaeDb_shortTermCacheGet_args::read(::apache::thrift::protocol::TProtoco
           xfer += iprot->skip(ftype);
         }
         break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->flags);
+          this->__isset.flags = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1894,6 +1902,10 @@ uint32_t VaeDb_shortTermCacheGet_args::write(::apache::thrift::protocol::TProtoc
   xfer += oprot->writeString(this->key);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("flags", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32(this->flags);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -1912,6 +1924,10 @@ uint32_t VaeDb_shortTermCacheGet_pargs::write(::apache::thrift::protocol::TProto
 
   xfer += oprot->writeFieldBegin("key", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString((*(this->key)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("flags", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32((*(this->flags)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -2067,6 +2083,22 @@ uint32_t VaeDb_shortTermCacheSet_args::read(::apache::thrift::protocol::TProtoco
           xfer += iprot->skip(ftype);
         }
         break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->flags);
+          this->__isset.flags = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->expireInterval);
+          this->__isset.expireInterval = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -2092,6 +2124,14 @@ uint32_t VaeDb_shortTermCacheSet_args::write(::apache::thrift::protocol::TProtoc
   xfer += oprot->writeString(this->value);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("flags", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32(this->flags);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("expireInterval", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32(this->expireInterval);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -2114,6 +2154,14 @@ uint32_t VaeDb_shortTermCacheSet_pargs::write(::apache::thrift::protocol::TProto
 
   xfer += oprot->writeFieldBegin("value", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->value)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("flags", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((*(this->flags)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("expireInterval", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((*(this->expireInterval)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -3228,19 +3276,20 @@ void VaeDbClient::recv_structure(VaeDbStructureResponse& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "structure failed: unknown result");
 }
 
-void VaeDbClient::shortTermCacheGet(std::string& _return, const std::string& key)
+void VaeDbClient::shortTermCacheGet(std::string& _return, const std::string& key, const int32_t flags)
 {
-  send_shortTermCacheGet(key);
+  send_shortTermCacheGet(key, flags);
   recv_shortTermCacheGet(_return);
 }
 
-void VaeDbClient::send_shortTermCacheGet(const std::string& key)
+void VaeDbClient::send_shortTermCacheGet(const std::string& key, const int32_t flags)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("shortTermCacheGet", ::apache::thrift::protocol::T_CALL, cseqid);
 
   VaeDb_shortTermCacheGet_pargs args;
   args.key = &key;
+  args.flags = &flags;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -3286,13 +3335,13 @@ void VaeDbClient::recv_shortTermCacheGet(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "shortTermCacheGet failed: unknown result");
 }
 
-void VaeDbClient::shortTermCacheSet(const std::string& key, const std::string& value)
+void VaeDbClient::shortTermCacheSet(const std::string& key, const std::string& value, const int32_t flags, const int32_t expireInterval)
 {
-  send_shortTermCacheSet(key, value);
+  send_shortTermCacheSet(key, value, flags, expireInterval);
   recv_shortTermCacheSet();
 }
 
-void VaeDbClient::send_shortTermCacheSet(const std::string& key, const std::string& value)
+void VaeDbClient::send_shortTermCacheSet(const std::string& key, const std::string& value, const int32_t flags, const int32_t expireInterval)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("shortTermCacheSet", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -3300,6 +3349,8 @@ void VaeDbClient::send_shortTermCacheSet(const std::string& key, const std::stri
   VaeDb_shortTermCacheSet_pargs args;
   args.key = &key;
   args.value = &value;
+  args.flags = &flags;
+  args.expireInterval = &expireInterval;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4006,7 +4057,7 @@ void VaeDbProcessor::process_shortTermCacheGet(int32_t seqid, ::apache::thrift::
 
   VaeDb_shortTermCacheGet_result result;
   try {
-    iface_->shortTermCacheGet(result.success, args.key);
+    iface_->shortTermCacheGet(result.success, args.key, args.flags);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
@@ -4060,7 +4111,7 @@ void VaeDbProcessor::process_shortTermCacheSet(int32_t seqid, ::apache::thrift::
 
   VaeDb_shortTermCacheSet_result result;
   try {
-    iface_->shortTermCacheSet(args.key, args.value);
+    iface_->shortTermCacheSet(args.key, args.value, args.flags, args.expireInterval);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "VaeDb.shortTermCacheSet");

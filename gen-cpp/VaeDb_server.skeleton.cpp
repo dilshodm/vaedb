@@ -60,12 +60,12 @@ class VaeDbHandler : virtual public VaeDbIf {
     printf("structure\n");
   }
 
-  void shortTermCacheGet(std::string& _return, const std::string& key) {
+  void shortTermCacheGet(std::string& _return, const std::string& key, const int32_t flags) {
     // Your implementation goes here
     printf("shortTermCacheGet\n");
   }
 
-  void shortTermCacheSet(const std::string& key, const std::string& value) {
+  void shortTermCacheSet(const std::string& key, const std::string& value, const int32_t flags, const int32_t expireInterval) {
     // Your implementation goes here
     printf("shortTermCacheSet\n");
   }

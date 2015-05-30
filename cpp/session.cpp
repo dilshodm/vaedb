@@ -24,7 +24,9 @@ void Session::createInfo(VaeDbCreateInfoResponse& _return, const int32_t respons
     if (responses.size() >= responseId) {
       parent = responses[responseId-1];
     } else {
-      throw VaeDbInternalError("Invalid responseId");
+      VaeDbInternalError e;
+      e.message = "Invalid responseId";
+      throw e;
     }
   } else {
     parent = boost::shared_ptr<Response>();
@@ -39,7 +41,9 @@ void Session::data(VaeDbDataResponse& _return, const int32_t responseId) {
   if (responses.size() >= responseId) {
     response = responses[responseId-1];
   } else {
-    throw VaeDbInternalError("Invalid responseId");
+    VaeDbInternalError e;
+    e.message = "Invalid responseId";
+    throw e;
   }
   response->writeVaeDbDataResponse(_return);
 }
@@ -51,7 +55,9 @@ void Session::get(VaeDbResponse& _return, const int32_t responseId, const std::s
     if (responses.size() >= responseId) {
       parent = responses[responseId-1];
     } else {
-      throw VaeDbInternalError("Invalid responseId");
+      VaeDbInternalError e;
+      e.message = "Invalid responseId";
+      throw e;
     }
   } else {
     parent = boost::shared_ptr<Response>();
@@ -76,7 +82,9 @@ void Session::structure(VaeDbStructureResponse& _return, const int32_t responseI
   if (responses.size() >= responseId) {
     response = responses[responseId-1];
   } else {
-    throw VaeDbInternalError("Invalid responseId");
+    VaeDbInternalError e;
+    e.message = "Invalid responseId";
+    throw e;
   }
   response->writeVaeDbStructureResponse(_return);
 }

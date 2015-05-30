@@ -79,7 +79,9 @@ string Context::getData(const string &query) {
   if (!dataPopulated) populateData();
   boost::unique_lock<boost::mutex> lock(mutex);
   if (query == "") {
-    throw VaeDbInternalError("Empty query passed to Context::getData");
+    VaeDbInternalError e;
+    e.message = "Empty query passed to Context::getData";
+    throw e;
   }
   DataMap::const_iterator it;
   if ((it = data.find(query)) != data.end()) {
@@ -131,7 +133,11 @@ void Context::initializeAssociation() {
     
       /* set up reverse association */
       xmlNodePtr pointerNode = xmlCopyNode(node->parent, 0);
-      if (pointerNode == NULL) throw VaeDbInternalError("xmlCopyNode returned NULL");
+      if (pointerNode == NULL) {
+        VaeDbInternalError e;
+        e.message = "xmlCopyNode returned NULL";
+        throw e;
+      }
       pointerNode->_private = node->parent->_private;
       pointerNode->children = node->parent->children;
       pointerNode->last = node->parent->last;

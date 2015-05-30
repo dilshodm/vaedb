@@ -101,9 +101,9 @@ service VaeDb {
   VaeDbStructureResponse structure(1:i32 session_id, 2:i32 response_id)
     throws (1:VaeDbInternalError ie)
 
-  string shortTermCacheGet(1:string key)
+  string shortTermCacheGet(1:string key, 2:i32 flags)
 
-  void shortTermCacheSet(1:string key, 2:string value)
+  void shortTermCacheSet(1:string key, 2:string value, 3:i32 flags, 4:i32 expireInterval)
 
   string longTermCacheGet(1:string key, 2:i32 renewExpiry)
 

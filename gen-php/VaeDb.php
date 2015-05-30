@@ -77,14 +77,17 @@ interface VaeDbIf {
   public function structure($session_id, $response_id);
   /**
    * @param string $key
+   * @param int $flags
    * @return string
    */
-  public function shortTermCacheGet($key);
+  public function shortTermCacheGet($key, $flags);
   /**
    * @param string $key
    * @param string $value
+   * @param int $flags
+   * @param int $expireInterval
    */
-  public function shortTermCacheSet($key, $value);
+  public function shortTermCacheSet($key, $value, $flags, $expireInterval);
   /**
    * @param string $key
    * @param int $renewExpiry
@@ -554,16 +557,17 @@ class VaeDbClient implements \VaeDbIf {
     throw new \Exception("structure failed: unknown result");
   }
 
-  public function shortTermCacheGet($key)
+  public function shortTermCacheGet($key, $flags)
   {
-    $this->send_shortTermCacheGet($key);
+    $this->send_shortTermCacheGet($key, $flags);
     return $this->recv_shortTermCacheGet();
   }
 
-  public function send_shortTermCacheGet($key)
+  public function send_shortTermCacheGet($key, $flags)
   {
     $args = new \VaeDb_shortTermCacheGet_args();
     $args->key = $key;
+    $args->flags = $flags;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -605,17 +609,19 @@ class VaeDbClient implements \VaeDbIf {
     throw new \Exception("shortTermCacheGet failed: unknown result");
   }
 
-  public function shortTermCacheSet($key, $value)
+  public function shortTermCacheSet($key, $value, $flags, $expireInterval)
   {
-    $this->send_shortTermCacheSet($key, $value);
+    $this->send_shortTermCacheSet($key, $value, $flags, $expireInterval);
     $this->recv_shortTermCacheSet();
   }
 
-  public function send_shortTermCacheSet($key, $value)
+  public function send_shortTermCacheSet($key, $value, $flags, $expireInterval)
   {
     $args = new \VaeDb_shortTermCacheSet_args();
     $args->key = $key;
     $args->value = $value;
+    $args->flags = $flags;
+    $args->expireInterval = $expireInterval;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -2499,6 +2505,10 @@ class VaeDb_shortTermCacheGet_args {
    * @var string
    */
   public $key = null;
+  /**
+   * @var int
+   */
+  public $flags = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -2507,11 +2517,18 @@ class VaeDb_shortTermCacheGet_args {
           'var' => 'key',
           'type' => TType::STRING,
           ),
+        2 => array(
+          'var' => 'flags',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
       if (isset($vals['key'])) {
         $this->key = $vals['key'];
+      }
+      if (isset($vals['flags'])) {
+        $this->flags = $vals['flags'];
       }
     }
   }
@@ -2542,6 +2559,13 @@ class VaeDb_shortTermCacheGet_args {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->flags);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -2558,6 +2582,11 @@ class VaeDb_shortTermCacheGet_args {
     if ($this->key !== null) {
       $xfer += $output->writeFieldBegin('key', TType::STRING, 1);
       $xfer += $output->writeString($this->key);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->flags !== null) {
+      $xfer += $output->writeFieldBegin('flags', TType::I32, 2);
+      $xfer += $output->writeI32($this->flags);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -2653,6 +2682,14 @@ class VaeDb_shortTermCacheSet_args {
    * @var string
    */
   public $value = null;
+  /**
+   * @var int
+   */
+  public $flags = null;
+  /**
+   * @var int
+   */
+  public $expireInterval = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -2665,6 +2702,14 @@ class VaeDb_shortTermCacheSet_args {
           'var' => 'value',
           'type' => TType::STRING,
           ),
+        3 => array(
+          'var' => 'flags',
+          'type' => TType::I32,
+          ),
+        4 => array(
+          'var' => 'expireInterval',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -2673,6 +2718,12 @@ class VaeDb_shortTermCacheSet_args {
       }
       if (isset($vals['value'])) {
         $this->value = $vals['value'];
+      }
+      if (isset($vals['flags'])) {
+        $this->flags = $vals['flags'];
+      }
+      if (isset($vals['expireInterval'])) {
+        $this->expireInterval = $vals['expireInterval'];
       }
     }
   }
@@ -2710,6 +2761,20 @@ class VaeDb_shortTermCacheSet_args {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 3:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->flags);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->expireInterval);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -2731,6 +2796,16 @@ class VaeDb_shortTermCacheSet_args {
     if ($this->value !== null) {
       $xfer += $output->writeFieldBegin('value', TType::STRING, 2);
       $xfer += $output->writeString($this->value);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->flags !== null) {
+      $xfer += $output->writeFieldBegin('flags', TType::I32, 3);
+      $xfer += $output->writeI32($this->flags);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->expireInterval !== null) {
+      $xfer += $output->writeFieldBegin('expireInterval', TType::I32, 4);
+      $xfer += $output->writeI32($this->expireInterval);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

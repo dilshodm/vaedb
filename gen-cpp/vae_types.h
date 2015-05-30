@@ -58,8 +58,6 @@ class VaeDbInternalError : public ::apache::thrift::TException {
   VaeDbInternalError& operator=(const VaeDbInternalError&);
   VaeDbInternalError() : message() {
   }
-  VaeDbInternalError(const char *m) : message(m) {
-  }
 
   virtual ~VaeDbInternalError() throw();
   std::string message;
@@ -102,8 +100,6 @@ class VaeDbQueryError : public ::apache::thrift::TException {
   VaeDbQueryError(const VaeDbQueryError&);
   VaeDbQueryError& operator=(const VaeDbQueryError&);
   VaeDbQueryError() : message() {
-  }
-  VaeDbQueryError(const char *m) : message(m) {
   }
 
   virtual ~VaeDbQueryError() throw();
