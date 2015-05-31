@@ -27,7 +27,7 @@ class VaeDbIf {
   virtual void shortTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t flags, const int32_t expireInterval) = 0;
   virtual void longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry) = 0;
   virtual void longTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename) = 0;
-  virtual void longTermCacheEmpty() = 0;
+  virtual void longTermCacheEmpty(const int32_t session_id) = 0;
 };
 
 class VaeDbIfFactory {
@@ -95,7 +95,7 @@ class VaeDbNull : virtual public VaeDbIf {
   void longTermCacheSet(const int32_t /* session_id */, const std::string& /* key */, const std::string& /* value */, const int32_t /* expireInterval */, const int32_t /* isFilename */) {
     return;
   }
-  void longTermCacheEmpty() {
+  void longTermCacheEmpty(const int32_t /* session_id */) {
     return;
   }
 };
@@ -1716,22 +1716,33 @@ class VaeDb_longTermCacheSet_presult {
   friend std::ostream& operator<<(std::ostream& out, const VaeDb_longTermCacheSet_presult& obj);
 };
 
+typedef struct _VaeDb_longTermCacheEmpty_args__isset {
+  _VaeDb_longTermCacheEmpty_args__isset() : session_id(false) {}
+  bool session_id :1;
+} _VaeDb_longTermCacheEmpty_args__isset;
 
 class VaeDb_longTermCacheEmpty_args {
  public:
 
-  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+  static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
+  static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
 
   VaeDb_longTermCacheEmpty_args(const VaeDb_longTermCacheEmpty_args&);
   VaeDb_longTermCacheEmpty_args& operator=(const VaeDb_longTermCacheEmpty_args&);
-  VaeDb_longTermCacheEmpty_args() {
+  VaeDb_longTermCacheEmpty_args() : session_id(0) {
   }
 
   virtual ~VaeDb_longTermCacheEmpty_args() throw();
+  int32_t session_id;
 
-  bool operator == (const VaeDb_longTermCacheEmpty_args & /* rhs */) const
+  _VaeDb_longTermCacheEmpty_args__isset __isset;
+
+  void __set_session_id(const int32_t val);
+
+  bool operator == (const VaeDb_longTermCacheEmpty_args & rhs) const
   {
+    if (!(session_id == rhs.session_id))
+      return false;
     return true;
   }
   bool operator != (const VaeDb_longTermCacheEmpty_args &rhs) const {
@@ -1750,11 +1761,12 @@ class VaeDb_longTermCacheEmpty_args {
 class VaeDb_longTermCacheEmpty_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+  static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
+  static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
 
 
   virtual ~VaeDb_longTermCacheEmpty_pargs() throw();
+  const int32_t* session_id;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -1867,8 +1879,8 @@ class VaeDbClient : virtual public VaeDbIf {
   void longTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename);
   void send_longTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename);
   void recv_longTermCacheSet();
-  void longTermCacheEmpty();
-  void send_longTermCacheEmpty();
+  void longTermCacheEmpty(const int32_t session_id);
+  void send_longTermCacheEmpty(const int32_t session_id);
   void recv_longTermCacheEmpty();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
@@ -2056,13 +2068,13 @@ class VaeDbMultiface : virtual public VaeDbIf {
     ifaces_[i]->longTermCacheSet(session_id, key, value, expireInterval, isFilename);
   }
 
-  void longTermCacheEmpty() {
+  void longTermCacheEmpty(const int32_t session_id) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->longTermCacheEmpty();
+      ifaces_[i]->longTermCacheEmpty(session_id);
     }
-    ifaces_[i]->longTermCacheEmpty();
+    ifaces_[i]->longTermCacheEmpty(session_id);
   }
 
 };

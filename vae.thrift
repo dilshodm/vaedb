@@ -111,6 +111,6 @@ service VaeDb {
 
   void longTermCacheSet(1:i32 session_id, 2:string key, 3:string value, 4:i32 expireInterval, 5:i32 isFilename)
 
-  void longTermCacheEmpty()
+  void longTermCacheEmpty(1:i32 session_id)
 
 }

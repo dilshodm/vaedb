@@ -196,13 +196,13 @@ module VaeDb
       return
     end
 
-    def longTermCacheEmpty()
-      send_longTermCacheEmpty()
+    def longTermCacheEmpty(session_id)
+      send_longTermCacheEmpty(session_id)
       recv_longTermCacheEmpty()
     end
 
-    def send_longTermCacheEmpty()
-      send_message('longTermCacheEmpty', LongTermCacheEmpty_args)
+    def send_longTermCacheEmpty(session_id)
+      send_message('longTermCacheEmpty', LongTermCacheEmpty_args, :session_id => session_id)
     end
 
     def recv_longTermCacheEmpty()
@@ -334,7 +334,7 @@ module VaeDb
     def process_longTermCacheEmpty(seqid, iprot, oprot)
       args = read_args(iprot, LongTermCacheEmpty_args)
       result = LongTermCacheEmpty_result.new()
-      @handler.longTermCacheEmpty()
+      @handler.longTermCacheEmpty(args.session_id)
       write_result(result, oprot, 'longTermCacheEmpty', seqid)
     end
 
@@ -787,9 +787,10 @@ module VaeDb
 
   class LongTermCacheEmpty_args
     include ::Thrift::Struct, ::Thrift::Struct_Union
+    SESSION_ID = 1
 
     FIELDS = {
-
+      SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'}
     }
 
     def struct_fields; FIELDS; end

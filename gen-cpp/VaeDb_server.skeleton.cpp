@@ -80,7 +80,7 @@ class VaeDbHandler : virtual public VaeDbIf {
     printf("longTermCacheSet\n");
   }
 
-  void longTermCacheEmpty() {
+  void longTermCacheEmpty(const int32_t session_id) {
     // Your implementation goes here
     printf("longTermCacheEmpty\n");
   }

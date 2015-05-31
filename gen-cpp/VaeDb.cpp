@@ -2737,7 +2737,20 @@ uint32_t VaeDb_longTermCacheEmpty_args::read(::apache::thrift::protocol::TProtoc
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    xfer += iprot->skip(ftype);
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->session_id);
+          this->__isset.session_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
     xfer += iprot->readFieldEnd();
   }
 
@@ -2750,6 +2763,10 @@ uint32_t VaeDb_longTermCacheEmpty_args::write(::apache::thrift::protocol::TProto
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
   xfer += oprot->writeStructBegin("VaeDb_longTermCacheEmpty_args");
+
+  xfer += oprot->writeFieldBegin("session_id", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->session_id);
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -2766,6 +2783,10 @@ uint32_t VaeDb_longTermCacheEmpty_pargs::write(::apache::thrift::protocol::TProt
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
   xfer += oprot->writeStructBegin("VaeDb_longTermCacheEmpty_pargs");
+
+  xfer += oprot->writeFieldBegin("session_id", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32((*(this->session_id)));
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -3574,18 +3595,19 @@ void VaeDbClient::recv_longTermCacheSet()
   return;
 }
 
-void VaeDbClient::longTermCacheEmpty()
+void VaeDbClient::longTermCacheEmpty(const int32_t session_id)
 {
-  send_longTermCacheEmpty();
+  send_longTermCacheEmpty(session_id);
   recv_longTermCacheEmpty();
 }
 
-void VaeDbClient::send_longTermCacheEmpty()
+void VaeDbClient::send_longTermCacheEmpty(const int32_t session_id)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("longTermCacheEmpty", ::apache::thrift::protocol::T_CALL, cseqid);
 
   VaeDb_longTermCacheEmpty_pargs args;
+  args.session_id = &session_id;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -4339,7 +4361,7 @@ void VaeDbProcessor::process_longTermCacheEmpty(int32_t seqid, ::apache::thrift:
 
   VaeDb_longTermCacheEmpty_result result;
   try {
-    iface_->longTermCacheEmpty();
+    iface_->longTermCacheEmpty(args.session_id);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "VaeDb.longTermCacheEmpty");

@@ -106,8 +106,9 @@ interface VaeDbIf {
    */
   public function longTermCacheSet($session_id, $key, $value, $expireInterval, $isFilename);
   /**
+   * @param int $session_id
    */
-  public function longTermCacheEmpty();
+  public function longTermCacheEmpty($session_id);
 }
 
 class VaeDbClient implements \Thrift\VaeDbIf {
@@ -771,15 +772,16 @@ class VaeDbClient implements \Thrift\VaeDbIf {
     return;
   }
 
-  public function longTermCacheEmpty()
+  public function longTermCacheEmpty($session_id)
   {
-    $this->send_longTermCacheEmpty();
+    $this->send_longTermCacheEmpty($session_id);
     $this->recv_longTermCacheEmpty();
   }
 
-  public function send_longTermCacheEmpty()
+  public function send_longTermCacheEmpty($session_id)
   {
     $args = new \Thrift\VaeDb_longTermCacheEmpty_args();
+    $args->session_id = $session_id;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -3335,11 +3337,24 @@ class VaeDb_longTermCacheSet_result {
 class VaeDb_longTermCacheEmpty_args {
   static $_TSPEC;
 
+  /**
+   * @var int
+   */
+  public $session_id = null;
 
-  public function __construct() {
+  public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
+        1 => array(
+          'var' => 'session_id',
+          'type' => TType::I32,
+          ),
         );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['session_id'])) {
+        $this->session_id = $vals['session_id'];
+      }
     }
   }
 
@@ -3362,6 +3377,13 @@ class VaeDb_longTermCacheEmpty_args {
       }
       switch ($fid)
       {
+        case 1:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->session_id);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -3375,6 +3397,11 @@ class VaeDb_longTermCacheEmpty_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('VaeDb_longTermCacheEmpty_args');
+    if ($this->session_id !== null) {
+      $xfer += $output->writeFieldBegin('session_id', TType::I32, 1);
+      $xfer += $output->writeI32($this->session_id);
+      $xfer += $output->writeFieldEnd();
+    }
     $xfer += $output->writeFieldStop();
     $xfer += $output->writeStructEnd();
     return $xfer;

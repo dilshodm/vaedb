@@ -264,6 +264,9 @@ void VaeDbHandler::writePid() {
 }
 
 void VaeDbHandler::shortTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t flags) {
+  QueryLogEntry entry(queryLog);
+  entry.method_call("shortTermCacheGet") << sessionId << key << "\n";
+
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -279,6 +282,9 @@ void VaeDbHandler::shortTermCacheGet(string &_return, const int32_t sessionId, s
 }
 
 void VaeDbHandler::shortTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t flags, const int32_t expireInterval) {
+  QueryLogEntry entry(queryLog);
+  entry.method_call("shortTermCacheSet") << sessionId << key << "\n";
+
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -294,11 +300,20 @@ void VaeDbHandler::shortTermCacheSet(const int32_t sessionId, string const & key
 }
 
 void VaeDbHandler::longTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t renewExpiry) {
+  QueryLogEntry entry(queryLog);
+  entry.method_call("longTermCacheGet") << sessionId << key << "\n";
+
   _return = "Long Term Value";
 }
 
 void VaeDbHandler::longTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t expireInterval, const int32_t isFilename) {
+  QueryLogEntry entry(queryLog);
+  entry.method_call("longTermCacheSet") << sessionId << key << "\n";
+
 }
 
-void VaeDbHandler::longTermCacheEmpty() {
+void VaeDbHandler::longTermCacheEmpty(const int32_t sessionId) {
+  QueryLogEntry entry(queryLog);
+  entry.method_call("longTermCacheEmpty") << sessionId << "\n";
+
 }
