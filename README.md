@@ -69,3 +69,10 @@ Whenever you need to rebuild the thrift definition file, simply run:
     ./vae.thrift
 
 There is no longer a patch needed after running this.  (Thanks Kevin!)
+
+
+## Test Suite
+
+This project is tested entirely using the test suite in Vae Remote.  It
+is very easy to add more tasks to that test suite and we likely do not
+need one here.
