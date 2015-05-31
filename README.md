@@ -37,8 +37,31 @@ Who the hell knows?  Someone please fill me in!
 
 ### Rebuilding the Thrift Defintion File
 
+This only needs to be done when the interface between vae_thrift and
+vae_remote changes.  (I.e. you made changes to the file called
+vae.thrift).
+
 Whenever you need to rebuild the thrift definition file, simply run:
 
     ./vae.thrift
 
 There is no longer a patch needed after running this.  (Thanks Kevin!)
+
+
+## Compiling VaeDB
+
+    cd cpp
+    ./configure
+    make
+
+
+### To test run VaeDB:
+
+    ./vaedb --test
+
+
+### To test run VaeRubyd:
+
+    cd rb
+    bundle install
+    ruby vaerubyd.rb
