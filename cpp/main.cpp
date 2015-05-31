@@ -33,6 +33,8 @@ namespace po = boost::program_options;
 #include "vae_db_handler.h"
 #include "bus.h"
 
+int testMode = 0;
+
 void crash_handler(int signal) {
   const int MAX_STACK_DEPTH = 100;
 
@@ -93,6 +95,7 @@ int main(int argc, char **argv) {
     ("mysql_database", po::value<string>(&mysql_database), "MySQL database name")
     ("mysql_host", po::value<string>(&mysql_host), "MySQL hostname or IP Address")
     ("memcached_host", po::value<string>(&memcached_host), "Memcached hostname or IP Address.  Provide multiple server hostnames by using: this syntax \"memcached1.actionverb.com,memcached2.actionverb.com\" without the quotes")
+    ("test,T", "Run in Vae Remote Unit Test mode.  Do not run this on production!")
   ;
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -101,6 +104,9 @@ int main(int argc, char **argv) {
   if (vm.count("help")) {
     cout << desc << "\n";
     return 1;
+  }
+  if (vm.count("test")) {
+    testMode = 1;
   }
   if (vm.count("log_level")) {
     if (vm["log_level"].as<string>() == "error") Logger::displayLevel = error;

@@ -16,8 +16,10 @@ using namespace std;
 
 Site::Site(string su, bool stagingMode_, string const & rawxml) : stagingMode(stagingMode_), query_cache(384) {
   subdomain = su;
-  secretKey = read_s3(subdomain+"-secret");
-  if (stagingMode) subdomain += ".staging"; 
+  if (!testMode) {
+    secretKey = read_s3(subdomain+"-secret");
+    if (stagingMode) subdomain += ".staging"; 
+  }
   loadXmlDoc(rawxml);
   L(info) << "[" << subdomain << "] opened";
 }
@@ -62,7 +64,12 @@ string Site::getSubdomain() {
 }
 
 void Site::loadXmlDoc(string const & rawxml) {
-  if ((doc = xmlReadMemory(rawxml.c_str(), rawxml.size(), subdomain.c_str(), NULL, 0)) == NULL) {
+  if (testMode) {
+    doc = xmlParseFile(subdomain.c_str());
+  } else {
+    doc = xmlReadMemory(rawxml.c_str(), rawxml.size(), subdomain.c_str(), NULL, 0);
+  }
+  if (doc == NULL) {
     L(warning) << "[" << subdomain << "] could not open/parse XML";
     VaeDbInternalError e;
     e.message = "Could not open/parse XML file";
@@ -128,7 +135,7 @@ VaeDbStructure *Site::structureFromStructureId(int structureId) {
 }
   
 void Site::validateSecretKey(string testSecretKey) {
-  if (secretKey != testSecretKey) {
+  if (!testMode && secretKey != testSecretKey) {
     L(warning) << "[" << subdomain << "] secret key mismatch: " << secretKey << " <> " << testSecretKey;
     VaeDbInternalError e;
     e.message = "Secret Key Mismatch";

@@ -19,16 +19,17 @@ using namespace std;
 void eatErrors(void * ctx, const char * msg, ...) { }
 
 boost::shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey, bool stagingMode) {
+  string xml("");
   string sitesKey(stagingMode ? subdomain + ".staging" : subdomain);
   boost::unique_lock<boost::mutex> lockSite(_get_site_mutex(subdomain, stagingMode));
 
   boost::shared_ptr<Site> site(_getSite(sitesKey, secretKey));
 
-  if(site)
-      return site;
+  if (site) return site;
   
-  string feedfile(subdomain+"-feed.xml");
-  string xml(read_s3(feedfile));
+  if (!testMode) {
+    xml = read_s3(subdomain+"-feed.xml");
+  }
   site = _loadSite(subdomain, stagingMode, xml);
   site->validateSecretKey(secretKey);
   return site;
@@ -38,10 +39,11 @@ inline
 boost::mutex & VaeDbHandler::_get_site_mutex(std::string const & subdomain, bool stagingMode) {
   string sitesKey(stagingMode ? subdomain + ".staging" : subdomain);
   boost::unique_lock<boost::mutex> lockSites(sitesMutex);  
-  if(siteMutexes.count(sitesKey))
+  if (siteMutexes.count(sitesKey)) {
     return *siteMutexes[sitesKey];
-  else 
-    return *(siteMutexes[sitesKey] = new boost::mutex);     
+  } else {
+    return *(siteMutexes[sitesKey] = new boost::mutex);
+  }
 }
 
 inline boost::shared_ptr<class Site>
@@ -56,7 +58,7 @@ VaeDbHandler::_loadSite(string const & subdomain, bool stagingMode, string const
 boost::shared_ptr<Site> VaeDbHandler::_getSite(string const & sitesKey, string const & secretKey) {
   boost::unique_lock<boost::mutex> lock(sitesMutex);
 
-  if(sites.count(sitesKey)) {
+  if (sites.count(sitesKey)) {
     sites[sitesKey]->validateSecretKey(secretKey);
     return sites[sitesKey];
   }

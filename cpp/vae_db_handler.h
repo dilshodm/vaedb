@@ -11,6 +11,8 @@ typedef std::map<int,boost::shared_ptr<class Session> > SessionMap;
 typedef std::map<std::string,boost::shared_ptr<class Site> > SiteMap;
 typedef std::map<std::string,boost::mutex*> SiteMutexesMap;
 
+extern int testMode;
+
 class VaeDbHandler : virtual public VaeDbIf {
 
  private:
