@@ -21,7 +21,7 @@ class VaeDbHandler : virtual public VaeDbIf {
   SiteMutexesMap siteMutexes;
   boost::mutex sitesMutex;
   QueryLog &queryLog;
-  MemcacheProxy &memcache;
+  MemcacheProxy &memcacheProxy;
   
   boost::shared_ptr<class Site> getSite(std::string subdomain, std::string secretKey, bool stagingMode);
   inline boost::shared_ptr<class Site> _getSite(std::string const & sitesKey, std::string const & secretKey);
@@ -31,7 +31,7 @@ class VaeDbHandler : virtual public VaeDbIf {
   inline boost::mutex & _get_site_mutex(std::string const & subdomain, bool stagingMode);
 
  public:
-  VaeDbHandler(QueryLog & queryLog, MemcacheProxy &memcache);
+  VaeDbHandler(QueryLog & queryLog, MemcacheProxy &memcacheProxy);
   ~VaeDbHandler();
   void closeSession(const int32_t sessionId, const std::string& secretKey);
   void createInfo(VaeDbCreateInfoResponse& _return, const int32_t session_id, const int32_t response_id, const std::string& query);

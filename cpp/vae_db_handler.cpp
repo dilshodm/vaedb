@@ -64,8 +64,8 @@ boost::shared_ptr<Site> VaeDbHandler::_getSite(string const & sitesKey, string c
   return boost::shared_ptr<Site>();
 }
 
-VaeDbHandler::VaeDbHandler(QueryLog &queryLog, MemcacheProxy &memcache) 
-  :  queryLog(queryLog), memcache(memcache) {
+VaeDbHandler::VaeDbHandler(QueryLog &queryLog, MemcacheProxy &memcacheProxy) 
+  :  queryLog(queryLog), memcacheProxy(memcacheProxy) {
 
   nextSessionId = 1;
   xmlInitParser();
@@ -262,12 +262,12 @@ void VaeDbHandler::writePid() {
 }
 
 void VaeDbHandler::shortTermCacheGet(string &_return, string const & key, const int32_t flags) {
-  _return = memcache.get(key, flags);
+  _return = memcacheProxy.get(key, flags);
 }
 
 void VaeDbHandler::shortTermCacheSet(string const & key, string const & value, const int32_t flags, const int32_t expireInterval) {
+  memcacheProxy.set(key, value, flags, expireInterval);
 }
-  memcache.set(key, value, flags, expireInterval);
 
 void VaeDbHandler::longTermCacheGet(string &_return, string const & key, const int32_t renewExpiry) {
   _return = "Long Term Value";
