@@ -10,8 +10,8 @@ class MemcacheProxy {
 public:
   MemcacheProxy(std::string connectString);
   ~MemcacheProxy();
-  std::string get(std::string key);
-  void set(std::string key, std::string value);
+  std::string get(const std::string key, const int32_t flags);
+  void set(const std::string key, const std::string value, const int32_t flags, const int32_t expireInterval);
 };
 
 #endif

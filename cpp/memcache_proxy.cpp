@@ -13,13 +13,13 @@ MemcacheProxy::MemcacheProxy(std::string connectString) {
 MemcacheProxy::~MemcacheProxy() {
 }
 
-string MemcacheProxy::get(string key) {
+string MemcacheProxy::get(const string key, const int32_t flags) {
   std::vector<char> ret_value;
   client->get(key, ret_value);
   string string_ret_value(ret_value.begin(), ret_value.end());
   return string_ret_value;
 };
 
-void MemcacheProxy::set(string key, string value) {
-  client->set(key, value.c_str(), value.length(), 0, 0);
+void MemcacheProxy::set(const string key, const string value, const int32_t flags, const int32_t expireInterval) {
+  client->set(key, value.c_str(), value.length(), expireInterval, flags);
 };

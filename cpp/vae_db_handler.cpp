@@ -262,12 +262,12 @@ void VaeDbHandler::writePid() {
 }
 
 void VaeDbHandler::shortTermCacheGet(string &_return, string const & key, const int32_t flags) {
-  _return = memcache.get(key);
+  _return = memcache.get(key, flags);
 }
 
 void VaeDbHandler::shortTermCacheSet(string const & key, string const & value, const int32_t flags, const int32_t expireInterval) {
-  memcache.set(key, value);
 }
+  memcache.set(key, value, flags, expireInterval);
 
 void VaeDbHandler::longTermCacheGet(string &_return, string const & key, const int32_t renewExpiry) {
   _return = "Long Term Value";
