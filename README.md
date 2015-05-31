@@ -1,6 +1,11 @@
-# vae_thrift
+# VaeDB and VaeRubyd
 
-vaedb and it's associated goodness.
+The vae_thrift repository contains two daemons that run for the purpose
+of servicing Vae Remote.  In a typical Vae installation, these are run
+on separate machines for both security and scaling purposes.
+
+You should build and configure VaeDB and VaeRubyd before you attempt to
+configure Vae Remote on your development machine.
 
 
 ## Prerequisites
@@ -29,13 +34,31 @@ vaedb and it's associated goodness.
     sudo make install
 
 
-### Install Prerequisites using Linux
+## Compiling VaeDB
 
-Who the hell knows?  Someone please fill me in!
+    cd cpp
+    ./configure
+    make
 
 
+### To test run VaeDB:
 
-### Rebuilding the Thrift Defintion File
+    cd cpp
+    ./vaedb --test
+
+
+### To test run VaeRubyd:
+
+    cd rb
+    bundle install
+    ruby vaerubyd.rb
+
+
+If all that stuff works, you should be golden and the test suite for Vae
+Remote should be ready to run.
+
+
+## Rebuilding the Thrift Defintion File
 
 This only needs to be done when the interface between vae_thrift and
 vae_remote changes.  (I.e. you made changes to the file called
@@ -46,22 +69,3 @@ Whenever you need to rebuild the thrift definition file, simply run:
     ./vae.thrift
 
 There is no longer a patch needed after running this.  (Thanks Kevin!)
-
-
-## Compiling VaeDB
-
-    cd cpp
-    ./configure
-    make
-
-
-### To test run VaeDB:
-
-    ./vaedb --test
-
-
-### To test run VaeRubyd:
-
-    cd rb
-    bundle install
-    ruby vaerubyd.rb

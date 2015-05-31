@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
   string mysql_password(_mysql_password ? _mysql_password : "");
   string mysql_database(_mysql_database ? _mysql_database : "");
   string mysql_host(_mysql_host ? _mysql_host : "");
-  string memcached_host(_memcached_host ? _memcached_host : "");
+  string memcached_host(_memcached_host ? _memcached_host : "127.0.0.1");
   string aws_bucket;
   string feed_cache_path;
 
