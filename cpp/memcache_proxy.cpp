@@ -1,12 +1,15 @@
 #include <string>
 #include <pcrecpp.h>
 
+#include "logger.h"
 #include "memcache_proxy.h"
 
 using std::string;
 
 MemcacheProxy::MemcacheProxy(std::string connectString) {
-  pcrecpp::RE(",").Replace(" ", &connectString);
+  pcrecpp::RE(",").Replace(" --SERVER=", &connectString);
+  connectString = "--SERVER=" + connectString;
+  L(info) << " Connecting to Memcache via: " << connectString;
   client = new memcache::Memcache(connectString);
 }
 

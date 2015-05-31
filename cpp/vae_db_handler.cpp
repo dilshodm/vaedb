@@ -266,6 +266,7 @@ void VaeDbHandler::writePid() {
 void VaeDbHandler::shortTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t flags) {
   QueryLogEntry entry(queryLog);
   entry.method_call("shortTermCacheGet") << sessionId << key << "\n";
+  L(debug) << "shortTermCacheGet: " << sessionId << " " << key;
 
   boost::shared_ptr<class Session> session;
   {
@@ -278,7 +279,8 @@ void VaeDbHandler::shortTermCacheGet(string &_return, const int32_t sessionId, s
     }
   }
   string fullKey = "VaedbProxy:" + session->getSite()->getSubdomain() + ":" + key;
-  _return = memcacheProxy.get(fullKey, flags);
+  string answer(memcacheProxy.get(fullKey, flags));
+  _return = answer;
 }
 
 void VaeDbHandler::shortTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t flags, const int32_t expireInterval) {
