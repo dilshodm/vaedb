@@ -41,10 +41,4 @@ Whenever you need to rebuild the thrift definition file, simply run:
 
     ./vae.thrift
 
-When you're done, you need to patch a few files.  Run:
-
-    patch gen-cpp/vae_types.h < cpp/vae_types.h.patch
-
-... except now this patch doesn't work.  Read the patch and see what it
-basically does and then manually apply a similar change and that will
-work for now.
+There is no longer a patch needed after running this.  (Thanks Kevin!)
