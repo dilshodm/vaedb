@@ -261,19 +261,41 @@ void VaeDbHandler::writePid() {
   pidfile.close();
 }
 
-void VaeDbHandler::shortTermCacheGet(string &_return, string const & key, const int32_t flags) {
-  _return = memcacheProxy.get(key, flags);
+void VaeDbHandler::shortTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t flags) {
+  boost::shared_ptr<class Session> session;
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    if (sessions.count(sessionId)) {
+      session = sessions[sessionId];
+    } else {
+      L(warning) << "shortTermCacheGet() called with an invalid session ID: " << sessionId;
+      return;
+    }
+  }
+  string fullKey = "VaedbProxy:" + session->getSite()->getSubdomain() + ":" + key;
+  _return = memcacheProxy.get(fullKey, flags);
 }
 
-void VaeDbHandler::shortTermCacheSet(string const & key, string const & value, const int32_t flags, const int32_t expireInterval) {
-  memcacheProxy.set(key, value, flags, expireInterval);
+void VaeDbHandler::shortTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t flags, const int32_t expireInterval) {
+  boost::shared_ptr<class Session> session;
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    if (sessions.count(sessionId)) {
+      session = sessions[sessionId];
+    } else {
+      L(warning) << "shortTermCacheSet() called with an invalid session ID: " << sessionId;
+      return;
+    }
+  }
+  string fullKey = "VaedbProxy:" + session->getSite()->getSubdomain() + ":" + key;
+  memcacheProxy.set(fullKey, value, flags, expireInterval);
 }
 
-void VaeDbHandler::longTermCacheGet(string &_return, string const & key, const int32_t renewExpiry) {
+void VaeDbHandler::longTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t renewExpiry) {
   _return = "Long Term Value";
 }
 
-void VaeDbHandler::longTermCacheSet(string const & key, string const & value, const int32_t expireInterval, const int32_t isFilename) {
+void VaeDbHandler::longTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t expireInterval, const int32_t isFilename) {
 }
 
 void VaeDbHandler::longTermCacheEmpty() {

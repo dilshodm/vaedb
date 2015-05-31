@@ -1,5 +1,7 @@
 #!/usr/local/bin/thrift --gen php --gen rb --gen cpp
 
+namespace php Thrift
+
 exception VaeDbInternalError {
   1:string message
 }
@@ -101,13 +103,13 @@ service VaeDb {
   VaeDbStructureResponse structure(1:i32 session_id, 2:i32 response_id)
     throws (1:VaeDbInternalError ie)
 
-  string shortTermCacheGet(1:string key, 2:i32 flags)
+  string shortTermCacheGet(1:i32 session_id, 2:string key, 3:i32 flags)
 
-  void shortTermCacheSet(1:string key, 2:string value, 3:i32 flags, 4:i32 expireInterval)
+  void shortTermCacheSet(1:i32 session_id, 2:string key, 3:string value, 4:i32 flags, 5:i32 expireInterval)
 
-  string longTermCacheGet(1:string key, 2:i32 renewExpiry)
+  string longTermCacheGet(1:i32 session_id, 2:string key, 3:i32 renewExpiry)
 
-  void longTermCacheSet(1:string key, 2:string value, 3:i32 expireInterval, 4:i32 isFilename)
+  void longTermCacheSet(1:i32 session_id, 2:string key, 3:string value, 4:i32 expireInterval, 5:i32 isFilename)
 
   void longTermCacheEmpty()
 

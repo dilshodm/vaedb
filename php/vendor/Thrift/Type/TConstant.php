@@ -17,34 +17,35 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- * @package thrift.transport
+ * @package thrift
  */
 
-namespace Thrift\Transport;
-
-use Thrift\Transport\TTransport;
-use Thrift\Exception\TTransportException;
+namespace Thrift\Type;
 
 /**
- * Transport that only accepts writes and ignores them.
- * This is useful for measuring the serialized size of structures.
- *
- * @package thrift.transport
+ * Base class for constant Management
  */
-class TNullTransport extends TTransport {
+abstract class TConstant
+{
+    /**
+     * Don't instanciate this class
+     */
+    protected function __construct() {}
 
-  public function isOpen() {
-    return true;
-  }
+    /**
+     * Get a constant value
+     * @param string $constant
+     * @return mixed
+     */
+    public static function get($constant)
+    {
+        if(is_null(static::$$constant))
+        {
+            static::$$constant = call_user_func(
+                    sprintf('static::init_%s', $constant)
+                );
+        }
 
-  public function open() {}
-
-  public function close() {}
-
-  public function read($len) {
-    throw new TTransportException("Can't read from TNullTransport.");
-  }
-
-  public function write($buf) {}
-
+        return static::$$constant;
+    }
 }

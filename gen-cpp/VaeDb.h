@@ -23,10 +23,10 @@ class VaeDbIf {
   virtual int32_t openSession(const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id) = 0;
   virtual void resetSite(const std::string& site, const std::string& secret_key) = 0;
   virtual void structure(VaeDbStructureResponse& _return, const int32_t session_id, const int32_t response_id) = 0;
-  virtual void shortTermCacheGet(std::string& _return, const std::string& key, const int32_t flags) = 0;
-  virtual void shortTermCacheSet(const std::string& key, const std::string& value, const int32_t flags, const int32_t expireInterval) = 0;
-  virtual void longTermCacheGet(std::string& _return, const std::string& key, const int32_t renewExpiry) = 0;
-  virtual void longTermCacheSet(const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename) = 0;
+  virtual void shortTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t flags) = 0;
+  virtual void shortTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t flags, const int32_t expireInterval) = 0;
+  virtual void longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry) = 0;
+  virtual void longTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename) = 0;
   virtual void longTermCacheEmpty() = 0;
 };
 
@@ -83,16 +83,16 @@ class VaeDbNull : virtual public VaeDbIf {
   void structure(VaeDbStructureResponse& /* _return */, const int32_t /* session_id */, const int32_t /* response_id */) {
     return;
   }
-  void shortTermCacheGet(std::string& /* _return */, const std::string& /* key */, const int32_t /* flags */) {
+  void shortTermCacheGet(std::string& /* _return */, const int32_t /* session_id */, const std::string& /* key */, const int32_t /* flags */) {
     return;
   }
-  void shortTermCacheSet(const std::string& /* key */, const std::string& /* value */, const int32_t /* flags */, const int32_t /* expireInterval */) {
+  void shortTermCacheSet(const int32_t /* session_id */, const std::string& /* key */, const std::string& /* value */, const int32_t /* flags */, const int32_t /* expireInterval */) {
     return;
   }
-  void longTermCacheGet(std::string& /* _return */, const std::string& /* key */, const int32_t /* renewExpiry */) {
+  void longTermCacheGet(std::string& /* _return */, const int32_t /* session_id */, const std::string& /* key */, const int32_t /* renewExpiry */) {
     return;
   }
-  void longTermCacheSet(const std::string& /* key */, const std::string& /* value */, const int32_t /* expireInterval */, const int32_t /* isFilename */) {
+  void longTermCacheSet(const int32_t /* session_id */, const std::string& /* key */, const std::string& /* value */, const int32_t /* expireInterval */, const int32_t /* isFilename */) {
     return;
   }
   void longTermCacheEmpty() {
@@ -1189,7 +1189,8 @@ class VaeDb_structure_presult {
 };
 
 typedef struct _VaeDb_shortTermCacheGet_args__isset {
-  _VaeDb_shortTermCacheGet_args__isset() : key(false), flags(false) {}
+  _VaeDb_shortTermCacheGet_args__isset() : session_id(false), key(false), flags(false) {}
+  bool session_id :1;
   bool key :1;
   bool flags :1;
 } _VaeDb_shortTermCacheGet_args__isset;
@@ -1197,19 +1198,22 @@ typedef struct _VaeDb_shortTermCacheGet_args__isset {
 class VaeDb_shortTermCacheGet_args {
  public:
 
-  static const char* ascii_fingerprint; // = "EEBC915CE44901401D881E6091423036";
-  static const uint8_t binary_fingerprint[16]; // = {0xEE,0xBC,0x91,0x5C,0xE4,0x49,0x01,0x40,0x1D,0x88,0x1E,0x60,0x91,0x42,0x30,0x36};
+  static const char* ascii_fingerprint; // = "52C6DAB6CF51AF617111F6D3964C6503";
+  static const uint8_t binary_fingerprint[16]; // = {0x52,0xC6,0xDA,0xB6,0xCF,0x51,0xAF,0x61,0x71,0x11,0xF6,0xD3,0x96,0x4C,0x65,0x03};
 
   VaeDb_shortTermCacheGet_args(const VaeDb_shortTermCacheGet_args&);
   VaeDb_shortTermCacheGet_args& operator=(const VaeDb_shortTermCacheGet_args&);
-  VaeDb_shortTermCacheGet_args() : key(), flags(0) {
+  VaeDb_shortTermCacheGet_args() : session_id(0), key(), flags(0) {
   }
 
   virtual ~VaeDb_shortTermCacheGet_args() throw();
+  int32_t session_id;
   std::string key;
   int32_t flags;
 
   _VaeDb_shortTermCacheGet_args__isset __isset;
+
+  void __set_session_id(const int32_t val);
 
   void __set_key(const std::string& val);
 
@@ -1217,6 +1221,8 @@ class VaeDb_shortTermCacheGet_args {
 
   bool operator == (const VaeDb_shortTermCacheGet_args & rhs) const
   {
+    if (!(session_id == rhs.session_id))
+      return false;
     if (!(key == rhs.key))
       return false;
     if (!(flags == rhs.flags))
@@ -1239,11 +1245,12 @@ class VaeDb_shortTermCacheGet_args {
 class VaeDb_shortTermCacheGet_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "EEBC915CE44901401D881E6091423036";
-  static const uint8_t binary_fingerprint[16]; // = {0xEE,0xBC,0x91,0x5C,0xE4,0x49,0x01,0x40,0x1D,0x88,0x1E,0x60,0x91,0x42,0x30,0x36};
+  static const char* ascii_fingerprint; // = "52C6DAB6CF51AF617111F6D3964C6503";
+  static const uint8_t binary_fingerprint[16]; // = {0x52,0xC6,0xDA,0xB6,0xCF,0x51,0xAF,0x61,0x71,0x11,0xF6,0xD3,0x96,0x4C,0x65,0x03};
 
 
   virtual ~VaeDb_shortTermCacheGet_pargs() throw();
+  const int32_t* session_id;
   const std::string* key;
   const int32_t* flags;
 
@@ -1316,7 +1323,8 @@ class VaeDb_shortTermCacheGet_presult {
 };
 
 typedef struct _VaeDb_shortTermCacheSet_args__isset {
-  _VaeDb_shortTermCacheSet_args__isset() : key(false), value(false), flags(false), expireInterval(false) {}
+  _VaeDb_shortTermCacheSet_args__isset() : session_id(false), key(false), value(false), flags(false), expireInterval(false) {}
+  bool session_id :1;
   bool key :1;
   bool value :1;
   bool flags :1;
@@ -1326,21 +1334,24 @@ typedef struct _VaeDb_shortTermCacheSet_args__isset {
 class VaeDb_shortTermCacheSet_args {
  public:
 
-  static const char* ascii_fingerprint; // = "E9A7EEE9A2D27F7A70E08E1F60A257DB";
-  static const uint8_t binary_fingerprint[16]; // = {0xE9,0xA7,0xEE,0xE9,0xA2,0xD2,0x7F,0x7A,0x70,0xE0,0x8E,0x1F,0x60,0xA2,0x57,0xDB};
+  static const char* ascii_fingerprint; // = "CE957BCE4AA85FCDE5AE4AA17006475D";
+  static const uint8_t binary_fingerprint[16]; // = {0xCE,0x95,0x7B,0xCE,0x4A,0xA8,0x5F,0xCD,0xE5,0xAE,0x4A,0xA1,0x70,0x06,0x47,0x5D};
 
   VaeDb_shortTermCacheSet_args(const VaeDb_shortTermCacheSet_args&);
   VaeDb_shortTermCacheSet_args& operator=(const VaeDb_shortTermCacheSet_args&);
-  VaeDb_shortTermCacheSet_args() : key(), value(), flags(0), expireInterval(0) {
+  VaeDb_shortTermCacheSet_args() : session_id(0), key(), value(), flags(0), expireInterval(0) {
   }
 
   virtual ~VaeDb_shortTermCacheSet_args() throw();
+  int32_t session_id;
   std::string key;
   std::string value;
   int32_t flags;
   int32_t expireInterval;
 
   _VaeDb_shortTermCacheSet_args__isset __isset;
+
+  void __set_session_id(const int32_t val);
 
   void __set_key(const std::string& val);
 
@@ -1352,6 +1363,8 @@ class VaeDb_shortTermCacheSet_args {
 
   bool operator == (const VaeDb_shortTermCacheSet_args & rhs) const
   {
+    if (!(session_id == rhs.session_id))
+      return false;
     if (!(key == rhs.key))
       return false;
     if (!(value == rhs.value))
@@ -1378,11 +1391,12 @@ class VaeDb_shortTermCacheSet_args {
 class VaeDb_shortTermCacheSet_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "E9A7EEE9A2D27F7A70E08E1F60A257DB";
-  static const uint8_t binary_fingerprint[16]; // = {0xE9,0xA7,0xEE,0xE9,0xA2,0xD2,0x7F,0x7A,0x70,0xE0,0x8E,0x1F,0x60,0xA2,0x57,0xDB};
+  static const char* ascii_fingerprint; // = "CE957BCE4AA85FCDE5AE4AA17006475D";
+  static const uint8_t binary_fingerprint[16]; // = {0xCE,0x95,0x7B,0xCE,0x4A,0xA8,0x5F,0xCD,0xE5,0xAE,0x4A,0xA1,0x70,0x06,0x47,0x5D};
 
 
   virtual ~VaeDb_shortTermCacheSet_pargs() throw();
+  const int32_t* session_id;
   const std::string* key;
   const std::string* value;
   const int32_t* flags;
@@ -1439,7 +1453,8 @@ class VaeDb_shortTermCacheSet_presult {
 };
 
 typedef struct _VaeDb_longTermCacheGet_args__isset {
-  _VaeDb_longTermCacheGet_args__isset() : key(false), renewExpiry(false) {}
+  _VaeDb_longTermCacheGet_args__isset() : session_id(false), key(false), renewExpiry(false) {}
+  bool session_id :1;
   bool key :1;
   bool renewExpiry :1;
 } _VaeDb_longTermCacheGet_args__isset;
@@ -1447,19 +1462,22 @@ typedef struct _VaeDb_longTermCacheGet_args__isset {
 class VaeDb_longTermCacheGet_args {
  public:
 
-  static const char* ascii_fingerprint; // = "EEBC915CE44901401D881E6091423036";
-  static const uint8_t binary_fingerprint[16]; // = {0xEE,0xBC,0x91,0x5C,0xE4,0x49,0x01,0x40,0x1D,0x88,0x1E,0x60,0x91,0x42,0x30,0x36};
+  static const char* ascii_fingerprint; // = "52C6DAB6CF51AF617111F6D3964C6503";
+  static const uint8_t binary_fingerprint[16]; // = {0x52,0xC6,0xDA,0xB6,0xCF,0x51,0xAF,0x61,0x71,0x11,0xF6,0xD3,0x96,0x4C,0x65,0x03};
 
   VaeDb_longTermCacheGet_args(const VaeDb_longTermCacheGet_args&);
   VaeDb_longTermCacheGet_args& operator=(const VaeDb_longTermCacheGet_args&);
-  VaeDb_longTermCacheGet_args() : key(), renewExpiry(0) {
+  VaeDb_longTermCacheGet_args() : session_id(0), key(), renewExpiry(0) {
   }
 
   virtual ~VaeDb_longTermCacheGet_args() throw();
+  int32_t session_id;
   std::string key;
   int32_t renewExpiry;
 
   _VaeDb_longTermCacheGet_args__isset __isset;
+
+  void __set_session_id(const int32_t val);
 
   void __set_key(const std::string& val);
 
@@ -1467,6 +1485,8 @@ class VaeDb_longTermCacheGet_args {
 
   bool operator == (const VaeDb_longTermCacheGet_args & rhs) const
   {
+    if (!(session_id == rhs.session_id))
+      return false;
     if (!(key == rhs.key))
       return false;
     if (!(renewExpiry == rhs.renewExpiry))
@@ -1489,11 +1509,12 @@ class VaeDb_longTermCacheGet_args {
 class VaeDb_longTermCacheGet_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "EEBC915CE44901401D881E6091423036";
-  static const uint8_t binary_fingerprint[16]; // = {0xEE,0xBC,0x91,0x5C,0xE4,0x49,0x01,0x40,0x1D,0x88,0x1E,0x60,0x91,0x42,0x30,0x36};
+  static const char* ascii_fingerprint; // = "52C6DAB6CF51AF617111F6D3964C6503";
+  static const uint8_t binary_fingerprint[16]; // = {0x52,0xC6,0xDA,0xB6,0xCF,0x51,0xAF,0x61,0x71,0x11,0xF6,0xD3,0x96,0x4C,0x65,0x03};
 
 
   virtual ~VaeDb_longTermCacheGet_pargs() throw();
+  const int32_t* session_id;
   const std::string* key;
   const int32_t* renewExpiry;
 
@@ -1566,7 +1587,8 @@ class VaeDb_longTermCacheGet_presult {
 };
 
 typedef struct _VaeDb_longTermCacheSet_args__isset {
-  _VaeDb_longTermCacheSet_args__isset() : key(false), value(false), expireInterval(false), isFilename(false) {}
+  _VaeDb_longTermCacheSet_args__isset() : session_id(false), key(false), value(false), expireInterval(false), isFilename(false) {}
+  bool session_id :1;
   bool key :1;
   bool value :1;
   bool expireInterval :1;
@@ -1576,21 +1598,24 @@ typedef struct _VaeDb_longTermCacheSet_args__isset {
 class VaeDb_longTermCacheSet_args {
  public:
 
-  static const char* ascii_fingerprint; // = "E9A7EEE9A2D27F7A70E08E1F60A257DB";
-  static const uint8_t binary_fingerprint[16]; // = {0xE9,0xA7,0xEE,0xE9,0xA2,0xD2,0x7F,0x7A,0x70,0xE0,0x8E,0x1F,0x60,0xA2,0x57,0xDB};
+  static const char* ascii_fingerprint; // = "CE957BCE4AA85FCDE5AE4AA17006475D";
+  static const uint8_t binary_fingerprint[16]; // = {0xCE,0x95,0x7B,0xCE,0x4A,0xA8,0x5F,0xCD,0xE5,0xAE,0x4A,0xA1,0x70,0x06,0x47,0x5D};
 
   VaeDb_longTermCacheSet_args(const VaeDb_longTermCacheSet_args&);
   VaeDb_longTermCacheSet_args& operator=(const VaeDb_longTermCacheSet_args&);
-  VaeDb_longTermCacheSet_args() : key(), value(), expireInterval(0), isFilename(0) {
+  VaeDb_longTermCacheSet_args() : session_id(0), key(), value(), expireInterval(0), isFilename(0) {
   }
 
   virtual ~VaeDb_longTermCacheSet_args() throw();
+  int32_t session_id;
   std::string key;
   std::string value;
   int32_t expireInterval;
   int32_t isFilename;
 
   _VaeDb_longTermCacheSet_args__isset __isset;
+
+  void __set_session_id(const int32_t val);
 
   void __set_key(const std::string& val);
 
@@ -1602,6 +1627,8 @@ class VaeDb_longTermCacheSet_args {
 
   bool operator == (const VaeDb_longTermCacheSet_args & rhs) const
   {
+    if (!(session_id == rhs.session_id))
+      return false;
     if (!(key == rhs.key))
       return false;
     if (!(value == rhs.value))
@@ -1628,11 +1655,12 @@ class VaeDb_longTermCacheSet_args {
 class VaeDb_longTermCacheSet_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "E9A7EEE9A2D27F7A70E08E1F60A257DB";
-  static const uint8_t binary_fingerprint[16]; // = {0xE9,0xA7,0xEE,0xE9,0xA2,0xD2,0x7F,0x7A,0x70,0xE0,0x8E,0x1F,0x60,0xA2,0x57,0xDB};
+  static const char* ascii_fingerprint; // = "CE957BCE4AA85FCDE5AE4AA17006475D";
+  static const uint8_t binary_fingerprint[16]; // = {0xCE,0x95,0x7B,0xCE,0x4A,0xA8,0x5F,0xCD,0xE5,0xAE,0x4A,0xA1,0x70,0x06,0x47,0x5D};
 
 
   virtual ~VaeDb_longTermCacheSet_pargs() throw();
+  const int32_t* session_id;
   const std::string* key;
   const std::string* value;
   const int32_t* expireInterval;
@@ -1827,17 +1855,17 @@ class VaeDbClient : virtual public VaeDbIf {
   void structure(VaeDbStructureResponse& _return, const int32_t session_id, const int32_t response_id);
   void send_structure(const int32_t session_id, const int32_t response_id);
   void recv_structure(VaeDbStructureResponse& _return);
-  void shortTermCacheGet(std::string& _return, const std::string& key, const int32_t flags);
-  void send_shortTermCacheGet(const std::string& key, const int32_t flags);
+  void shortTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t flags);
+  void send_shortTermCacheGet(const int32_t session_id, const std::string& key, const int32_t flags);
   void recv_shortTermCacheGet(std::string& _return);
-  void shortTermCacheSet(const std::string& key, const std::string& value, const int32_t flags, const int32_t expireInterval);
-  void send_shortTermCacheSet(const std::string& key, const std::string& value, const int32_t flags, const int32_t expireInterval);
+  void shortTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t flags, const int32_t expireInterval);
+  void send_shortTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t flags, const int32_t expireInterval);
   void recv_shortTermCacheSet();
-  void longTermCacheGet(std::string& _return, const std::string& key, const int32_t renewExpiry);
-  void send_longTermCacheGet(const std::string& key, const int32_t renewExpiry);
+  void longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry);
+  void send_longTermCacheGet(const int32_t session_id, const std::string& key, const int32_t renewExpiry);
   void recv_longTermCacheGet(std::string& _return);
-  void longTermCacheSet(const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename);
-  void send_longTermCacheSet(const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename);
+  void longTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename);
+  void send_longTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename);
   void recv_longTermCacheSet();
   void longTermCacheEmpty();
   void send_longTermCacheEmpty();
@@ -1990,42 +2018,42 @@ class VaeDbMultiface : virtual public VaeDbIf {
     return;
   }
 
-  void shortTermCacheGet(std::string& _return, const std::string& key, const int32_t flags) {
+  void shortTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t flags) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->shortTermCacheGet(_return, key, flags);
+      ifaces_[i]->shortTermCacheGet(_return, session_id, key, flags);
     }
-    ifaces_[i]->shortTermCacheGet(_return, key, flags);
+    ifaces_[i]->shortTermCacheGet(_return, session_id, key, flags);
     return;
   }
 
-  void shortTermCacheSet(const std::string& key, const std::string& value, const int32_t flags, const int32_t expireInterval) {
+  void shortTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t flags, const int32_t expireInterval) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->shortTermCacheSet(key, value, flags, expireInterval);
+      ifaces_[i]->shortTermCacheSet(session_id, key, value, flags, expireInterval);
     }
-    ifaces_[i]->shortTermCacheSet(key, value, flags, expireInterval);
+    ifaces_[i]->shortTermCacheSet(session_id, key, value, flags, expireInterval);
   }
 
-  void longTermCacheGet(std::string& _return, const std::string& key, const int32_t renewExpiry) {
+  void longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->longTermCacheGet(_return, key, renewExpiry);
+      ifaces_[i]->longTermCacheGet(_return, session_id, key, renewExpiry);
     }
-    ifaces_[i]->longTermCacheGet(_return, key, renewExpiry);
+    ifaces_[i]->longTermCacheGet(_return, session_id, key, renewExpiry);
     return;
   }
 
-  void longTermCacheSet(const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename) {
+  void longTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->longTermCacheSet(key, value, expireInterval, isFilename);
+      ifaces_[i]->longTermCacheSet(session_id, key, value, expireInterval, isFilename);
     }
-    ifaces_[i]->longTermCacheSet(key, value, expireInterval, isFilename);
+    ifaces_[i]->longTermCacheSet(session_id, key, value, expireInterval, isFilename);
   }
 
   void longTermCacheEmpty() {

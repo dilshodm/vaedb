@@ -20,9 +20,10 @@
  * @package thrift.transport
  */
 
+namespace Thrift\Transport;
 
-/** Inherits from Socket */
-include_once $GLOBALS['THRIFT_ROOT'].'/transport/TSocket.php';
+use Thrift\Transport\TSocket;
+use Thrift\Exception\TException;
 
 /**
  * This library makes use of APC cache to make hosts as down in a web
@@ -278,7 +279,7 @@ class TSocketPool extends TSocket {
       }
     }
 
-    // Holy shit we failed them all. The system is totally ill!
+    // Oh no; we failed them all. The system is totally ill!
     $error = 'TSocketPool: All hosts in pool are down. ';
     $hosts = array();
     foreach ($this->servers_ as $server) {
@@ -292,5 +293,3 @@ class TSocketPool extends TSocket {
     throw new TException($error);
   }
 }
-
-?>

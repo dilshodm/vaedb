@@ -60,22 +60,22 @@ class VaeDbHandler : virtual public VaeDbIf {
     printf("structure\n");
   }
 
-  void shortTermCacheGet(std::string& _return, const std::string& key, const int32_t flags) {
+  void shortTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t flags) {
     // Your implementation goes here
     printf("shortTermCacheGet\n");
   }
 
-  void shortTermCacheSet(const std::string& key, const std::string& value, const int32_t flags, const int32_t expireInterval) {
+  void shortTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t flags, const int32_t expireInterval) {
     // Your implementation goes here
     printf("shortTermCacheSet\n");
   }
 
-  void longTermCacheGet(std::string& _return, const std::string& key, const int32_t renewExpiry) {
+  void longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry) {
     // Your implementation goes here
     printf("longTermCacheGet\n");
   }
 
-  void longTermCacheSet(const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename) {
+  void longTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename) {
     // Your implementation goes here
     printf("longTermCacheSet\n");
   }

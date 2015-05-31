@@ -138,13 +138,13 @@ module VaeDb
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'structure failed: unknown result')
     end
 
-    def shortTermCacheGet(key, flags)
-      send_shortTermCacheGet(key, flags)
+    def shortTermCacheGet(session_id, key, flags)
+      send_shortTermCacheGet(session_id, key, flags)
       return recv_shortTermCacheGet()
     end
 
-    def send_shortTermCacheGet(key, flags)
-      send_message('shortTermCacheGet', ShortTermCacheGet_args, :key => key, :flags => flags)
+    def send_shortTermCacheGet(session_id, key, flags)
+      send_message('shortTermCacheGet', ShortTermCacheGet_args, :session_id => session_id, :key => key, :flags => flags)
     end
 
     def recv_shortTermCacheGet()
@@ -153,13 +153,13 @@ module VaeDb
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'shortTermCacheGet failed: unknown result')
     end
 
-    def shortTermCacheSet(key, value, flags, expireInterval)
-      send_shortTermCacheSet(key, value, flags, expireInterval)
+    def shortTermCacheSet(session_id, key, value, flags, expireInterval)
+      send_shortTermCacheSet(session_id, key, value, flags, expireInterval)
       recv_shortTermCacheSet()
     end
 
-    def send_shortTermCacheSet(key, value, flags, expireInterval)
-      send_message('shortTermCacheSet', ShortTermCacheSet_args, :key => key, :value => value, :flags => flags, :expireInterval => expireInterval)
+    def send_shortTermCacheSet(session_id, key, value, flags, expireInterval)
+      send_message('shortTermCacheSet', ShortTermCacheSet_args, :session_id => session_id, :key => key, :value => value, :flags => flags, :expireInterval => expireInterval)
     end
 
     def recv_shortTermCacheSet()
@@ -167,13 +167,13 @@ module VaeDb
       return
     end
 
-    def longTermCacheGet(key, renewExpiry)
-      send_longTermCacheGet(key, renewExpiry)
+    def longTermCacheGet(session_id, key, renewExpiry)
+      send_longTermCacheGet(session_id, key, renewExpiry)
       return recv_longTermCacheGet()
     end
 
-    def send_longTermCacheGet(key, renewExpiry)
-      send_message('longTermCacheGet', LongTermCacheGet_args, :key => key, :renewExpiry => renewExpiry)
+    def send_longTermCacheGet(session_id, key, renewExpiry)
+      send_message('longTermCacheGet', LongTermCacheGet_args, :session_id => session_id, :key => key, :renewExpiry => renewExpiry)
     end
 
     def recv_longTermCacheGet()
@@ -182,13 +182,13 @@ module VaeDb
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'longTermCacheGet failed: unknown result')
     end
 
-    def longTermCacheSet(key, value, expireInterval, isFilename)
-      send_longTermCacheSet(key, value, expireInterval, isFilename)
+    def longTermCacheSet(session_id, key, value, expireInterval, isFilename)
+      send_longTermCacheSet(session_id, key, value, expireInterval, isFilename)
       recv_longTermCacheSet()
     end
 
-    def send_longTermCacheSet(key, value, expireInterval, isFilename)
-      send_message('longTermCacheSet', LongTermCacheSet_args, :key => key, :value => value, :expireInterval => expireInterval, :isFilename => isFilename)
+    def send_longTermCacheSet(session_id, key, value, expireInterval, isFilename)
+      send_message('longTermCacheSet', LongTermCacheSet_args, :session_id => session_id, :key => key, :value => value, :expireInterval => expireInterval, :isFilename => isFilename)
     end
 
     def recv_longTermCacheSet()
@@ -306,28 +306,28 @@ module VaeDb
     def process_shortTermCacheGet(seqid, iprot, oprot)
       args = read_args(iprot, ShortTermCacheGet_args)
       result = ShortTermCacheGet_result.new()
-      result.success = @handler.shortTermCacheGet(args.key, args.flags)
+      result.success = @handler.shortTermCacheGet(args.session_id, args.key, args.flags)
       write_result(result, oprot, 'shortTermCacheGet', seqid)
     end
 
     def process_shortTermCacheSet(seqid, iprot, oprot)
       args = read_args(iprot, ShortTermCacheSet_args)
       result = ShortTermCacheSet_result.new()
-      @handler.shortTermCacheSet(args.key, args.value, args.flags, args.expireInterval)
+      @handler.shortTermCacheSet(args.session_id, args.key, args.value, args.flags, args.expireInterval)
       write_result(result, oprot, 'shortTermCacheSet', seqid)
     end
 
     def process_longTermCacheGet(seqid, iprot, oprot)
       args = read_args(iprot, LongTermCacheGet_args)
       result = LongTermCacheGet_result.new()
-      result.success = @handler.longTermCacheGet(args.key, args.renewExpiry)
+      result.success = @handler.longTermCacheGet(args.session_id, args.key, args.renewExpiry)
       write_result(result, oprot, 'longTermCacheGet', seqid)
     end
 
     def process_longTermCacheSet(seqid, iprot, oprot)
       args = read_args(iprot, LongTermCacheSet_args)
       result = LongTermCacheSet_result.new()
-      @handler.longTermCacheSet(args.key, args.value, args.expireInterval, args.isFilename)
+      @handler.longTermCacheSet(args.session_id, args.key, args.value, args.expireInterval, args.isFilename)
       write_result(result, oprot, 'longTermCacheSet', seqid)
     end
 
@@ -637,10 +637,12 @@ module VaeDb
 
   class ShortTermCacheGet_args
     include ::Thrift::Struct, ::Thrift::Struct_Union
-    KEY = 1
-    FLAGS = 2
+    SESSION_ID = 1
+    KEY = 2
+    FLAGS = 3
 
     FIELDS = {
+      SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'},
       KEY => {:type => ::Thrift::Types::STRING, :name => 'key'},
       FLAGS => {:type => ::Thrift::Types::I32, :name => 'flags'}
     }
@@ -671,12 +673,14 @@ module VaeDb
 
   class ShortTermCacheSet_args
     include ::Thrift::Struct, ::Thrift::Struct_Union
-    KEY = 1
-    VALUE = 2
-    FLAGS = 3
-    EXPIREINTERVAL = 4
+    SESSION_ID = 1
+    KEY = 2
+    VALUE = 3
+    FLAGS = 4
+    EXPIREINTERVAL = 5
 
     FIELDS = {
+      SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'},
       KEY => {:type => ::Thrift::Types::STRING, :name => 'key'},
       VALUE => {:type => ::Thrift::Types::STRING, :name => 'value'},
       FLAGS => {:type => ::Thrift::Types::I32, :name => 'flags'},
@@ -708,10 +712,12 @@ module VaeDb
 
   class LongTermCacheGet_args
     include ::Thrift::Struct, ::Thrift::Struct_Union
-    KEY = 1
-    RENEWEXPIRY = 2
+    SESSION_ID = 1
+    KEY = 2
+    RENEWEXPIRY = 3
 
     FIELDS = {
+      SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'},
       KEY => {:type => ::Thrift::Types::STRING, :name => 'key'},
       RENEWEXPIRY => {:type => ::Thrift::Types::I32, :name => 'renewExpiry'}
     }
@@ -742,12 +748,14 @@ module VaeDb
 
   class LongTermCacheSet_args
     include ::Thrift::Struct, ::Thrift::Struct_Union
-    KEY = 1
-    VALUE = 2
-    EXPIREINTERVAL = 3
-    ISFILENAME = 4
+    SESSION_ID = 1
+    KEY = 2
+    VALUE = 3
+    EXPIREINTERVAL = 4
+    ISFILENAME = 5
 
     FIELDS = {
+      SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'},
       KEY => {:type => ::Thrift::Types::STRING, :name => 'key'},
       VALUE => {:type => ::Thrift::Types::STRING, :name => 'value'},
       EXPIREINTERVAL => {:type => ::Thrift::Types::I32, :name => 'expireInterval'},
