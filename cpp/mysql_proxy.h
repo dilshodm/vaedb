@@ -15,6 +15,11 @@ class MysqlProxy {
 public:
   MysqlProxy(std::string host, std::string username, std::string password, std::string database);
   ~MysqlProxy();
+  std::string sessionCacheGet(std::string subdomain, std::string key);
+  void sessionCacheSet(std::string subdomain, std::string key, std::string value);
+  void sessionCacheDelete(std::string subdomain, std::string key);
+  int32_t lock(std::string subdomain);
+  int32_t unlock(std::string subdomain);
 };
 
 #endif

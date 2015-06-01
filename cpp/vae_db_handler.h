@@ -4,6 +4,7 @@
 #include <boost/thread/mutex.hpp>
 #include "../gen-cpp/VaeDb.h"
 #include "memcache_proxy.h"
+#include "mysql_proxy.h"
 #include "query_log.h"
 #include "site.h"
 
@@ -24,6 +25,7 @@ class VaeDbHandler : virtual public VaeDbIf {
   boost::mutex sitesMutex;
   QueryLog &queryLog;
   MemcacheProxy &memcacheProxy;
+  MysqlProxy &mysqlProxy;
   
   boost::shared_ptr<class Site> getSite(std::string subdomain, std::string secretKey, bool stagingMode);
   inline boost::shared_ptr<class Site> _getSite(std::string const & sitesKey, std::string const & secretKey);
@@ -33,7 +35,7 @@ class VaeDbHandler : virtual public VaeDbIf {
   inline boost::mutex & _get_site_mutex(std::string const & subdomain, bool stagingMode);
 
  public:
-  VaeDbHandler(QueryLog & queryLog, MemcacheProxy &memcacheProxy);
+  VaeDbHandler(QueryLog & queryLog, MemcacheProxy &memcacheProxy, MysqlProxy &mysqlProxy);
   ~VaeDbHandler();
   void closeSession(const int32_t sessionId, const std::string& secretKey);
   void createInfo(VaeDbCreateInfoResponse& _return, const int32_t session_id, const int32_t response_id, const std::string& query);

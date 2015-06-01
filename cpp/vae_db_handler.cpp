@@ -66,8 +66,8 @@ boost::shared_ptr<Site> VaeDbHandler::_getSite(string const & sitesKey, string c
   return boost::shared_ptr<Site>();
 }
 
-VaeDbHandler::VaeDbHandler(QueryLog &queryLog, MemcacheProxy &memcacheProxy) 
-  :  queryLog(queryLog), memcacheProxy(memcacheProxy) {
+VaeDbHandler::VaeDbHandler(QueryLog &queryLog, MemcacheProxy &memcacheProxy, MysqlProxy &mysqlProxy) 
+  :  queryLog(queryLog), memcacheProxy(memcacheProxy), mysqlProxy(mysqlProxy) {
 
   nextSessionId = 1;
   xmlInitParser();
@@ -369,11 +369,10 @@ int32_t VaeDbHandler::sitewideLock(const int32_t sessionId) {
       session = sessions[sessionId];
     } else {
       L(warning) << "sitewideLock() called with an invalid session ID: " << sessionId;
-      return 0;
+      return -1;
     }
   }
-
-  return 1;
+  return mysqlProxy.lock(session->getSite()->getSubdomain());
 }
 
 int32_t VaeDbHandler::sitewideUnlock(const int32_t sessionId) {
@@ -384,9 +383,8 @@ int32_t VaeDbHandler::sitewideUnlock(const int32_t sessionId) {
       session = sessions[sessionId];
     } else {
       L(warning) << "sitewideUnlock() called with an invalid session ID: " << sessionId;
-      return 0;
+      return -1;
     }
   }
-
-  return 1;
+  return mysqlProxy.unlock(session->getSite()->getSubdomain());
 }

@@ -70,10 +70,10 @@ int main(int argc, char **argv) {
 
   string aws_access_key(_access_key ? _access_key : "");
   string aws_secret_key(_secret_key ? _secret_key : "");
-  string mysql_username(_mysql_username ? _mysql_username : "");
+  string mysql_username(_mysql_username ? _mysql_username : "root");
   string mysql_password(_mysql_password ? _mysql_password : "");
-  string mysql_database(_mysql_database ? _mysql_database : "");
-  string mysql_host(_mysql_host ? _mysql_host : "");
+  string mysql_database(_mysql_database ? _mysql_database : "av_verbshared");
+  string mysql_host(_mysql_host ? _mysql_host : "localhost");
   string memcached_host(_memcached_host ? _memcached_host : "127.0.0.1");
   string aws_bucket;
   string feed_cache_path;
@@ -127,6 +127,7 @@ int main(int argc, char **argv) {
   
   QueryLog query_log(p_querylog_stream.get());
   MemcacheProxy memcache(memcached_host);
+  MysqlProxy mysql(mysql_host, mysql_username, mysql_password, mysql_database);
 
   if(!initialize_s3(aws_access_key, aws_secret_key, aws_bucket, feed_cache_path)) {
     L(error) << "S3 failed to initialize.";
@@ -134,7 +135,7 @@ int main(int argc, char **argv) {
   }
 
   boost::shared_ptr<PosixThreadFactory> threadFactory = boost::shared_ptr<PosixThreadFactory>(new PosixThreadFactory());
-  boost::shared_ptr<VaeDbHandler> handler(new VaeDbHandler(query_log, memcache));
+  boost::shared_ptr<VaeDbHandler> handler(new VaeDbHandler(query_log, memcache, mysql));
   boost::shared_ptr<TProcessor> processor(new VaeDbProcessor(handler));
   boost::shared_ptr<TServerSocket> serverSocket(new TServerSocket(vm["port"].as<int>()));
   boost::shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
