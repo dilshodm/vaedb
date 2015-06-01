@@ -126,7 +126,7 @@ void MysqlProxy::longTermCacheSweeperInfo(VaeDbDataForContext& _return, string s
   sql::ResultSet *res;
   try {
     stmt = con->prepareStatement("SELECT `k`,`v` FROM `kvstore` WHERE `is_filename`='1' AND `subdomain`=?");
-    stmt2 = con->prepareStatement("DELETE FROM `kvstore` WHERE expires_at<NOW() WHERE `subdomain`=?");
+    stmt2 = con->prepareStatement("DELETE FROM `kvstore` WHERE `expire_at`<NOW() AND `subdomain`=?");
     stmt2->setString(1, subdomain);
     stmt2->execute();
     stmt->setString(1, subdomain);
