@@ -103,8 +103,13 @@ service VaeDb {
   VaeDbStructureResponse structure(1:i32 session_id, 2:i32 response_id)
     throws (1:VaeDbInternalError ie)
 
+  string sessionCacheGet(1:i32 session_id, 2:string key)
+  void sessionCacheSet(1:i32 session_id, 2:string key, 3:string value)
+  void sessionCacheDelete(1:i32 session_id, 2:string key)
+
   string shortTermCacheGet(1:i32 session_id, 2:string key, 3:i32 flags)
   void shortTermCacheSet(1:i32 session_id, 2:string key, 3:string value, 4:i32 flags, 5:i32 expireInterval)
+  void shortTermCacheDelete(1:i32 session_id, 2:string key)
 
   string longTermCacheGet(1:i32 session_id, 2:string key, 3:i32 renewExpiry)
   void longTermCacheSet(1:i32 session_id, 2:string key, 3:string value, 4:i32 expireInterval, 5:i32 isFilename)

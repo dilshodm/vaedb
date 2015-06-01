@@ -60,6 +60,21 @@ class VaeDbHandler : virtual public VaeDbIf {
     printf("structure\n");
   }
 
+  void sessionCacheGet(std::string& _return, const int32_t session_id, const std::string& key) {
+    // Your implementation goes here
+    printf("sessionCacheGet\n");
+  }
+
+  void sessionCacheSet(const int32_t session_id, const std::string& key, const std::string& value) {
+    // Your implementation goes here
+    printf("sessionCacheSet\n");
+  }
+
+  void sessionCacheDelete(const int32_t session_id, const std::string& key) {
+    // Your implementation goes here
+    printf("sessionCacheDelete\n");
+  }
+
   void shortTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t flags) {
     // Your implementation goes here
     printf("shortTermCacheGet\n");
@@ -68,6 +83,11 @@ class VaeDbHandler : virtual public VaeDbIf {
   void shortTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t flags, const int32_t expireInterval) {
     // Your implementation goes here
     printf("shortTermCacheSet\n");
+  }
+
+  void shortTermCacheDelete(const int32_t session_id, const std::string& key) {
+    // Your implementation goes here
+    printf("shortTermCacheDelete\n");
   }
 
   void longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry) {

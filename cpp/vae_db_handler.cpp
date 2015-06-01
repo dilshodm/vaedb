@@ -264,8 +264,6 @@ void VaeDbHandler::writePid() {
 }
 
 void VaeDbHandler::shortTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t flags) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("shortTermCacheGet") << sessionId << key << "\n";
   L(debug) << "shortTermCacheGet: " << sessionId << " " << key;
 
   boost::shared_ptr<class Session> session;
@@ -284,9 +282,6 @@ void VaeDbHandler::shortTermCacheGet(string &_return, const int32_t sessionId, s
 }
 
 void VaeDbHandler::shortTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t flags, const int32_t expireInterval) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("shortTermCacheSet") << sessionId << key << "\n";
-
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -301,23 +296,69 @@ void VaeDbHandler::shortTermCacheSet(const int32_t sessionId, string const & key
   memcacheProxy.set(fullKey, value, flags, expireInterval);
 }
 
-void VaeDbHandler::longTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t renewExpiry) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("longTermCacheGet") << sessionId << key << "\n";
+void VaeDbHandler::shortTermCacheDelete(const int32_t sessionId, string const & key) {
+  boost::shared_ptr<class Session> session;
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    if (sessions.count(sessionId)) {
+      session = sessions[sessionId];
+    } else {
+      L(warning) << "shortTermCacheDelete() called with an invalid session ID: " << sessionId;
+      return;
+    }
+  }
+  string fullKey = "VaedbProxy:" + session->getSite()->getSubdomain() + ":" + key;
+  memcacheProxy.remove(fullKey);
+}
 
+void VaeDbHandler::sessionCacheGet(string &_return, const int32_t sessionId, string const & key) {
+  boost::shared_ptr<class Session> session;
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    if (sessions.count(sessionId)) {
+      session = sessions[sessionId];
+    } else {
+      L(warning) << "sessionCacheGet() called with an invalid session ID: " << sessionId;
+      return;
+    }
+  }
+  _return = "foo";
+}
+
+void VaeDbHandler::sessionCacheSet(const int32_t sessionId, string const & key, string const & value) {
+  boost::shared_ptr<class Session> session;
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    if (sessions.count(sessionId)) {
+      session = sessions[sessionId];
+    } else {
+      L(warning) << "sessionCacheSet() called with an invalid session ID: " << sessionId;
+      return;
+    }
+  }
+}
+
+void VaeDbHandler::sessionCacheDelete(const int32_t sessionId, string const & key) {
+  boost::shared_ptr<class Session> session;
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    if (sessions.count(sessionId)) {
+      session = sessions[sessionId];
+    } else {
+      L(warning) << "sessionCacheDelete() called with an invalid session ID: " << sessionId;
+      return;
+    }
+  }
+}
+
+void VaeDbHandler::longTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t renewExpiry) {
   _return = "Long Term Value";
 }
 
 void VaeDbHandler::longTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t expireInterval, const int32_t isFilename) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("longTermCacheSet") << sessionId << key << "\n";
-
 }
 
 void VaeDbHandler::longTermCacheEmpty(const int32_t sessionId) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("longTermCacheEmpty") << sessionId << "\n";
-
 }
 
 int32_t VaeDbHandler::sitewideLock(const int32_t sessionId) {

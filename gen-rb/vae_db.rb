@@ -138,6 +138,49 @@ module VaeDb
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'structure failed: unknown result')
     end
 
+    def sessionCacheGet(session_id, key)
+      send_sessionCacheGet(session_id, key)
+      return recv_sessionCacheGet()
+    end
+
+    def send_sessionCacheGet(session_id, key)
+      send_message('sessionCacheGet', SessionCacheGet_args, :session_id => session_id, :key => key)
+    end
+
+    def recv_sessionCacheGet()
+      result = receive_message(SessionCacheGet_result)
+      return result.success unless result.success.nil?
+      raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'sessionCacheGet failed: unknown result')
+    end
+
+    def sessionCacheSet(session_id, key, value)
+      send_sessionCacheSet(session_id, key, value)
+      recv_sessionCacheSet()
+    end
+
+    def send_sessionCacheSet(session_id, key, value)
+      send_message('sessionCacheSet', SessionCacheSet_args, :session_id => session_id, :key => key, :value => value)
+    end
+
+    def recv_sessionCacheSet()
+      result = receive_message(SessionCacheSet_result)
+      return
+    end
+
+    def sessionCacheDelete(session_id, key)
+      send_sessionCacheDelete(session_id, key)
+      recv_sessionCacheDelete()
+    end
+
+    def send_sessionCacheDelete(session_id, key)
+      send_message('sessionCacheDelete', SessionCacheDelete_args, :session_id => session_id, :key => key)
+    end
+
+    def recv_sessionCacheDelete()
+      result = receive_message(SessionCacheDelete_result)
+      return
+    end
+
     def shortTermCacheGet(session_id, key, flags)
       send_shortTermCacheGet(session_id, key, flags)
       return recv_shortTermCacheGet()
@@ -164,6 +207,20 @@ module VaeDb
 
     def recv_shortTermCacheSet()
       result = receive_message(ShortTermCacheSet_result)
+      return
+    end
+
+    def shortTermCacheDelete(session_id, key)
+      send_shortTermCacheDelete(session_id, key)
+      recv_shortTermCacheDelete()
+    end
+
+    def send_shortTermCacheDelete(session_id, key)
+      send_message('shortTermCacheDelete', ShortTermCacheDelete_args, :session_id => session_id, :key => key)
+    end
+
+    def recv_shortTermCacheDelete()
+      result = receive_message(ShortTermCacheDelete_result)
       return
     end
 
@@ -333,6 +390,27 @@ module VaeDb
       write_result(result, oprot, 'structure', seqid)
     end
 
+    def process_sessionCacheGet(seqid, iprot, oprot)
+      args = read_args(iprot, SessionCacheGet_args)
+      result = SessionCacheGet_result.new()
+      result.success = @handler.sessionCacheGet(args.session_id, args.key)
+      write_result(result, oprot, 'sessionCacheGet', seqid)
+    end
+
+    def process_sessionCacheSet(seqid, iprot, oprot)
+      args = read_args(iprot, SessionCacheSet_args)
+      result = SessionCacheSet_result.new()
+      @handler.sessionCacheSet(args.session_id, args.key, args.value)
+      write_result(result, oprot, 'sessionCacheSet', seqid)
+    end
+
+    def process_sessionCacheDelete(seqid, iprot, oprot)
+      args = read_args(iprot, SessionCacheDelete_args)
+      result = SessionCacheDelete_result.new()
+      @handler.sessionCacheDelete(args.session_id, args.key)
+      write_result(result, oprot, 'sessionCacheDelete', seqid)
+    end
+
     def process_shortTermCacheGet(seqid, iprot, oprot)
       args = read_args(iprot, ShortTermCacheGet_args)
       result = ShortTermCacheGet_result.new()
@@ -345,6 +423,13 @@ module VaeDb
       result = ShortTermCacheSet_result.new()
       @handler.shortTermCacheSet(args.session_id, args.key, args.value, args.flags, args.expireInterval)
       write_result(result, oprot, 'shortTermCacheSet', seqid)
+    end
+
+    def process_shortTermCacheDelete(seqid, iprot, oprot)
+      args = read_args(iprot, ShortTermCacheDelete_args)
+      result = ShortTermCacheDelete_result.new()
+      @handler.shortTermCacheDelete(args.session_id, args.key)
+      write_result(result, oprot, 'shortTermCacheDelete', seqid)
     end
 
     def process_longTermCacheGet(seqid, iprot, oprot)
@@ -679,6 +764,108 @@ module VaeDb
     ::Thrift::Struct.generate_accessors self
   end
 
+  class SessionCacheGet_args
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+    SESSION_ID = 1
+    KEY = 2
+
+    FIELDS = {
+      SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'},
+      KEY => {:type => ::Thrift::Types::STRING, :name => 'key'}
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class SessionCacheGet_result
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+    SUCCESS = 0
+
+    FIELDS = {
+      SUCCESS => {:type => ::Thrift::Types::STRING, :name => 'success'}
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class SessionCacheSet_args
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+    SESSION_ID = 1
+    KEY = 2
+    VALUE = 3
+
+    FIELDS = {
+      SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'},
+      KEY => {:type => ::Thrift::Types::STRING, :name => 'key'},
+      VALUE => {:type => ::Thrift::Types::STRING, :name => 'value'}
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class SessionCacheSet_result
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+
+    FIELDS = {
+
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class SessionCacheDelete_args
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+    SESSION_ID = 1
+    KEY = 2
+
+    FIELDS = {
+      SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'},
+      KEY => {:type => ::Thrift::Types::STRING, :name => 'key'}
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class SessionCacheDelete_result
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+
+    FIELDS = {
+
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
   class ShortTermCacheGet_args
     include ::Thrift::Struct, ::Thrift::Struct_Union
     SESSION_ID = 1
@@ -740,6 +927,39 @@ module VaeDb
   end
 
   class ShortTermCacheSet_result
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+
+    FIELDS = {
+
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class ShortTermCacheDelete_args
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+    SESSION_ID = 1
+    KEY = 2
+
+    FIELDS = {
+      SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'},
+      KEY => {:type => ::Thrift::Types::STRING, :name => 'key'}
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class ShortTermCacheDelete_result
     include ::Thrift::Struct, ::Thrift::Struct_Union
 
     FIELDS = {

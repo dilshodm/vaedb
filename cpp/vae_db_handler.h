@@ -49,6 +49,10 @@ class VaeDbHandler : virtual public VaeDbIf {
 
   void shortTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t flags);
   void shortTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t flags, const int32_t expireInterval);
+  void shortTermCacheDelete(const int32_t sessionId, string const & key);
+  void sessionCacheGet(string &_return, const int32_t sessionId, string const & key);
+  void sessionCacheSet(const int32_t sessionId, string const & key, string const & value);
+  void sessionCacheDelete(const int32_t sessionId, string const & key);
   void longTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t renewExpiry);
   void longTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t expireInterval, const int32_t isFilename);
   void longTermCacheEmpty(const int32_t sessionId);
