@@ -44,7 +44,7 @@ void MysqlProxy::garbageCollect() {
 string MysqlProxy::longTermCacheGet(string subdomain, string key, int32_t renewExpiry) {
   string out = "";
   sql::PreparedStatement *stmt = con->prepareStatement("SELECT `v`,DATEDIFF(`expire_at`,NOW()) AS remaining_days FROM `kvstore` WHERE `k`=? AND `subdomain`=?");
-  sql::PreparedStatement *stmt2 = con->prepareStatement("UPDATE kvstore SET `expire_at`=DATE_ADD(NOW(),INTERVAL ? DAY)` WHERE `k`=? AND `subdomain`=?");
+  sql::PreparedStatement *stmt2 = con->prepareStatement("UPDATE kvstore SET `expire_at`=DATE_ADD(NOW(),INTERVAL ? DAY) WHERE `k`=? AND `subdomain`=?");
   sql::ResultSet *res;
   try {
     stmt->setString(1, key);
