@@ -1,9 +1,10 @@
 #include <string>
+#include <unistd.h>
 
 #include "logger.h"
 #include "mysql_proxy.h"
 
-using std::string;
+using namespace std;
 
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
@@ -149,16 +150,32 @@ void MysqlProxy::sessionCacheDelete(string subdomain, string key) {
 }
 
 int32_t MysqlProxy::lock(string subdomain) {
-  // TODO: make work
+  int32_t lockTime = 1000000;
+  int32_t oldLocksRemoved = 0;
+  int32_t gotLock = 0;
   sql::PreparedStatement *stmt = con->prepareStatement("INSERT INTO `locks` (subdomain,created_at) VALUES(?,NOW())");
-  try {
-    stmt->setString(1, subdomain);
-    stmt->execute();
-  } catch(sql::SQLException &e) {
-    L(error) << "MySQL Error Fetching Lock For " << subdomain << ": " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
+  sql::PreparedStatement *stmt2 = con->prepareStatement("DELETE FROM `locks` WHERE created_at<DATE_SUB(NOW(), INTERVAL 1 MINUTE)");
+  stmt->setString(1, subdomain);
+  for (int i = 0; i < 60*10001000/lockTime; i++) {
+    try {
+      stmt->execute();
+      gotLock = 1;
+      break;
+    } catch(sql::SQLException &e) {
+      if (!oldLocksRemoved) {
+        try {
+          stmt2->execute();
+        } catch(sql::SQLException &e) {
+          L(error) << "MySQL Error Removing Old Locks For " << subdomain << ": " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
+        }
+        oldLocksRemoved = 1;
+      }  
+      usleep(lockTime);
+    }
   }
   delete stmt; 
-  return 0;
+  delete stmt2; 
+  return gotLock;
 }
 
 int32_t MysqlProxy::unlock(string subdomain) {
