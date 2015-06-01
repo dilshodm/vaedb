@@ -104,13 +104,13 @@ service VaeDb {
     throws (1:VaeDbInternalError ie)
 
   string shortTermCacheGet(1:i32 session_id, 2:string key, 3:i32 flags)
-
   void shortTermCacheSet(1:i32 session_id, 2:string key, 3:string value, 4:i32 flags, 5:i32 expireInterval)
 
   string longTermCacheGet(1:i32 session_id, 2:string key, 3:i32 renewExpiry)
-
   void longTermCacheSet(1:i32 session_id, 2:string key, 3:string value, 4:i32 expireInterval, 5:i32 isFilename)
-
   void longTermCacheEmpty(1:i32 session_id)
+
+  i32 sitewideLock(1:i32 session_id)
+  i32 sitewideUnlock(1:i32 session_id)
 
 }

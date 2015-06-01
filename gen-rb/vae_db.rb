@@ -210,6 +210,36 @@ module VaeDb
       return
     end
 
+    def sitewideLock(session_id)
+      send_sitewideLock(session_id)
+      return recv_sitewideLock()
+    end
+
+    def send_sitewideLock(session_id)
+      send_message('sitewideLock', SitewideLock_args, :session_id => session_id)
+    end
+
+    def recv_sitewideLock()
+      result = receive_message(SitewideLock_result)
+      return result.success unless result.success.nil?
+      raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'sitewideLock failed: unknown result')
+    end
+
+    def sitewideUnlock(session_id)
+      send_sitewideUnlock(session_id)
+      return recv_sitewideUnlock()
+    end
+
+    def send_sitewideUnlock(session_id)
+      send_message('sitewideUnlock', SitewideUnlock_args, :session_id => session_id)
+    end
+
+    def recv_sitewideUnlock()
+      result = receive_message(SitewideUnlock_result)
+      return result.success unless result.success.nil?
+      raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'sitewideUnlock failed: unknown result')
+    end
+
   end
 
   class Processor
@@ -336,6 +366,20 @@ module VaeDb
       result = LongTermCacheEmpty_result.new()
       @handler.longTermCacheEmpty(args.session_id)
       write_result(result, oprot, 'longTermCacheEmpty', seqid)
+    end
+
+    def process_sitewideLock(seqid, iprot, oprot)
+      args = read_args(iprot, SitewideLock_args)
+      result = SitewideLock_result.new()
+      result.success = @handler.sitewideLock(args.session_id)
+      write_result(result, oprot, 'sitewideLock', seqid)
+    end
+
+    def process_sitewideUnlock(seqid, iprot, oprot)
+      args = read_args(iprot, SitewideUnlock_args)
+      result = SitewideUnlock_result.new()
+      result.success = @handler.sitewideUnlock(args.session_id)
+      write_result(result, oprot, 'sitewideUnlock', seqid)
     end
 
   end
@@ -806,6 +850,70 @@ module VaeDb
 
     FIELDS = {
 
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class SitewideLock_args
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+    SESSION_ID = 1
+
+    FIELDS = {
+      SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'}
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class SitewideLock_result
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+    SUCCESS = 0
+
+    FIELDS = {
+      SUCCESS => {:type => ::Thrift::Types::I32, :name => 'success'}
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class SitewideUnlock_args
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+    SESSION_ID = 1
+
+    FIELDS = {
+      SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'}
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class SitewideUnlock_result
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+    SUCCESS = 0
+
+    FIELDS = {
+      SUCCESS => {:type => ::Thrift::Types::I32, :name => 'success'}
     }
 
     def struct_fields; FIELDS; end

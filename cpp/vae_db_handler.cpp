@@ -319,3 +319,33 @@ void VaeDbHandler::longTermCacheEmpty(const int32_t sessionId) {
   entry.method_call("longTermCacheEmpty") << sessionId << "\n";
 
 }
+
+int32_t VaeDbHandler::sitewideLock(const int32_t sessionId) {
+  boost::shared_ptr<class Session> session;
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    if (sessions.count(sessionId)) {
+      session = sessions[sessionId];
+    } else {
+      L(warning) << "sitewideLock() called with an invalid session ID: " << sessionId;
+      return 0;
+    }
+  }
+
+  return 1;
+}
+
+int32_t VaeDbHandler::sitewideUnlock(const int32_t sessionId) {
+  boost::shared_ptr<class Session> session;
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    if (sessions.count(sessionId)) {
+      session = sessions[sessionId];
+    } else {
+      L(warning) << "sitewideUnlock() called with an invalid session ID: " << sessionId;
+      return 0;
+    }
+  }
+
+  return 1;
+}

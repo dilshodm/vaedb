@@ -85,6 +85,16 @@ class VaeDbHandler : virtual public VaeDbIf {
     printf("longTermCacheEmpty\n");
   }
 
+  int32_t sitewideLock(const int32_t session_id) {
+    // Your implementation goes here
+    printf("sitewideLock\n");
+  }
+
+  int32_t sitewideUnlock(const int32_t session_id) {
+    // Your implementation goes here
+    printf("sitewideUnlock\n");
+  }
+
 };
 
 int main(int argc, char **argv) {
