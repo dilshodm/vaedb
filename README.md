@@ -41,6 +41,16 @@ configure Vae Remote on your development machine.
     sudo make install
 
 
+### Create Local MySQL Database for Vae Remote
+
+Create a local mysql database called vaedb.  Then create a user
+called vaedb and give that user a password.
+
+Import the schema as follows:
+
+    mysql -uvaedb < db/schema.sql
+
+
 ## Compiling VaeDB
 
     cd cpp

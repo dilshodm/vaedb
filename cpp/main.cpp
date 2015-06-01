@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
   string aws_secret_key(_secret_key ? _secret_key : "");
   string mysql_username(_mysql_username ? _mysql_username : "root");
   string mysql_password(_mysql_password ? _mysql_password : "");
-  string mysql_database(_mysql_database ? _mysql_database : "av_verbshared");
+  string mysql_database(_mysql_database ? _mysql_database : "vaedb");
   string mysql_host(_mysql_host ? _mysql_host : "localhost");
   string memcached_host(_memcached_host ? _memcached_host : "127.0.0.1");
   string aws_bucket;
