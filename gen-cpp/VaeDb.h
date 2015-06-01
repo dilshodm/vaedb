@@ -31,7 +31,9 @@ class VaeDbIf {
   virtual void shortTermCacheDelete(const int32_t session_id, const std::string& key) = 0;
   virtual void longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry, const int32_t useShortTermCache) = 0;
   virtual void longTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename) = 0;
+  virtual void longTermCacheDelete(const int32_t session_id, const std::string& key) = 0;
   virtual void longTermCacheEmpty(const int32_t session_id) = 0;
+  virtual void longTermCacheSweeperInfo(VaeDbDataForContext& _return, const int32_t session_id) = 0;
   virtual int32_t sitewideLock(const int32_t session_id) = 0;
   virtual int32_t sitewideUnlock(const int32_t session_id) = 0;
 };
@@ -113,7 +115,13 @@ class VaeDbNull : virtual public VaeDbIf {
   void longTermCacheSet(const int32_t /* session_id */, const std::string& /* key */, const std::string& /* value */, const int32_t /* expireInterval */, const int32_t /* isFilename */) {
     return;
   }
+  void longTermCacheDelete(const int32_t /* session_id */, const std::string& /* key */) {
+    return;
+  }
   void longTermCacheEmpty(const int32_t /* session_id */) {
+    return;
+  }
+  void longTermCacheSweeperInfo(VaeDbDataForContext& /* _return */, const int32_t /* session_id */) {
     return;
   }
   int32_t sitewideLock(const int32_t /* session_id */) {
@@ -2210,6 +2218,115 @@ class VaeDb_longTermCacheSet_presult {
   friend std::ostream& operator<<(std::ostream& out, const VaeDb_longTermCacheSet_presult& obj);
 };
 
+typedef struct _VaeDb_longTermCacheDelete_args__isset {
+  _VaeDb_longTermCacheDelete_args__isset() : session_id(false), key(false) {}
+  bool session_id :1;
+  bool key :1;
+} _VaeDb_longTermCacheDelete_args__isset;
+
+class VaeDb_longTermCacheDelete_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "3F5FC93B338687BC7235B1AB103F47B3";
+  static const uint8_t binary_fingerprint[16]; // = {0x3F,0x5F,0xC9,0x3B,0x33,0x86,0x87,0xBC,0x72,0x35,0xB1,0xAB,0x10,0x3F,0x47,0xB3};
+
+  VaeDb_longTermCacheDelete_args(const VaeDb_longTermCacheDelete_args&);
+  VaeDb_longTermCacheDelete_args& operator=(const VaeDb_longTermCacheDelete_args&);
+  VaeDb_longTermCacheDelete_args() : session_id(0), key() {
+  }
+
+  virtual ~VaeDb_longTermCacheDelete_args() throw();
+  int32_t session_id;
+  std::string key;
+
+  _VaeDb_longTermCacheDelete_args__isset __isset;
+
+  void __set_session_id(const int32_t val);
+
+  void __set_key(const std::string& val);
+
+  bool operator == (const VaeDb_longTermCacheDelete_args & rhs) const
+  {
+    if (!(session_id == rhs.session_id))
+      return false;
+    if (!(key == rhs.key))
+      return false;
+    return true;
+  }
+  bool operator != (const VaeDb_longTermCacheDelete_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VaeDb_longTermCacheDelete_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const VaeDb_longTermCacheDelete_args& obj);
+};
+
+
+class VaeDb_longTermCacheDelete_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "3F5FC93B338687BC7235B1AB103F47B3";
+  static const uint8_t binary_fingerprint[16]; // = {0x3F,0x5F,0xC9,0x3B,0x33,0x86,0x87,0xBC,0x72,0x35,0xB1,0xAB,0x10,0x3F,0x47,0xB3};
+
+
+  virtual ~VaeDb_longTermCacheDelete_pargs() throw();
+  const int32_t* session_id;
+  const std::string* key;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const VaeDb_longTermCacheDelete_pargs& obj);
+};
+
+
+class VaeDb_longTermCacheDelete_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
+  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+
+  VaeDb_longTermCacheDelete_result(const VaeDb_longTermCacheDelete_result&);
+  VaeDb_longTermCacheDelete_result& operator=(const VaeDb_longTermCacheDelete_result&);
+  VaeDb_longTermCacheDelete_result() {
+  }
+
+  virtual ~VaeDb_longTermCacheDelete_result() throw();
+
+  bool operator == (const VaeDb_longTermCacheDelete_result & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const VaeDb_longTermCacheDelete_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VaeDb_longTermCacheDelete_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const VaeDb_longTermCacheDelete_result& obj);
+};
+
+
+class VaeDb_longTermCacheDelete_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
+  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+
+
+  virtual ~VaeDb_longTermCacheDelete_presult() throw();
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const VaeDb_longTermCacheDelete_presult& obj);
+};
+
 typedef struct _VaeDb_longTermCacheEmpty_args__isset {
   _VaeDb_longTermCacheEmpty_args__isset() : session_id(false) {}
   bool session_id :1;
@@ -2310,6 +2427,126 @@ class VaeDb_longTermCacheEmpty_presult {
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
   friend std::ostream& operator<<(std::ostream& out, const VaeDb_longTermCacheEmpty_presult& obj);
+};
+
+typedef struct _VaeDb_longTermCacheSweeperInfo_args__isset {
+  _VaeDb_longTermCacheSweeperInfo_args__isset() : session_id(false) {}
+  bool session_id :1;
+} _VaeDb_longTermCacheSweeperInfo_args__isset;
+
+class VaeDb_longTermCacheSweeperInfo_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
+  static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
+
+  VaeDb_longTermCacheSweeperInfo_args(const VaeDb_longTermCacheSweeperInfo_args&);
+  VaeDb_longTermCacheSweeperInfo_args& operator=(const VaeDb_longTermCacheSweeperInfo_args&);
+  VaeDb_longTermCacheSweeperInfo_args() : session_id(0) {
+  }
+
+  virtual ~VaeDb_longTermCacheSweeperInfo_args() throw();
+  int32_t session_id;
+
+  _VaeDb_longTermCacheSweeperInfo_args__isset __isset;
+
+  void __set_session_id(const int32_t val);
+
+  bool operator == (const VaeDb_longTermCacheSweeperInfo_args & rhs) const
+  {
+    if (!(session_id == rhs.session_id))
+      return false;
+    return true;
+  }
+  bool operator != (const VaeDb_longTermCacheSweeperInfo_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VaeDb_longTermCacheSweeperInfo_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const VaeDb_longTermCacheSweeperInfo_args& obj);
+};
+
+
+class VaeDb_longTermCacheSweeperInfo_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
+  static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
+
+
+  virtual ~VaeDb_longTermCacheSweeperInfo_pargs() throw();
+  const int32_t* session_id;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const VaeDb_longTermCacheSweeperInfo_pargs& obj);
+};
+
+typedef struct _VaeDb_longTermCacheSweeperInfo_result__isset {
+  _VaeDb_longTermCacheSweeperInfo_result__isset() : success(false) {}
+  bool success :1;
+} _VaeDb_longTermCacheSweeperInfo_result__isset;
+
+class VaeDb_longTermCacheSweeperInfo_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "BC8D8BE539C6665F1FA9E0F57A0D965C";
+  static const uint8_t binary_fingerprint[16]; // = {0xBC,0x8D,0x8B,0xE5,0x39,0xC6,0x66,0x5F,0x1F,0xA9,0xE0,0xF5,0x7A,0x0D,0x96,0x5C};
+
+  VaeDb_longTermCacheSweeperInfo_result(const VaeDb_longTermCacheSweeperInfo_result&);
+  VaeDb_longTermCacheSweeperInfo_result& operator=(const VaeDb_longTermCacheSweeperInfo_result&);
+  VaeDb_longTermCacheSweeperInfo_result() {
+  }
+
+  virtual ~VaeDb_longTermCacheSweeperInfo_result() throw();
+  VaeDbDataForContext success;
+
+  _VaeDb_longTermCacheSweeperInfo_result__isset __isset;
+
+  void __set_success(const VaeDbDataForContext& val);
+
+  bool operator == (const VaeDb_longTermCacheSweeperInfo_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const VaeDb_longTermCacheSweeperInfo_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VaeDb_longTermCacheSweeperInfo_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const VaeDb_longTermCacheSweeperInfo_result& obj);
+};
+
+typedef struct _VaeDb_longTermCacheSweeperInfo_presult__isset {
+  _VaeDb_longTermCacheSweeperInfo_presult__isset() : success(false) {}
+  bool success :1;
+} _VaeDb_longTermCacheSweeperInfo_presult__isset;
+
+class VaeDb_longTermCacheSweeperInfo_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "BC8D8BE539C6665F1FA9E0F57A0D965C";
+  static const uint8_t binary_fingerprint[16]; // = {0xBC,0x8D,0x8B,0xE5,0x39,0xC6,0x66,0x5F,0x1F,0xA9,0xE0,0xF5,0x7A,0x0D,0x96,0x5C};
+
+
+  virtual ~VaeDb_longTermCacheSweeperInfo_presult() throw();
+  VaeDbDataForContext* success;
+
+  _VaeDb_longTermCacheSweeperInfo_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const VaeDb_longTermCacheSweeperInfo_presult& obj);
 };
 
 typedef struct _VaeDb_sitewideLock_args__isset {
@@ -2625,9 +2862,15 @@ class VaeDbClient : virtual public VaeDbIf {
   void longTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename);
   void send_longTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename);
   void recv_longTermCacheSet();
+  void longTermCacheDelete(const int32_t session_id, const std::string& key);
+  void send_longTermCacheDelete(const int32_t session_id, const std::string& key);
+  void recv_longTermCacheDelete();
   void longTermCacheEmpty(const int32_t session_id);
   void send_longTermCacheEmpty(const int32_t session_id);
   void recv_longTermCacheEmpty();
+  void longTermCacheSweeperInfo(VaeDbDataForContext& _return, const int32_t session_id);
+  void send_longTermCacheSweeperInfo(const int32_t session_id);
+  void recv_longTermCacheSweeperInfo(VaeDbDataForContext& _return);
   int32_t sitewideLock(const int32_t session_id);
   void send_sitewideLock(const int32_t session_id);
   int32_t recv_sitewideLock();
@@ -2665,7 +2908,9 @@ class VaeDbProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_shortTermCacheDelete(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_longTermCacheGet(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_longTermCacheSet(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_longTermCacheDelete(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_longTermCacheEmpty(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_longTermCacheSweeperInfo(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_sitewideLock(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_sitewideUnlock(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
@@ -2687,7 +2932,9 @@ class VaeDbProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["shortTermCacheDelete"] = &VaeDbProcessor::process_shortTermCacheDelete;
     processMap_["longTermCacheGet"] = &VaeDbProcessor::process_longTermCacheGet;
     processMap_["longTermCacheSet"] = &VaeDbProcessor::process_longTermCacheSet;
+    processMap_["longTermCacheDelete"] = &VaeDbProcessor::process_longTermCacheDelete;
     processMap_["longTermCacheEmpty"] = &VaeDbProcessor::process_longTermCacheEmpty;
+    processMap_["longTermCacheSweeperInfo"] = &VaeDbProcessor::process_longTermCacheSweeperInfo;
     processMap_["sitewideLock"] = &VaeDbProcessor::process_sitewideLock;
     processMap_["sitewideUnlock"] = &VaeDbProcessor::process_sitewideUnlock;
   }
@@ -2869,6 +3116,15 @@ class VaeDbMultiface : virtual public VaeDbIf {
     ifaces_[i]->longTermCacheSet(session_id, key, value, expireInterval, isFilename);
   }
 
+  void longTermCacheDelete(const int32_t session_id, const std::string& key) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->longTermCacheDelete(session_id, key);
+    }
+    ifaces_[i]->longTermCacheDelete(session_id, key);
+  }
+
   void longTermCacheEmpty(const int32_t session_id) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -2876,6 +3132,16 @@ class VaeDbMultiface : virtual public VaeDbIf {
       ifaces_[i]->longTermCacheEmpty(session_id);
     }
     ifaces_[i]->longTermCacheEmpty(session_id);
+  }
+
+  void longTermCacheSweeperInfo(VaeDbDataForContext& _return, const int32_t session_id) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->longTermCacheSweeperInfo(_return, session_id);
+    }
+    ifaces_[i]->longTermCacheSweeperInfo(_return, session_id);
+    return;
   }
 
   int32_t sitewideLock(const int32_t session_id) {

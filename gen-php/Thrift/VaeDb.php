@@ -130,8 +130,18 @@ interface VaeDbIf {
   public function longTermCacheSet($session_id, $key, $value, $expireInterval, $isFilename);
   /**
    * @param int $session_id
+   * @param string $key
+   */
+  public function longTermCacheDelete($session_id, $key);
+  /**
+   * @param int $session_id
    */
   public function longTermCacheEmpty($session_id);
+  /**
+   * @param int $session_id
+   * @return \Thrift\VaeDbDataForContext
+   */
+  public function longTermCacheSweeperInfo($session_id);
   /**
    * @param int $session_id
    * @return int
@@ -1006,6 +1016,55 @@ class VaeDbClient implements \Thrift\VaeDbIf {
     return;
   }
 
+  public function longTermCacheDelete($session_id, $key)
+  {
+    $this->send_longTermCacheDelete($session_id, $key);
+    $this->recv_longTermCacheDelete();
+  }
+
+  public function send_longTermCacheDelete($session_id, $key)
+  {
+    $args = new \Thrift\VaeDb_longTermCacheDelete_args();
+    $args->session_id = $session_id;
+    $args->key = $key;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'longTermCacheDelete', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('longTermCacheDelete', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_longTermCacheDelete()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Thrift\VaeDb_longTermCacheDelete_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Thrift\VaeDb_longTermCacheDelete_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    return;
+  }
+
   public function longTermCacheEmpty($session_id)
   {
     $this->send_longTermCacheEmpty($session_id);
@@ -1052,6 +1111,57 @@ class VaeDbClient implements \Thrift\VaeDbIf {
       $this->input_->readMessageEnd();
     }
     return;
+  }
+
+  public function longTermCacheSweeperInfo($session_id)
+  {
+    $this->send_longTermCacheSweeperInfo($session_id);
+    return $this->recv_longTermCacheSweeperInfo();
+  }
+
+  public function send_longTermCacheSweeperInfo($session_id)
+  {
+    $args = new \Thrift\VaeDb_longTermCacheSweeperInfo_args();
+    $args->session_id = $session_id;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'longTermCacheSweeperInfo', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('longTermCacheSweeperInfo', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_longTermCacheSweeperInfo()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Thrift\VaeDb_longTermCacheSweeperInfo_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Thrift\VaeDb_longTermCacheSweeperInfo_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    throw new \Exception("longTermCacheSweeperInfo failed: unknown result");
   }
 
   public function sitewideLock($session_id)
@@ -4333,6 +4443,154 @@ class VaeDb_longTermCacheSet_result {
 
 }
 
+class VaeDb_longTermCacheDelete_args {
+  static $_TSPEC;
+
+  /**
+   * @var int
+   */
+  public $session_id = null;
+  /**
+   * @var string
+   */
+  public $key = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'session_id',
+          'type' => TType::I32,
+          ),
+        2 => array(
+          'var' => 'key',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['session_id'])) {
+        $this->session_id = $vals['session_id'];
+      }
+      if (isset($vals['key'])) {
+        $this->key = $vals['key'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'VaeDb_longTermCacheDelete_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->session_id);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->key);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('VaeDb_longTermCacheDelete_args');
+    if ($this->session_id !== null) {
+      $xfer += $output->writeFieldBegin('session_id', TType::I32, 1);
+      $xfer += $output->writeI32($this->session_id);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->key !== null) {
+      $xfer += $output->writeFieldBegin('key', TType::STRING, 2);
+      $xfer += $output->writeString($this->key);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class VaeDb_longTermCacheDelete_result {
+  static $_TSPEC;
+
+
+  public function __construct() {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        );
+    }
+  }
+
+  public function getName() {
+    return 'VaeDb_longTermCacheDelete_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('VaeDb_longTermCacheDelete_result');
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class VaeDb_longTermCacheEmpty_args {
   static $_TSPEC;
 
@@ -4451,6 +4709,161 @@ class VaeDb_longTermCacheEmpty_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('VaeDb_longTermCacheEmpty_result');
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class VaeDb_longTermCacheSweeperInfo_args {
+  static $_TSPEC;
+
+  /**
+   * @var int
+   */
+  public $session_id = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'session_id',
+          'type' => TType::I32,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['session_id'])) {
+        $this->session_id = $vals['session_id'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'VaeDb_longTermCacheSweeperInfo_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->session_id);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('VaeDb_longTermCacheSweeperInfo_args');
+    if ($this->session_id !== null) {
+      $xfer += $output->writeFieldBegin('session_id', TType::I32, 1);
+      $xfer += $output->writeI32($this->session_id);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class VaeDb_longTermCacheSweeperInfo_result {
+  static $_TSPEC;
+
+  /**
+   * @var \Thrift\VaeDbDataForContext
+   */
+  public $success = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRUCT,
+          'class' => '\Thrift\VaeDbDataForContext',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'VaeDb_longTermCacheSweeperInfo_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::STRUCT) {
+            $this->success = new \Thrift\VaeDbDataForContext();
+            $xfer += $this->success->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('VaeDb_longTermCacheSweeperInfo_result');
+    if ($this->success !== null) {
+      if (!is_object($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::STRUCT, 0);
+      $xfer += $this->success->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
     $xfer += $output->writeFieldStop();
     $xfer += $output->writeStructEnd();
     return $xfer;

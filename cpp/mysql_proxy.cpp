@@ -99,6 +99,38 @@ void MysqlProxy::longTermCacheEmpty(string subdomain) {
   delete stmt; 
 }
 
+void MysqlProxy::longTermCacheDelete(string subdomain, string key) {
+  sql::PreparedStatement *stmt = con->prepareStatement("DELETE FROM `kvstore` WHERE `k`=? AND `subdomain`=?");
+  try {
+    stmt->setString(1, key);
+    stmt->setString(2, subdomain);
+    stmt->execute();
+  } catch(sql::SQLException &e) {
+    L(error) << "MySQL Error Deleting From The Long Term Cache: " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
+  }
+  delete stmt; 
+}
+
+void MysqlProxy::longTermCacheSweeperInfo(VaeDbDataForContext& _return, string subdomain) {
+  sql::PreparedStatement *stmt = con->prepareStatement("SELECT `k`,`v` FROM `kvstore` WHERE `is_filename`='1' AND `subdomain`=?");
+  sql::PreparedStatement *stmt2 = con->prepareStatement("DELETE FROM `kvstore` WHERE expires_at<NOW() WHERE `subdomain`=?");
+  sql::ResultSet *res;
+  try {
+    stmt2->setString(1, subdomain);
+    stmt2->execute();
+    stmt->setString(1, subdomain);
+    res = stmt->executeQuery();
+    while (res->next()) {
+      _return.data[res->getString("k")] = res->getString("v");
+    }
+    delete res; 
+  } catch(sql::SQLException &e) {
+    L(error) << "MySQL Error Getting From the Long Term Cache: " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
+  }
+  delete stmt; 
+  delete stmt2;
+}
+
 string MysqlProxy::sessionCacheGet(string subdomain, string key) {
   string out = "";
   sql::PreparedStatement *stmt = con->prepareStatement("SELECT `data` FROM `session_data` WHERE `id`=? AND `subdomain`=?");

@@ -8,6 +8,8 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 
+#include "../gen-cpp/VaeDb.h"
+
 class MysqlProxy {
   sql::Driver *driver;
   sql::Connection *con;
@@ -21,7 +23,9 @@ public:
   void sessionCacheDelete(std::string subdomain, std::string key);
   std::string longTermCacheGet(std::string subdomain, std::string key, int32_t renewExpiry);
   void longTermCacheSet(std::string subdomain, std::string key, std::string value, int32_t expireInterval, int32_t isFilename);
+  void longTermCacheDelete(std::string subdomain, std::string key);
   void longTermCacheEmpty(std::string subdomain);
+  void longTermCacheSweeperInfo(VaeDbDataForContext& _return, std::string subdomain);
   int32_t lock(std::string subdomain);
   int32_t unlock(std::string subdomain);
 };

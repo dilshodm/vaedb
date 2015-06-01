@@ -100,9 +100,19 @@ class VaeDbHandler : virtual public VaeDbIf {
     printf("longTermCacheSet\n");
   }
 
+  void longTermCacheDelete(const int32_t session_id, const std::string& key) {
+    // Your implementation goes here
+    printf("longTermCacheDelete\n");
+  }
+
   void longTermCacheEmpty(const int32_t session_id) {
     // Your implementation goes here
     printf("longTermCacheEmpty\n");
+  }
+
+  void longTermCacheSweeperInfo(VaeDbDataForContext& _return, const int32_t session_id) {
+    // Your implementation goes here
+    printf("longTermCacheSweeperInfo\n");
   }
 
   int32_t sitewideLock(const int32_t session_id) {

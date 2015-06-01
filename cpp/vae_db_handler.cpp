@@ -392,6 +392,22 @@ void VaeDbHandler::longTermCacheSet(const int32_t sessionId, string const & key,
   memcacheProxy.set(fullKey, value, 0, 86400);
 }
 
+void VaeDbHandler::longTermCacheDelete(const int32_t sessionId, string const & key) {
+  boost::shared_ptr<class Session> session;
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    if (sessions.count(sessionId)) {
+      session = sessions[sessionId];
+    } else {
+      L(warning) << "longTermCacheDelete() called with an invalid session ID: " << sessionId;
+      return;
+    }
+  }
+  string fullKey = "VaedbProxy:" + session->getSite()->getSubdomain() + "LongTerm:" + key;
+  mysqlProxy.longTermCacheDelete(session->getSite()->getSubdomain(), key);
+  memcacheProxy.remove(fullKey);
+}
+
 void VaeDbHandler::longTermCacheEmpty(const int32_t sessionId) {
   boost::shared_ptr<class Session> session;
   {
@@ -404,6 +420,20 @@ void VaeDbHandler::longTermCacheEmpty(const int32_t sessionId) {
     }
   }
   mysqlProxy.longTermCacheEmpty(session->getSite()->getSubdomain());
+}
+
+void VaeDbHandler::longTermCacheSweeperInfo(VaeDbDataForContext& _return, const int32_t sessionId) {
+  boost::shared_ptr<class Session> session;
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    if (sessions.count(sessionId)) {
+      session = sessions[sessionId];
+    } else {
+      L(warning) << "longTermCacheSweeperInfo() called with an invalid session ID: " << sessionId;
+      return;
+    }
+  }
+  mysqlProxy.longTermCacheSweeperInfo(_return, session->getSite()->getSubdomain());
 }
 
 int32_t VaeDbHandler::sitewideLock(const int32_t sessionId) {

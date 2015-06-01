@@ -253,6 +253,20 @@ module VaeDb
       return
     end
 
+    def longTermCacheDelete(session_id, key)
+      send_longTermCacheDelete(session_id, key)
+      recv_longTermCacheDelete()
+    end
+
+    def send_longTermCacheDelete(session_id, key)
+      send_message('longTermCacheDelete', LongTermCacheDelete_args, :session_id => session_id, :key => key)
+    end
+
+    def recv_longTermCacheDelete()
+      result = receive_message(LongTermCacheDelete_result)
+      return
+    end
+
     def longTermCacheEmpty(session_id)
       send_longTermCacheEmpty(session_id)
       recv_longTermCacheEmpty()
@@ -265,6 +279,21 @@ module VaeDb
     def recv_longTermCacheEmpty()
       result = receive_message(LongTermCacheEmpty_result)
       return
+    end
+
+    def longTermCacheSweeperInfo(session_id)
+      send_longTermCacheSweeperInfo(session_id)
+      return recv_longTermCacheSweeperInfo()
+    end
+
+    def send_longTermCacheSweeperInfo(session_id)
+      send_message('longTermCacheSweeperInfo', LongTermCacheSweeperInfo_args, :session_id => session_id)
+    end
+
+    def recv_longTermCacheSweeperInfo()
+      result = receive_message(LongTermCacheSweeperInfo_result)
+      return result.success unless result.success.nil?
+      raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'longTermCacheSweeperInfo failed: unknown result')
     end
 
     def sitewideLock(session_id)
@@ -446,11 +475,25 @@ module VaeDb
       write_result(result, oprot, 'longTermCacheSet', seqid)
     end
 
+    def process_longTermCacheDelete(seqid, iprot, oprot)
+      args = read_args(iprot, LongTermCacheDelete_args)
+      result = LongTermCacheDelete_result.new()
+      @handler.longTermCacheDelete(args.session_id, args.key)
+      write_result(result, oprot, 'longTermCacheDelete', seqid)
+    end
+
     def process_longTermCacheEmpty(seqid, iprot, oprot)
       args = read_args(iprot, LongTermCacheEmpty_args)
       result = LongTermCacheEmpty_result.new()
       @handler.longTermCacheEmpty(args.session_id)
       write_result(result, oprot, 'longTermCacheEmpty', seqid)
+    end
+
+    def process_longTermCacheSweeperInfo(seqid, iprot, oprot)
+      args = read_args(iprot, LongTermCacheSweeperInfo_args)
+      result = LongTermCacheSweeperInfo_result.new()
+      result.success = @handler.longTermCacheSweeperInfo(args.session_id)
+      write_result(result, oprot, 'longTermCacheSweeperInfo', seqid)
     end
 
     def process_sitewideLock(seqid, iprot, oprot)
@@ -1051,6 +1094,39 @@ module VaeDb
     ::Thrift::Struct.generate_accessors self
   end
 
+  class LongTermCacheDelete_args
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+    SESSION_ID = 1
+    KEY = 2
+
+    FIELDS = {
+      SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'},
+      KEY => {:type => ::Thrift::Types::STRING, :name => 'key'}
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class LongTermCacheDelete_result
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+
+    FIELDS = {
+
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
   class LongTermCacheEmpty_args
     include ::Thrift::Struct, ::Thrift::Struct_Union
     SESSION_ID = 1
@@ -1072,6 +1148,38 @@ module VaeDb
 
     FIELDS = {
 
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class LongTermCacheSweeperInfo_args
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+    SESSION_ID = 1
+
+    FIELDS = {
+      SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'}
+    }
+
+    def struct_fields; FIELDS; end
+
+    def validate
+    end
+
+    ::Thrift::Struct.generate_accessors self
+  end
+
+  class LongTermCacheSweeperInfo_result
+    include ::Thrift::Struct, ::Thrift::Struct_Union
+    SUCCESS = 0
+
+    FIELDS = {
+      SUCCESS => {:type => ::Thrift::Types::STRUCT, :name => 'success', :class => ::VaeDbDataForContext}
     }
 
     def struct_fields; FIELDS; end
