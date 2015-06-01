@@ -28,25 +28,28 @@ MysqlProxy::MysqlProxy(string host, string username, string password, string dat
 }
 
 MysqlProxy::~MysqlProxy() {
-  delete con;
+  if (con) delete con;
 }
 
 void MysqlProxy::garbageCollect() {
-  sql::PreparedStatement *stmt = con->prepareStatement("DELETE FROM `session_data` WHERE `expires`<UNIX_TIMESTAMP()");
+  sql::PreparedStatement *stmt;
   try {
+    stmt = con->prepareStatement("DELETE FROM `session_data` WHERE `expires`<UNIX_TIMESTAMP()");
     stmt->execute();
   } catch(sql::SQLException &e) {
     L(error) << "MySQL Error Garbage Collecting the Session Cache: " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
+    return;
   }
-  delete stmt; 
+  if (stmt) delete stmt; 
 }
 
 string MysqlProxy::longTermCacheGet(string subdomain, string key, int32_t renewExpiry) {
   string out = "";
-  sql::PreparedStatement *stmt = con->prepareStatement("SELECT `v`,DATEDIFF(`expire_at`,NOW()) AS remaining_days FROM `kvstore` WHERE `k`=? AND `subdomain`=?");
-  sql::PreparedStatement *stmt2 = con->prepareStatement("UPDATE kvstore SET `expire_at`=DATE_ADD(NOW(),INTERVAL ? DAY) WHERE `k`=? AND `subdomain`=?");
+  sql::PreparedStatement *stmt, *stmt2;
   sql::ResultSet *res;
   try {
+    stmt = con->prepareStatement("SELECT `v`,DATEDIFF(`expire_at`,NOW()) AS remaining_days FROM `kvstore` WHERE `k`=? AND `subdomain`=?");
+    stmt2 = con->prepareStatement("UPDATE kvstore SET `expire_at`=DATE_ADD(NOW(),INTERVAL ? DAY) WHERE `k`=? AND `subdomain`=?");
     stmt->setString(1, key);
     stmt->setString(2, subdomain);
     res = stmt->executeQuery();
@@ -62,16 +65,18 @@ string MysqlProxy::longTermCacheGet(string subdomain, string key, int32_t renewE
     delete res; 
   } catch(sql::SQLException &e) {
     L(error) << "MySQL Error Getting From the Long Term Cache: " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
+    return "";
   }
-  delete stmt; 
-  delete stmt2;
+  if (stmt) delete stmt; 
+  if (stmt2) delete stmt2; 
   return out;
 }
 
 void MysqlProxy::longTermCacheSet(string subdomain, string key, string value, int32_t expireInterval, int32_t isFilename) {
-  sql::PreparedStatement *stmt = con->prepareStatement("DELETE FROM `kvstore` WHERE `subdomain`=? AND `k`=?");
-  sql::PreparedStatement *stmt2 = con->prepareStatement("INSERT INTO `kvstore` (`k`,`subdomain`,`v`,`expire_at`,`is_filename`) VALUES(?,?,?,DATE_ADD(NOW(), INTERVAL ? DAY),?)");
+  sql::PreparedStatement *stmt, *stmt2;
   try {
+    stmt = con->prepareStatement("DELETE FROM `kvstore` WHERE `subdomain`=? AND `k`=?");
+    stmt2 = con->prepareStatement("INSERT INTO `kvstore` (`k`,`subdomain`,`v`,`expire_at`,`is_filename`) VALUES(?,?,?,DATE_ADD(NOW(), INTERVAL ? DAY),?)");
     stmt->setString(1, subdomain);
     stmt->setString(2, key);
     stmt->execute();
@@ -83,39 +88,45 @@ void MysqlProxy::longTermCacheSet(string subdomain, string key, string value, in
     stmt2->execute();
   } catch(sql::SQLException &e) {
     L(error) << "MySQL Error Saving to the Long Term Cache: " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
+    return;
   }
-  delete stmt; 
-  delete stmt2;
+  if (stmt) delete stmt; 
+  if (stmt2) delete stmt2; 
 }
 
 void MysqlProxy::longTermCacheEmpty(string subdomain) {
-  sql::PreparedStatement *stmt = con->prepareStatement("DELETE FROM `kvstore` WHERE `subdomain`=?");
+  sql::PreparedStatement *stmt;
   try {
+    stmt = con->prepareStatement("DELETE FROM `kvstore` WHERE `subdomain`=?");
     stmt->setString(1, subdomain);
     stmt->execute();
   } catch(sql::SQLException &e) {
     L(error) << "MySQL Error Emptying The Long Term Cache: " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
+    return;
   }
-  delete stmt; 
+  if (stmt) delete stmt; 
 }
 
 void MysqlProxy::longTermCacheDelete(string subdomain, string key) {
-  sql::PreparedStatement *stmt = con->prepareStatement("DELETE FROM `kvstore` WHERE `k`=? AND `subdomain`=?");
+  sql::PreparedStatement *stmt;
   try {
+    stmt = con->prepareStatement("DELETE FROM `kvstore` WHERE `k`=? AND `subdomain`=?");
     stmt->setString(1, key);
     stmt->setString(2, subdomain);
     stmt->execute();
   } catch(sql::SQLException &e) {
     L(error) << "MySQL Error Deleting From The Long Term Cache: " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
+    return;
   }
-  delete stmt; 
+  if (stmt) delete stmt; 
 }
 
 void MysqlProxy::longTermCacheSweeperInfo(VaeDbDataForContext& _return, string subdomain) {
-  sql::PreparedStatement *stmt = con->prepareStatement("SELECT `k`,`v` FROM `kvstore` WHERE `is_filename`='1' AND `subdomain`=?");
-  sql::PreparedStatement *stmt2 = con->prepareStatement("DELETE FROM `kvstore` WHERE expires_at<NOW() WHERE `subdomain`=?");
+  sql::PreparedStatement *stmt, *stmt2;
   sql::ResultSet *res;
   try {
+    stmt = con->prepareStatement("SELECT `k`,`v` FROM `kvstore` WHERE `is_filename`='1' AND `subdomain`=?");
+    stmt2 = con->prepareStatement("DELETE FROM `kvstore` WHERE expires_at<NOW() WHERE `subdomain`=?");
     stmt2->setString(1, subdomain);
     stmt2->execute();
     stmt->setString(1, subdomain);
@@ -126,16 +137,18 @@ void MysqlProxy::longTermCacheSweeperInfo(VaeDbDataForContext& _return, string s
     delete res; 
   } catch(sql::SQLException &e) {
     L(error) << "MySQL Error Getting From the Long Term Cache: " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
+    return;
   }
-  delete stmt; 
-  delete stmt2;
+  if (stmt) delete stmt; 
+  if (stmt2) delete stmt2; 
 }
 
 string MysqlProxy::sessionCacheGet(string subdomain, string key) {
   string out = "";
-  sql::PreparedStatement *stmt = con->prepareStatement("SELECT `data` FROM `session_data` WHERE `id`=? AND `subdomain`=?");
+  sql::PreparedStatement *stmt;
   sql::ResultSet *res;
   try {
+    stmt = con->prepareStatement("SELECT `data` FROM `session_data` WHERE `id`=? AND `subdomain`=?");
     stmt->setString(1, key);
     stmt->setString(2, subdomain);
     res = stmt->executeQuery();
@@ -145,15 +158,17 @@ string MysqlProxy::sessionCacheGet(string subdomain, string key) {
     delete res; 
   } catch(sql::SQLException &e) {
     L(error) << "MySQL Error Getting From the Session Cache: " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
+    return "";
   }
-  delete stmt; 
+  if (stmt) delete stmt; 
   return out;
 }
 
 void MysqlProxy::sessionCacheSet(string subdomain, string key, string value) {
-  sql::PreparedStatement *stmt = con->prepareStatement("DELETE FROM `session_data` WHERE `id`=? AND `subdomain`=?");
-  sql::PreparedStatement *stmt2 = con->prepareStatement("INSERT INTO `session_data` (`id`,`subdomain`,`data`,`expires`) VALUES(?,?,?,UNIX_TIMESTAMP()+?)");
+  sql::PreparedStatement *stmt, *stmt2;
   try {
+    stmt = con->prepareStatement("DELETE FROM `session_data` WHERE `id`=? AND `subdomain`=?");
+    stmt2 = con->prepareStatement("INSERT INTO `session_data` (`id`,`subdomain`,`data`,`expires`) VALUES(?,?,?,UNIX_TIMESTAMP()+?)");
     stmt->setString(1, key);
     stmt->setString(2, subdomain);
     stmt->execute();
@@ -164,60 +179,67 @@ void MysqlProxy::sessionCacheSet(string subdomain, string key, string value) {
     stmt2->execute();
   } catch(sql::SQLException &e) {
     L(error) << "MySQL Error Saving to the Session Cache: " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
+    return;
   }
-  delete stmt; 
-  delete stmt2; 
+  if (stmt) delete stmt; 
+  if (stmt2) delete stmt2; 
 }
 
 void MysqlProxy::sessionCacheDelete(string subdomain, string key) {
-  sql::PreparedStatement *stmt = con->prepareStatement("DELETE FROM `session_data` WHERE `id`=? AND `subdomain`=?");
+  sql::PreparedStatement *stmt;
   try {
+    stmt = con->prepareStatement("DELETE FROM `session_data` WHERE `id`=? AND `subdomain`=?");
     stmt->setString(1, key);
     stmt->setString(2, subdomain);
     stmt->execute();
   } catch(sql::SQLException &e) {
     L(error) << "MySQL Error Deleting From The Session Cache: " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
+    return;
   }
-  delete stmt; 
+  if (stmt) delete stmt; 
 }
 
 int32_t MysqlProxy::lock(string subdomain) {
   int32_t lockTime = 1000000;
   int32_t oldLocksRemoved = 0;
   int32_t gotLock = 0;
-  sql::PreparedStatement *stmt = con->prepareStatement("INSERT INTO `locks` (subdomain,created_at) VALUES(?,NOW())");
-  sql::PreparedStatement *stmt2 = con->prepareStatement("DELETE FROM `locks` WHERE created_at<DATE_SUB(NOW(), INTERVAL 1 MINUTE)");
+  sql::PreparedStatement *stmt, *stmt2;
   stmt->setString(1, subdomain);
   for (int i = 0; i < 60*10001000/lockTime; i++) {
     try {
+      stmt = con->prepareStatement("INSERT INTO `locks` (subdomain,created_at) VALUES(?,NOW())");
       stmt->execute();
       gotLock = 1;
       break;
     } catch(sql::SQLException &e) {
       if (!oldLocksRemoved) {
         try {
+          stmt2 = con->prepareStatement("DELETE FROM `locks` WHERE created_at<DATE_SUB(NOW(), INTERVAL 1 MINUTE)");
           stmt2->execute();
         } catch(sql::SQLException &e) {
           L(error) << "MySQL Error Removing Old Locks For " << subdomain << ": " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
+          return gotLock;
         }
         oldLocksRemoved = 1;
       }  
       usleep(lockTime);
     }
   }
-  delete stmt; 
-  delete stmt2; 
+  if (stmt) delete stmt; 
+  if (stmt2) delete stmt2; 
   return gotLock;
 }
 
 int32_t MysqlProxy::unlock(string subdomain) {
-  sql::PreparedStatement *stmt = con->prepareStatement("DELETE FROM `locks` WHERE `subdomain`=?");
+  sql::PreparedStatement *stmt;
   try {
+    stmt = con->prepareStatement("DELETE FROM `locks` WHERE `subdomain`=?");
     stmt->setString(1, subdomain);
     stmt->execute();
   } catch(sql::SQLException &e) {
     L(error) << "MySQL Error Releasing Lock For " << subdomain << ": " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
+    return 0;
   }
-  delete stmt; 
-  return 0;
+  if (stmt) delete stmt; 
+  return 1;
 }
