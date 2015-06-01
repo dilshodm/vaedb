@@ -14,23 +14,30 @@ configure Vae Remote on your development machine.
  - pcre
  - zeromq
  - libs3
- - libmysqlclient
  - libmemcached
+ - mysql-connector-c++ (library)
 
 
-### Install Prerequisites using a Mac
+### Install Prerequisites using a Mac:
 
     brew install pcre 
     brew install zeromq
     brew install thrift
     brew install libmemcached
-
-
-#### Install libs3:
+    brew install mysql-connector-c++
 
     git clone https://github.com/bji/libs3.git
     cd libs3
     mv GNUmakefile.osx GNUmakefile
+    sudo make install
+
+
+### Install Prerequisites on Linux:
+
+    apt-get install libzmq-dev libpcre3-dev libthrift-dev libmemcached-dev libmysqlcppconn-dev
+
+    git clone https://github.com/bji/libs3.git
+    cd libs3
     sudo make install
 
 
