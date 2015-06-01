@@ -3057,6 +3057,14 @@ uint32_t VaeDb_longTermCacheGet_args::read(::apache::thrift::protocol::TProtocol
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->useShortTermCache);
+          this->__isset.useShortTermCache = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -3086,6 +3094,10 @@ uint32_t VaeDb_longTermCacheGet_args::write(::apache::thrift::protocol::TProtoco
   xfer += oprot->writeI32(this->renewExpiry);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("useShortTermCache", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32(this->useShortTermCache);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -3112,6 +3124,10 @@ uint32_t VaeDb_longTermCacheGet_pargs::write(::apache::thrift::protocol::TProtoc
 
   xfer += oprot->writeFieldBegin("renewExpiry", ::apache::thrift::protocol::T_I32, 3);
   xfer += oprot->writeI32((*(this->renewExpiry)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("useShortTermCache", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((*(this->useShortTermCache)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -4803,13 +4819,13 @@ void VaeDbClient::recv_shortTermCacheDelete()
   return;
 }
 
-void VaeDbClient::longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry)
+void VaeDbClient::longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry, const int32_t useShortTermCache)
 {
-  send_longTermCacheGet(session_id, key, renewExpiry);
+  send_longTermCacheGet(session_id, key, renewExpiry, useShortTermCache);
   recv_longTermCacheGet(_return);
 }
 
-void VaeDbClient::send_longTermCacheGet(const int32_t session_id, const std::string& key, const int32_t renewExpiry)
+void VaeDbClient::send_longTermCacheGet(const int32_t session_id, const std::string& key, const int32_t renewExpiry, const int32_t useShortTermCache)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("longTermCacheGet", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -4818,6 +4834,7 @@ void VaeDbClient::send_longTermCacheGet(const int32_t session_id, const std::str
   args.session_id = &session_id;
   args.key = &key;
   args.renewExpiry = &renewExpiry;
+  args.useShortTermCache = &useShortTermCache;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -5908,7 +5925,7 @@ void VaeDbProcessor::process_longTermCacheGet(int32_t seqid, ::apache::thrift::p
 
   VaeDb_longTermCacheGet_result result;
   try {
-    iface_->longTermCacheGet(result.success, args.session_id, args.key, args.renewExpiry);
+    iface_->longTermCacheGet(result.success, args.session_id, args.key, args.renewExpiry, args.useShortTermCache);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {

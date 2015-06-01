@@ -224,13 +224,13 @@ module VaeDb
       return
     end
 
-    def longTermCacheGet(session_id, key, renewExpiry)
-      send_longTermCacheGet(session_id, key, renewExpiry)
+    def longTermCacheGet(session_id, key, renewExpiry, useShortTermCache)
+      send_longTermCacheGet(session_id, key, renewExpiry, useShortTermCache)
       return recv_longTermCacheGet()
     end
 
-    def send_longTermCacheGet(session_id, key, renewExpiry)
-      send_message('longTermCacheGet', LongTermCacheGet_args, :session_id => session_id, :key => key, :renewExpiry => renewExpiry)
+    def send_longTermCacheGet(session_id, key, renewExpiry, useShortTermCache)
+      send_message('longTermCacheGet', LongTermCacheGet_args, :session_id => session_id, :key => key, :renewExpiry => renewExpiry, :useShortTermCache => useShortTermCache)
     end
 
     def recv_longTermCacheGet()
@@ -435,7 +435,7 @@ module VaeDb
     def process_longTermCacheGet(seqid, iprot, oprot)
       args = read_args(iprot, LongTermCacheGet_args)
       result = LongTermCacheGet_result.new()
-      result.success = @handler.longTermCacheGet(args.session_id, args.key, args.renewExpiry)
+      result.success = @handler.longTermCacheGet(args.session_id, args.key, args.renewExpiry, args.useShortTermCache)
       write_result(result, oprot, 'longTermCacheGet', seqid)
     end
 
@@ -979,11 +979,13 @@ module VaeDb
     SESSION_ID = 1
     KEY = 2
     RENEWEXPIRY = 3
+    USESHORTTERMCACHE = 4
 
     FIELDS = {
       SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'},
       KEY => {:type => ::Thrift::Types::STRING, :name => 'key'},
-      RENEWEXPIRY => {:type => ::Thrift::Types::I32, :name => 'renewExpiry'}
+      RENEWEXPIRY => {:type => ::Thrift::Types::I32, :name => 'renewExpiry'},
+      USESHORTTERMCACHE => {:type => ::Thrift::Types::I32, :name => 'useShortTermCache'}
     }
 
     def struct_fields; FIELDS; end

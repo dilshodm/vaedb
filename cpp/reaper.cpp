@@ -17,7 +17,7 @@ using namespace std;
 #include "session.h"
 #include "vae_db_handler.h"
 
-Reaper::Reaper(VaeDbHandler *h) : vaeDbHandler(h) {
+Reaper::Reaper(VaeDbHandler *h, MysqlProxy &p) : vaeDbHandler(h), mysqlProxy(p) {
   thread *t = new thread(boost::bind(&Reaper::Run, this));
 }
 
@@ -33,5 +33,7 @@ void Reaper::Run() {
         sessions.erase(it++);
       } else { ++it; }
     }
+
+    mysqlProxy.garbageCollect();
   }
 }

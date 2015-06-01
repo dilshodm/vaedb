@@ -111,7 +111,7 @@ service VaeDb {
   void shortTermCacheSet(1:i32 session_id, 2:string key, 3:string value, 4:i32 flags, 5:i32 expireInterval)
   void shortTermCacheDelete(1:i32 session_id, 2:string key)
 
-  string longTermCacheGet(1:i32 session_id, 2:string key, 3:i32 renewExpiry)
+  string longTermCacheGet(1:i32 session_id, 2:string key, 3:i32 renewExpiry, 4:i32 useShortTermCache)
   void longTermCacheSet(1:i32 session_id, 2:string key, 3:string value, 4:i32 expireInterval, 5:i32 isFilename)
   void longTermCacheEmpty(1:i32 session_id)
 

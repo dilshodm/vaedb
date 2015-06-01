@@ -116,9 +116,10 @@ interface VaeDbIf {
    * @param int $session_id
    * @param string $key
    * @param int $renewExpiry
+   * @param int $useShortTermCache
    * @return string
    */
-  public function longTermCacheGet($session_id, $key, $renewExpiry);
+  public function longTermCacheGet($session_id, $key, $renewExpiry, $useShortTermCache);
   /**
    * @param int $session_id
    * @param string $key
@@ -899,18 +900,19 @@ class VaeDbClient implements \Thrift\VaeDbIf {
     return;
   }
 
-  public function longTermCacheGet($session_id, $key, $renewExpiry)
+  public function longTermCacheGet($session_id, $key, $renewExpiry, $useShortTermCache)
   {
-    $this->send_longTermCacheGet($session_id, $key, $renewExpiry);
+    $this->send_longTermCacheGet($session_id, $key, $renewExpiry, $useShortTermCache);
     return $this->recv_longTermCacheGet();
   }
 
-  public function send_longTermCacheGet($session_id, $key, $renewExpiry)
+  public function send_longTermCacheGet($session_id, $key, $renewExpiry, $useShortTermCache)
   {
     $args = new \Thrift\VaeDb_longTermCacheGet_args();
     $args->session_id = $session_id;
     $args->key = $key;
     $args->renewExpiry = $renewExpiry;
+    $args->useShortTermCache = $useShortTermCache;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -3910,6 +3912,10 @@ class VaeDb_longTermCacheGet_args {
    * @var int
    */
   public $renewExpiry = null;
+  /**
+   * @var int
+   */
+  public $useShortTermCache = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -3926,6 +3932,10 @@ class VaeDb_longTermCacheGet_args {
           'var' => 'renewExpiry',
           'type' => TType::I32,
           ),
+        4 => array(
+          'var' => 'useShortTermCache',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -3937,6 +3947,9 @@ class VaeDb_longTermCacheGet_args {
       }
       if (isset($vals['renewExpiry'])) {
         $this->renewExpiry = $vals['renewExpiry'];
+      }
+      if (isset($vals['useShortTermCache'])) {
+        $this->useShortTermCache = $vals['useShortTermCache'];
       }
     }
   }
@@ -3981,6 +3994,13 @@ class VaeDb_longTermCacheGet_args {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 4:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->useShortTermCache);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -4007,6 +4027,11 @@ class VaeDb_longTermCacheGet_args {
     if ($this->renewExpiry !== null) {
       $xfer += $output->writeFieldBegin('renewExpiry', TType::I32, 3);
       $xfer += $output->writeI32($this->renewExpiry);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->useShortTermCache !== null) {
+      $xfer += $output->writeFieldBegin('useShortTermCache', TType::I32, 4);
+      $xfer += $output->writeI32($this->useShortTermCache);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

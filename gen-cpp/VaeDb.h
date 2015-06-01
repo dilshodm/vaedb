@@ -29,7 +29,7 @@ class VaeDbIf {
   virtual void shortTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t flags) = 0;
   virtual void shortTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t flags, const int32_t expireInterval) = 0;
   virtual void shortTermCacheDelete(const int32_t session_id, const std::string& key) = 0;
-  virtual void longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry) = 0;
+  virtual void longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry, const int32_t useShortTermCache) = 0;
   virtual void longTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename) = 0;
   virtual void longTermCacheEmpty(const int32_t session_id) = 0;
   virtual int32_t sitewideLock(const int32_t session_id) = 0;
@@ -107,7 +107,7 @@ class VaeDbNull : virtual public VaeDbIf {
   void shortTermCacheDelete(const int32_t /* session_id */, const std::string& /* key */) {
     return;
   }
-  void longTermCacheGet(std::string& /* _return */, const int32_t /* session_id */, const std::string& /* key */, const int32_t /* renewExpiry */) {
+  void longTermCacheGet(std::string& /* _return */, const int32_t /* session_id */, const std::string& /* key */, const int32_t /* renewExpiry */, const int32_t /* useShortTermCache */) {
     return;
   }
   void longTermCacheSet(const int32_t /* session_id */, const std::string& /* key */, const std::string& /* value */, const int32_t /* expireInterval */, const int32_t /* isFilename */) {
@@ -1940,27 +1940,29 @@ class VaeDb_shortTermCacheDelete_presult {
 };
 
 typedef struct _VaeDb_longTermCacheGet_args__isset {
-  _VaeDb_longTermCacheGet_args__isset() : session_id(false), key(false), renewExpiry(false) {}
+  _VaeDb_longTermCacheGet_args__isset() : session_id(false), key(false), renewExpiry(false), useShortTermCache(false) {}
   bool session_id :1;
   bool key :1;
   bool renewExpiry :1;
+  bool useShortTermCache :1;
 } _VaeDb_longTermCacheGet_args__isset;
 
 class VaeDb_longTermCacheGet_args {
  public:
 
-  static const char* ascii_fingerprint; // = "52C6DAB6CF51AF617111F6D3964C6503";
-  static const uint8_t binary_fingerprint[16]; // = {0x52,0xC6,0xDA,0xB6,0xCF,0x51,0xAF,0x61,0x71,0x11,0xF6,0xD3,0x96,0x4C,0x65,0x03};
+  static const char* ascii_fingerprint; // = "AD5E8581BBE4C3CDE5FC5930DA3DD601";
+  static const uint8_t binary_fingerprint[16]; // = {0xAD,0x5E,0x85,0x81,0xBB,0xE4,0xC3,0xCD,0xE5,0xFC,0x59,0x30,0xDA,0x3D,0xD6,0x01};
 
   VaeDb_longTermCacheGet_args(const VaeDb_longTermCacheGet_args&);
   VaeDb_longTermCacheGet_args& operator=(const VaeDb_longTermCacheGet_args&);
-  VaeDb_longTermCacheGet_args() : session_id(0), key(), renewExpiry(0) {
+  VaeDb_longTermCacheGet_args() : session_id(0), key(), renewExpiry(0), useShortTermCache(0) {
   }
 
   virtual ~VaeDb_longTermCacheGet_args() throw();
   int32_t session_id;
   std::string key;
   int32_t renewExpiry;
+  int32_t useShortTermCache;
 
   _VaeDb_longTermCacheGet_args__isset __isset;
 
@@ -1970,6 +1972,8 @@ class VaeDb_longTermCacheGet_args {
 
   void __set_renewExpiry(const int32_t val);
 
+  void __set_useShortTermCache(const int32_t val);
+
   bool operator == (const VaeDb_longTermCacheGet_args & rhs) const
   {
     if (!(session_id == rhs.session_id))
@@ -1977,6 +1981,8 @@ class VaeDb_longTermCacheGet_args {
     if (!(key == rhs.key))
       return false;
     if (!(renewExpiry == rhs.renewExpiry))
+      return false;
+    if (!(useShortTermCache == rhs.useShortTermCache))
       return false;
     return true;
   }
@@ -1996,14 +2002,15 @@ class VaeDb_longTermCacheGet_args {
 class VaeDb_longTermCacheGet_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "52C6DAB6CF51AF617111F6D3964C6503";
-  static const uint8_t binary_fingerprint[16]; // = {0x52,0xC6,0xDA,0xB6,0xCF,0x51,0xAF,0x61,0x71,0x11,0xF6,0xD3,0x96,0x4C,0x65,0x03};
+  static const char* ascii_fingerprint; // = "AD5E8581BBE4C3CDE5FC5930DA3DD601";
+  static const uint8_t binary_fingerprint[16]; // = {0xAD,0x5E,0x85,0x81,0xBB,0xE4,0xC3,0xCD,0xE5,0xFC,0x59,0x30,0xDA,0x3D,0xD6,0x01};
 
 
   virtual ~VaeDb_longTermCacheGet_pargs() throw();
   const int32_t* session_id;
   const std::string* key;
   const int32_t* renewExpiry;
+  const int32_t* useShortTermCache;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -2612,8 +2619,8 @@ class VaeDbClient : virtual public VaeDbIf {
   void shortTermCacheDelete(const int32_t session_id, const std::string& key);
   void send_shortTermCacheDelete(const int32_t session_id, const std::string& key);
   void recv_shortTermCacheDelete();
-  void longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry);
-  void send_longTermCacheGet(const int32_t session_id, const std::string& key, const int32_t renewExpiry);
+  void longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry, const int32_t useShortTermCache);
+  void send_longTermCacheGet(const int32_t session_id, const std::string& key, const int32_t renewExpiry, const int32_t useShortTermCache);
   void recv_longTermCacheGet(std::string& _return);
   void longTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename);
   void send_longTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename);
@@ -2843,13 +2850,13 @@ class VaeDbMultiface : virtual public VaeDbIf {
     ifaces_[i]->shortTermCacheDelete(session_id, key);
   }
 
-  void longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry) {
+  void longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry, const int32_t useShortTermCache) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->longTermCacheGet(_return, session_id, key, renewExpiry);
+      ifaces_[i]->longTermCacheGet(_return, session_id, key, renewExpiry, useShortTermCache);
     }
-    ifaces_[i]->longTermCacheGet(_return, session_id, key, renewExpiry);
+    ifaces_[i]->longTermCacheGet(_return, session_id, key, renewExpiry, useShortTermCache);
     return;
   }
 

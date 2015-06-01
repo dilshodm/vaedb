@@ -90,7 +90,7 @@ class VaeDbHandler : virtual public VaeDbIf {
     printf("shortTermCacheDelete\n");
   }
 
-  void longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry) {
+  void longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry, const int32_t useShortTermCache) {
     // Your implementation goes here
     printf("longTermCacheGet\n");
   }
