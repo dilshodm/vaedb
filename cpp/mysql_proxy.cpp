@@ -200,33 +200,27 @@ void MysqlProxy::sessionCacheDelete(string subdomain, string key) {
 }
 
 int32_t MysqlProxy::lock(string subdomain) {
-  int32_t lockTime = 1000000;
-  int32_t oldLocksRemoved = 0;
   int32_t gotLock = 0;
-  sql::PreparedStatement *stmt, *stmt2;
-  stmt->setString(1, subdomain);
-  for (int i = 0; i < 60*10001000/lockTime; i++) {
+  sql::PreparedStatement *stmt;
+  try {
+    stmt = con->prepareStatement("INSERT INTO `locks` (subdomain,created_at) VALUES(?,NOW())");
+    stmt->setString(1, subdomain);
+    stmt->execute();
+    gotLock = 1;
+  } catch(sql::SQLException &e) {
+    sql::PreparedStatement *stmt2;
     try {
-      stmt = con->prepareStatement("INSERT INTO `locks` (subdomain,created_at) VALUES(?,NOW())");
-      stmt->execute();
-      gotLock = 1;
-      break;
+      stmt2 = con->prepareStatement("DELETE FROM `locks` WHERE created_at<DATE_SUB(NOW(), INTERVAL 1 MINUTE)");
+      stmt2->execute();
     } catch(sql::SQLException &e) {
-      if (!oldLocksRemoved) {
-        try {
-          stmt2 = con->prepareStatement("DELETE FROM `locks` WHERE created_at<DATE_SUB(NOW(), INTERVAL 1 MINUTE)");
-          stmt2->execute();
-        } catch(sql::SQLException &e) {
-          L(error) << "MySQL Error Removing Old Locks For " << subdomain << ": " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
-          return gotLock;
-        }
-        oldLocksRemoved = 1;
-      }  
-      usleep(lockTime);
+      L(error) << "MySQL Error Removing Old Locks For " << subdomain << ": " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
+      if (stmt) delete stmt; 
+      if (stmt2) delete stmt2; 
+      return gotLock;
     }
+    delete stmt2; 
   }
   if (stmt) delete stmt; 
-  if (stmt2) delete stmt2; 
   return gotLock;
 }
 
