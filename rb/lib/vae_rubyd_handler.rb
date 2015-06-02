@@ -4,8 +4,6 @@ require 'compass'
 require 'haml'
 require 'vae_rubyd'
 
-Encoding.default_external = "utf-8"
-
 class VaeRubydHandler
   
   def fixDocRoot(path)
