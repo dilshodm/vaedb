@@ -24,7 +24,8 @@ string MemcacheProxy::get(const string key, const int32_t flags) {
 };
 
 void MemcacheProxy::set(const string key, const string value, const int32_t flags, const int32_t expireInterval) {
-  client->set(key, value.c_str(), value.length(), expireInterval, flags);
+  const std::vector<char> valueVector(value.begin(), value.end());
+  client->set(key, valueVector, expireInterval, flags);
 };
 
 void MemcacheProxy::remove(const string key) {
