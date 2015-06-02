@@ -35,6 +35,8 @@ sql::Connection *MysqlProxy::createConnection() {
   driver = get_driver_instance();
   try {
     con = driver->connect("tcp://" + host + ":3306", username, password);
+    bool myTrue = true;
+    con->setClientOption("OPT_RECONNECT", &myTrue);
   } catch(sql::SQLException &e) {
     L(error) << "Error Connecting To MySQL: " << e.what();
     return NULL;
