@@ -11,6 +11,7 @@ class Vaerubyd
     transportFactory = Thrift::BufferedTransportFactory.new
     server = Thrift::ThreadPoolServer.new(processor, transport, transportFactory)
     puts "VaeRubyd Running"
+    puts "  Encoding: #{Encoding.default_internal} #{Encoding.default_external}"
     server.serve()
   end
   
