@@ -1,11 +1,13 @@
 #ifndef _VAE_THRIFT_MEMCACHE_PROXY_H_
 #define _VAE_THRIFT_MEMCACHE_PROXY_H_
 
+#include <boost/thread/mutex.hpp>
 #include <string>
 #include <libmemcached/memcached.hpp>
 
 class MemcacheProxy {
   memcache::Memcache *client;
+  boost::mutex clientMutex;
  
 public:
   MemcacheProxy(std::string connectString);

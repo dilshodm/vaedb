@@ -264,8 +264,6 @@ void VaeDbHandler::writePid() {
 }
 
 void VaeDbHandler::shortTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t flags) {
-  L(debug) << "shortTermCacheGet: " << sessionId << " " << key;
-
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);

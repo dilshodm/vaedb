@@ -2,6 +2,9 @@
 #define _VAE_THRIFT_MYSQL_PROXY_H_
 
 #include <string>
+#include <boost/smart_ptr.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/condition_variable.hpp>
 
 #include <cppconn/driver.h>
 #include <cppconn/exception.h>
@@ -10,9 +13,25 @@
 
 #include "../gen-cpp/VaeDb.h"
 
+#define NUM_CONNECTIONS 8
+
+enum {
+  POOL_FREE,
+  POOL_INUSE
+};
+
+typedef std::map<sql::Connection*, short> Pool;
+
 class MysqlProxy {
   sql::Driver *driver;
-  sql::Connection *con;
+  std::string username;
+  std::string password;
+  std::string database;
+  std::string host;
+  Pool connPool;
+  boost::mutex poolMutex;
+  boost::condition_variable cond;
+  int availableConnections;
  
 public:
   MysqlProxy(std::string host, std::string username, std::string password, std::string database);
@@ -28,6 +47,11 @@ public:
   void longTermCacheSweeperInfo(VaeDbDataForContext& _return, std::string subdomain);
   int32_t lock(std::string subdomain);
   int32_t unlock(std::string subdomain);
+
+private:
+  sql::Connection *createConnection();
+  boost::shared_ptr<sql::Connection> getConnection();
+  void freeConnection(sql::Connection *con);
 };
 
 #endif
