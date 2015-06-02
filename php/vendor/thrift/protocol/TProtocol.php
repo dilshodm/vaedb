@@ -20,39 +20,15 @@
  * @package thrift.protocol
  */
 
+namespace Thrift\Protocol;
 
-/**
- * Protocol module. Contains all the types and definitions needed to implement
- * a protocol encoder/decoder.
- *
- * @package thrift.protocol
- */
-
-/**
- * Protocol exceptions
- */
-class TProtocolException extends TException {
-  const UNKNOWN = 0;
-  const INVALID_DATA = 1;
-  const NEGATIVE_SIZE = 2;
-  const SIZE_LIMIT = 3;
-  const BAD_VERSION = 4;
-
-  function __construct($message=null, $code=0) {
-    parent::__construct($message, $code);
-  }
-}
+use Thrift\Type\TType;
+use Thrift\Exception\TProtocolException;
 
 /**
  * Protocol base class module.
  */
 abstract class TProtocol {
-  // The below may seem silly, but it is to get around the problem that the
-  // "instanceof" operator can only take in a T_VARIABLE and not a T_STRING
-  // or T_CONSTANT_ENCAPSED_STRING. Using "is_a()" instead of "instanceof" is
-  // a workaround but is deprecated in PHP5. This is used in the generated
-  // deserialization code.
-  static $TBINARYPROTOCOLACCELERATED = 'TBinaryProtocolAccelerated';
 
   /**
    * Underlying transport
@@ -262,7 +238,8 @@ abstract class TProtocol {
         return $result;
       }
     default:
-      return 0;
+      throw new TProtocolException('Unknown field type: '.$type,
+                                   TProtocolException::INVALID_DATA);
     }
   }
 
@@ -356,22 +333,8 @@ abstract class TProtocol {
         return $result;
       }
     default:
-      return 0;
+      throw new TProtocolException('Unknown field type: '.$type,
+                                   TProtocolException::INVALID_DATA);
     }
   }
 }
-
-/**
- * Protocol factory creates protocol objects from transports
- */
-interface TProtocolFactory {
-  /**
-   * Build a protocol from the base transport
-   *
-   * @return TProtcol protocol
-   */
-  public function getProtocol($trans);
-}
-
-
-?>

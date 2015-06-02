@@ -20,6 +20,10 @@
  * @package thrift.transport
  */
 
+namespace Thrift\Transport;
+
+use Thrift\Transport\TTransport;
+use Thrift\Exception\TTransportException;
 
 /**
  * Transport that only accepts writes and ignores them.
@@ -44,5 +48,3 @@ class TNullTransport extends TTransport {
   public function write($buf) {}
 
 }
-
-?>

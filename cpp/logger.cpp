@@ -1,8 +1,8 @@
-using namespace std;
-
 #include "logger.h"
 #include <unistd.h>
 #include <sys/syscall.h>
+
+using namespace std;
 
 LogLevel Logger::displayLevel = info;
 

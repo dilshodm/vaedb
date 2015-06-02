@@ -16,6 +16,8 @@
 #include "lru_cache.h"
 #include "../gen-cpp/VaeDb.h"
 
+extern int testMode;
+
 typedef vector<class Context *> ContextList;
 typedef map<int,xmlNodePtr> NodeIdMap;
 typedef vector<xmlNodePtr> NodeList;

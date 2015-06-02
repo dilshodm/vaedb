@@ -33,6 +33,8 @@ namespace po = boost::program_options;
 #include "vae_db_handler.h"
 #include "bus.h"
 
+int testMode = 0;
+
 void crash_handler(int signal) {
   const int MAX_STACK_DEPTH = 100;
 
@@ -52,15 +54,27 @@ int main(int argc, char **argv) {
   signal(SIGUSR1, crash_handler);
 
   //abuse of libxml internal pointers results in doublefree;
+#ifdef M_CHECK_ACTION
   mallopt(M_CHECK_ACTION, 0);
+#endif
 
   int opt, workers;
   string bus_bindaddress;
-  char * _access_key = getenv("AWS_ACCESS_KEY");
-  char * _secret_key = getenv("AWS_SECRET_KEY");
+  char *_access_key = getenv("AWS_ACCESS_KEY");
+  char *_secret_key = getenv("AWS_SECRET_KEY");
+  char *_mysql_username = getenv("MYSQL_USERNAME");
+  char *_mysql_password = getenv("MYSQL_PASSWORD");
+  char *_mysql_database = getenv("MYSQL_DATABASE");
+  char *_mysql_host = getenv("MYSQL_HOST");
+  char *_memcached_host = getenv("MEMCACHED_HOST");
 
   string aws_access_key(_access_key ? _access_key : "");
   string aws_secret_key(_secret_key ? _secret_key : "");
+  string mysql_username(_mysql_username ? _mysql_username : "root");
+  string mysql_password(_mysql_password ? _mysql_password : "");
+  string mysql_database(_mysql_database ? _mysql_database : "vaedb");
+  string mysql_host(_mysql_host ? _mysql_host : "localhost");
+  string memcached_host(_memcached_host ? _memcached_host : "127.0.0.1");
   string aws_bucket;
   string feed_cache_path;
 
@@ -76,6 +90,12 @@ int main(int argc, char **argv) {
     ("aws_bucket,U", po::value<string>(&aws_bucket)->default_value(aws_bucket), "AWS bucket")
     ("feed_cache_path", po::value<string>(&feed_cache_path)->default_value("/tmp"), "feed cache path") 
     ("workers,w", po::value<int>(&workers)->default_value(12), "number of worker threads to spawn")
+    ("mysql_username", po::value<string>(&mysql_username), "MySQL username")
+    ("mysql_password", po::value<string>(&mysql_password), "MySQL password")
+    ("mysql_database", po::value<string>(&mysql_database), "MySQL database name")
+    ("mysql_host", po::value<string>(&mysql_host), "MySQL hostname or IP Address")
+    ("memcached_host", po::value<string>(&memcached_host), "Memcached hostname or IP Address.  Provide multiple server hostnames by using: this syntax \"memcached1.actionverb.com,memcached2.actionverb.com\" without the quotes")
+    ("test,T", "Run in Vae Remote Unit Test mode.  Do not run this on production!")
   ;
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -84,6 +104,9 @@ int main(int argc, char **argv) {
   if (vm.count("help")) {
     cout << desc << "\n";
     return 1;
+  }
+  if (vm.count("test")) {
+    testMode = 1;
   }
   if (vm.count("log_level")) {
     if (vm["log_level"].as<string>() == "error") Logger::displayLevel = error;
@@ -103,29 +126,31 @@ int main(int argc, char **argv) {
   }
   
   QueryLog query_log(p_querylog_stream.get());
+  MemcacheProxy memcache(memcached_host);
+  MysqlProxy mysql(mysql_host, mysql_username, mysql_password, mysql_database);
 
   if(!initialize_s3(aws_access_key, aws_secret_key, aws_bucket, feed_cache_path)) {
     L(error) << "S3 failed to initialize.";
     return -1;
   }
 
-  shared_ptr<PosixThreadFactory> threadFactory = shared_ptr<PosixThreadFactory>(new PosixThreadFactory());
-  shared_ptr<VaeDbHandler> handler(new VaeDbHandler(query_log));
-  shared_ptr<TProcessor> processor(new VaeDbProcessor(handler));
-  shared_ptr<TServerSocket> serverSocket(new TServerSocket(vm["port"].as<int>()));
-  shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
-  shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
+  boost::shared_ptr<PosixThreadFactory> threadFactory = boost::shared_ptr<PosixThreadFactory>(new PosixThreadFactory());
+  boost::shared_ptr<VaeDbHandler> handler(new VaeDbHandler(query_log, memcache, mysql));
+  boost::shared_ptr<TProcessor> processor(new VaeDbProcessor(handler));
+  boost::shared_ptr<TServerSocket> serverSocket(new TServerSocket(vm["port"].as<int>()));
+  boost::shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
+  boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
 #ifdef THREADED 
-  shared_ptr<Bus> bus(new Bus(handler, vm["busaddress"].as<string>()));
+  boost::shared_ptr<Bus> bus(new Bus(handler, vm["busaddress"].as<string>()));
   threadFactory->newThread(bus)->start();
 
-  shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(workers);
+  boost::shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(workers);
   threadManager->threadFactory(threadFactory);
   threadManager->start();
-  shared_ptr<TServer> server(new TThreadPoolServer(processor, serverSocket, transportFactory, protocolFactory, threadManager));
+  boost::shared_ptr<TServer> server(new TThreadPoolServer(processor, serverSocket, transportFactory, protocolFactory, threadManager));
 #else
-  shared_ptr<TServer> server(new TSimpleServer(processor, serverSocket, transportFactory, protocolFactory));
+  boost::shared_ptr<TServer> server(new TSimpleServer(processor, serverSocket, transportFactory, protocolFactory));
 #endif
 
   server->serve();

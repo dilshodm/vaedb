@@ -62,13 +62,17 @@ Query::Query(Site *s, Context *context, const string &q) : site(s), xpathObj(NUL
   // prev() and next()
   if (!strcasecmp("prev()", query.c_str())) {
     if (!context) {
-      throw VaeDbQueryError("You cannot use PREV() outside of a context.");
+      VaeDbQueryError e;
+      e.message = "You cannot use PREV() outside of a context.";
+      throw e;
     }
     query = (string)"preceding-sibling::" + context->getNodeName() + "[1]";
   }
   if (!strcasecmp("next()", query.c_str())) {
     if (!context) {
-      throw VaeDbQueryError("You cannot use NEXT() outside of a context.");
+      VaeDbQueryError e;
+      e.message = "You cannot use NEXT() outside of a context.";
+      throw e;
     }
     query = (string)"following-sibling::" + context->getNodeName() + "[1]";
   }
@@ -83,7 +87,9 @@ Query::Query(Site *s, Context *context, const string &q) : site(s), xpathObj(NUL
     while (pcrecpp::RE("([^@])([_a-z])([0-9a-z_/]+) (or|and) ").Replace("\\1\\2\\3/text() \\4 ", &queryParts[i])) { }
     while (pcrecpp::RE("([^@])([_a-z])([0-9a-z_/]+)\\]").Replace("\\1\\2\\3/text()]", &queryParts[i])) { }
     if (strstr(queryParts[i].c_str(), "//")) {
-      throw VaeDbQueryError("Double-slashes are not supported in Vae queries (anymore).");
+      VaeDbQueryError e;
+      e.message = "Double-slashes are not supported in Vae queries.";
+      throw e;
     }
   }  
   query = boost::join(queryParts, "'");
@@ -171,9 +177,12 @@ void Query::runQuery(Context *context, const string &q, const string &displayQue
 
 void Query::runRawQuery(xmlNodePtr node, const string &q, const string &displayQuery) {
   xmlXPathContext *xpathContext = xmlXPathNewContext(site->doc);
+
   if (xpathContext == NULL) {
     L(warning) << "[" << site->getSubdomain() << "] could not create libxml2 XPath Context";
-    throw VaeDbInternalError("could not create libxml2 XPath Context");
+    VaeDbInternalError e;
+    e.message = "could not create libxml2 XPath Context";
+    throw e;
   }
   xpathContext->node = node;
   xpathObj = xmlXPathEvalExpression((xmlChar *)q.c_str(), xpathContext);
@@ -181,11 +190,15 @@ void Query::runRawQuery(xmlNodePtr node, const string &q, const string &displayQ
   if (xpathObj == NULL) {
     L(warning) << "[" << site->getSubdomain() << "] could not evaluate XPath expression: '" << displayQuery << "', transformed into '" << q << "'";
     string error = "could not evaluate XPath expression: '" + displayQuery + "'";
-    throw VaeDbQueryError(error.c_str());
+    VaeDbQueryError e;
+    e.message = error.c_str();
+    throw e;
   }
   if (xpathObj->type != XPATH_NODESET) {
     L(warning) << "[" << site->getSubdomain() << "] libxml2 returned a strange response: '" << xpathObj->type << "'.  Query was '" << q << "'";
-    throw VaeDbInternalError("libxml2 returned something other than a nodeset?!");
+    VaeDbInternalError e;
+    e.message = "libxml2 returned something other than a nodeset?!";
+    throw e;
   }
   size = (xpathObj->nodesetval) ? xpathObj->nodesetval->nodeNr : 0;
   if (size && (getNode(0) == site->rootNode)) {

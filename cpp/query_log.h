@@ -37,7 +37,22 @@ struct TypeHelper<std::string> {
   }
 };
 
+
 template <>
+struct TypeHelper<char[2]> {
+  inline static std::string Name() {
+    return "char[2]";
+  }
+  inline static std::string ValueRep(const char *val) {
+    std::stringstream ss;
+    std::string escaped(val);
+    str_replace(escaped, "\\", "\\\\");
+    str_replace(escaped, "\"", "\\\"");
+    ss << '"' << escaped << '"';
+    return ss.str();
+  }
+};
+
 template <typename K, typename V>
 struct TypeHelper<std::map<K,V> > {
   inline static std::string Name() {
@@ -108,7 +123,7 @@ struct QueryLogEntry {
   QueryLogEntry(QueryLogEntry const & entry);
   ~QueryLogEntry();
 
-  QueryLogEntry & set_subdomain(std::string const & subdomain);
+  void set_subdomain(std::string const & subdomain);
 
   QueryLogEntry & method_call(std::string const & method_name);
   QueryLogEntry & operator<< (QueryEntryManipulator manipulator);

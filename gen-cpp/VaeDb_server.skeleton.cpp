@@ -2,10 +2,10 @@
 // You should copy it to another filename to avoid overwriting it.
 
 #include "VaeDb.h"
-#include <protocol/TBinaryProtocol.h>
-#include <server/TSimpleServer.h>
-#include <transport/TServerSocket.h>
-#include <transport/TBufferTransports.h>
+#include <thrift/protocol/TBinaryProtocol.h>
+#include <thrift/server/TSimpleServer.h>
+#include <thrift/transport/TServerSocket.h>
+#include <thrift/transport/TBufferTransports.h>
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -58,6 +58,71 @@ class VaeDbHandler : virtual public VaeDbIf {
   void structure(VaeDbStructureResponse& _return, const int32_t session_id, const int32_t response_id) {
     // Your implementation goes here
     printf("structure\n");
+  }
+
+  void sessionCacheGet(std::string& _return, const int32_t session_id, const std::string& key) {
+    // Your implementation goes here
+    printf("sessionCacheGet\n");
+  }
+
+  void sessionCacheSet(const int32_t session_id, const std::string& key, const std::string& value) {
+    // Your implementation goes here
+    printf("sessionCacheSet\n");
+  }
+
+  void sessionCacheDelete(const int32_t session_id, const std::string& key) {
+    // Your implementation goes here
+    printf("sessionCacheDelete\n");
+  }
+
+  void shortTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t flags) {
+    // Your implementation goes here
+    printf("shortTermCacheGet\n");
+  }
+
+  void shortTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t flags, const int32_t expireInterval) {
+    // Your implementation goes here
+    printf("shortTermCacheSet\n");
+  }
+
+  void shortTermCacheDelete(const int32_t session_id, const std::string& key) {
+    // Your implementation goes here
+    printf("shortTermCacheDelete\n");
+  }
+
+  void longTermCacheGet(std::string& _return, const int32_t session_id, const std::string& key, const int32_t renewExpiry, const int32_t useShortTermCache) {
+    // Your implementation goes here
+    printf("longTermCacheGet\n");
+  }
+
+  void longTermCacheSet(const int32_t session_id, const std::string& key, const std::string& value, const int32_t expireInterval, const int32_t isFilename) {
+    // Your implementation goes here
+    printf("longTermCacheSet\n");
+  }
+
+  void longTermCacheDelete(const int32_t session_id, const std::string& key) {
+    // Your implementation goes here
+    printf("longTermCacheDelete\n");
+  }
+
+  void longTermCacheEmpty(const int32_t session_id) {
+    // Your implementation goes here
+    printf("longTermCacheEmpty\n");
+  }
+
+  void longTermCacheSweeperInfo(VaeDbDataForContext& _return, const int32_t session_id) {
+    // Your implementation goes here
+    printf("longTermCacheSweeperInfo\n");
+  }
+
+  int32_t sitewideLock(const int32_t session_id) {
+    // Your implementation goes here
+    printf("sitewideLock\n");
+  }
+
+  int32_t sitewideUnlock(const int32_t session_id) {
+    // Your implementation goes here
+    printf("sitewideUnlock\n");
   }
 
 };
