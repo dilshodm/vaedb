@@ -57,10 +57,12 @@ string MemcacheProxy::get(const string key, const int32_t flags) {
   std::vector<char> ret_value;
   client->get(key, ret_value);
   string string_ret_value(ret_value.begin(), ret_value.end());
+  L(debug) << "MemcacheProxy::get: " << key << " => " << string_ret_value;
   return string_ret_value;
 };
 
 void MemcacheProxy::set(const string key, const string value, const int32_t flags, const int32_t expireInterval) {
+  L(debug) << "MemcacheProxy::set: " << key << " => " << value;
   boost::shared_ptr<memcache::Memcache> client = this->getConnection();
   const std::vector<char> valueVector(value.begin(), value.end());
   client->set(key, valueVector, expireInterval, flags);
