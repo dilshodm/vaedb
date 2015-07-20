@@ -53,6 +53,8 @@ Import the schema as follows:
 
 ## Compiling VaeDB
 
+    (Ubuntu) Install prerequisites: apt-get install libboost-all-dev libzmq3-dev
+
     cd cpp
     ./configure
     make
@@ -61,7 +63,7 @@ Import the schema as follows:
 ### To test run VaeDB:
 
     cd cpp
-    ./vaedb --test
+    env MYSQL_USERNAME=<user> MYSQL_PASSWORD=<pass> MYSQL_DATABASE=<db> ./vaedb --test
 
 
 ### To test run VaeRubyd:
