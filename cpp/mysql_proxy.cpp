@@ -251,7 +251,7 @@ int32_t MysqlProxy::lock(string subdomain) {
       stmt2 = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `locks` WHERE created_at<DATE_SUB(NOW(), INTERVAL 1 MINUTE)"));
       stmt2->execute();
     } catch(sql::SQLException &e2) {
-      L(error) << "MySQL Error Removing Old Locks For " << subdomain << ": " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
+      L(error) << "MySQL Error Removing Old Locks For " << subdomain << ": " << e2.what() << " (Error Code: " << e2.getErrorCode() << ")";
     }
   }
   return gotLock;
