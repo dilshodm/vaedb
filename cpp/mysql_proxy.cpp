@@ -32,11 +32,14 @@ MysqlProxy::~MysqlProxy() {
 
 sql::Connection *MysqlProxy::createConnection() {
   sql::Connection *con;
+  sql::ConnectOptionsMap opts;
   driver = get_driver_instance();
   try {
-    con = driver->connect("tcp://" + host + ":3306", username, password);
-    bool myTrue = true;
-    con->setClientOption("OPT_RECONNECT", &myTrue);
+    opts["hostName"] = "tcp://" + host + ":3306";
+    opts["userName"] = username;
+    opts["password"] = password;
+    opts["OPT_RECONNECT"] = true;
+    con = driver->connect(opts);
   } catch(sql::SQLException &e) {
     L(error) << "Error Connecting To MySQL: " << e.what();
     return NULL;
