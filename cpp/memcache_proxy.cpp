@@ -55,7 +55,11 @@ void MemcacheProxy::freeConnection(memcache::Memcache *con) {
 string MemcacheProxy::get(const string key, const int32_t flags) {
   boost::shared_ptr<memcache::Memcache> client = this->getConnection();
   std::vector<char> ret_value;
-  client->get(key, ret_value);
+  try {
+    client->get(key, ret_value);
+  } catch (std::runtime_error &e) {
+    L(error) << "Memcache Error Getting Key: " << key << ".  Error Text: " << e.what();
+  }
   string string_ret_value(ret_value.begin(), ret_value.end());
   L(debug) << "MemcacheProxy::get: " << key << " => " << string_ret_value;
   return string_ret_value;
@@ -65,10 +69,18 @@ void MemcacheProxy::set(const string key, const string value, const int32_t flag
   L(debug) << "MemcacheProxy::set: " << key << " => " << value;
   boost::shared_ptr<memcache::Memcache> client = this->getConnection();
   const std::vector<char> valueVector(value.begin(), value.end());
-  client->set(key, valueVector, expireInterval, flags);
+  try {
+    client->set(key, valueVector, expireInterval, flags);
+  } catch (std::runtime_error &e) {
+    L(error) << "Memcache Error Setting Key: " << key << ".  Error Text: " << e.what();
+  }
 };
 
 void MemcacheProxy::remove(const string key) {
   boost::shared_ptr<memcache::Memcache> client = this->getConnection();
-  client->remove(key);
+  try {
+    client->remove(key);
+  } catch (std::runtime_error &e) {
+    L(error) << "Memcache Error Removing Key: " << key << ".  Error Text: " << e.what();
+  }
 };
