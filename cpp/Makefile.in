@@ -25,10 +25,8 @@ context.o: context.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} context.cpp
 
 install: server
-	svc -d /service/vaedbd
-	sleep 2
-	cp vaedb /usr/local/bin
-	svc -u /service/vaedbd
+	install vaedb /app/vaedb/sbin
+	killall -9 vaedb
 	
 bus.o: bus.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} bus.cpp
