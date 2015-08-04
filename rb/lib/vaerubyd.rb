@@ -7,7 +7,7 @@ class Vaerubyd
   
   def run
     processor = VaeRubyd::Processor.new(VaeRubydHandler.new)
-    transport = Thrift::ServerSocket.new("*", 9090)
+    transport = Thrift::ServerSocket.new(9090)
     transportFactory = Thrift::BufferedTransportFactory.new
     server = Thrift::ThreadPoolServer.new(processor, transport, transportFactory)
     puts "VaeRubyd Running"
