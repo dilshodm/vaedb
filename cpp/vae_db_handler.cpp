@@ -362,7 +362,7 @@ void VaeDbHandler::longTermCacheGet(string &_return, const int32_t sessionId, st
       return;
     }
   }
-  string fullKey = "VaedbProxy:" + session->getSite()->getSubdomain() + "LongTerm:" + key;
+  string fullKey = "VaedbProxy:" + session->getSite()->getSubdomain() + "LongTerm2:" + key;
   if (useShortTermCache) {
     string answer(memcacheProxy.get(fullKey, 0));
     if (answer.length() > 0) {
@@ -385,7 +385,7 @@ void VaeDbHandler::longTermCacheSet(const int32_t sessionId, string const & key,
       return;
     }
   }
-  string fullKey = "VaedbProxy:" + session->getSite()->getSubdomain() + "LongTerm:" + key;
+  string fullKey = "VaedbProxy:" + session->getSite()->getSubdomain() + "LongTerm2:" + key;
   mysqlProxy.longTermCacheSet(session->getSite()->getSubdomain(), key, value, expireInterval, isFilename);
   memcacheProxy.set(fullKey, value, 0, 86400);
 }
@@ -401,7 +401,7 @@ void VaeDbHandler::longTermCacheDelete(const int32_t sessionId, string const & k
       return;
     }
   }
-  string fullKey = "VaedbProxy:" + session->getSite()->getSubdomain() + "LongTerm:" + key;
+  string fullKey = "VaedbProxy:" + session->getSite()->getSubdomain() + "LongTerm2:" + key;
   mysqlProxy.longTermCacheDelete(session->getSite()->getSubdomain(), key);
   memcacheProxy.remove(fullKey);
 }
