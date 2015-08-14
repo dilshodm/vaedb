@@ -18,7 +18,6 @@ Site::Site(string su, bool stagingMode_, string const & rawxml) : stagingMode(st
   subdomain = su;
   if (!testMode) {
     secretKey = read_s3(subdomain+"-secret");
-    if (stagingMode) subdomain += ".staging"; 
   }
   loadXmlDoc(rawxml);
   L(info) << "[" << subdomain << "] opened";
