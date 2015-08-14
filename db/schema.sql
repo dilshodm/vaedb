@@ -23,21 +23,3 @@ CREATE TABLE `session_data` (
   `expires` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `slow_queries` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `subdomain` varchar(25) DEFAULT NULL,
-  `runtime` float DEFAULT NULL,
-  `created_at` datetime DEFAULT NULL,
-  `query` text,
-  `options` text,
-  PRIMARY KEY (`id`),
-  KEY `subdomain` (`subdomain`,`runtime`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `slow_times` (
-  `query` text,
-  `total_time` double DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
