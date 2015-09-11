@@ -65,6 +65,10 @@ Response::Response(boost::shared_ptr<Site> s, boost::shared_ptr<Response> parent
     while (ss >> buf) {
       char *cbuf;
       cbuf = (char *)malloc(buf.length()+1);
+      if (cbuf == NULL) {
+        L(error) << "malloc fail";
+        abort();
+      }
       strcpy(cbuf, buf.c_str());
       filterTerms.push_back(cbuf);
     }
