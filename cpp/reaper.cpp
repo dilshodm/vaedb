@@ -31,6 +31,7 @@ void Reaper::Run() {
     while (it != sessions.end()) {
       if ((now - it->second->getCreatedAt()) > SESSION_REAP_TIME) {
         sessions.erase(it++);
+        L(info) << "Erasing Session";
       } else { ++it; }
     }
 

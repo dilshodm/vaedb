@@ -156,6 +156,10 @@ int32_t VaeDbHandler::openSession(const string& subdomain, const string& secretK
   QueryLogEntry entry(queryLog);
   entry.method_call("openSession") << subdomain << secretKey << stagingMode << suggestedSessionId << "\n";
 
+  if (testMode) {
+    this->resetSite(subdomain, secretKey);
+  }
+
   int32_t sessionId; 
   sessionId = suggestedSessionId;
   boost::shared_ptr<Site> site = getSite(subdomain, secretKey, stagingMode);
@@ -182,6 +186,8 @@ int8_t VaeDbHandler::ping() {
 void VaeDbHandler::resetSite(string const & subdomain, string const & secretKey) {
   QueryLogEntry entry(queryLog);
   entry.method_call("resetSite") << subdomain << secretKey << "\n";
+  L(info) << "reset: " << subdomain;
+
   _resetSite(subdomain, secretKey, false);
 }
 
