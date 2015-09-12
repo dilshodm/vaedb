@@ -7,6 +7,7 @@
 using std::string;
 
 MemcacheProxy::MemcacheProxy(std::string c) {
+  this->availableConnections = 0;
   pcrecpp::RE(",").Replace(" --SERVER=", &c);
   connectString = "--TCP-KEEPALIVE --BINARY-PROTOCOL --SERVER=" + c;
   L(info) << " Connecting to Memcache via: " << connectString;
