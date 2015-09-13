@@ -11,6 +11,7 @@ using namespace std;
 #include "site.h"
 #include "query.h"
 #include "logger.h"
+#include "memory_mgmt.h"
 
 const char EMPTY_STRING[] = "";
 

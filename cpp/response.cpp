@@ -15,6 +15,7 @@ using namespace boost;
 #include "logger.h"
 #include "query.h"
 #include "util.h"
+#include "memory_mgmt.h"
 
 #define ZERO_PADDING_AMOUNT 12
 

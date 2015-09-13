@@ -12,7 +12,6 @@
 #include <thrift/server/TThreadPoolServer.h>
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
-#include <malloc.h>
 
 using namespace apache::thrift;
 using namespace apache::thrift::concurrency;
@@ -32,6 +31,7 @@ namespace po = boost::program_options;
 #include "session.h"
 #include "vae_db_handler.h"
 #include "bus.h"
+#include "memory_mgmt.h"
 
 int testMode = 0;
 
@@ -53,10 +53,7 @@ int main(int argc, char **argv) {
   signal(SIGSEGV, crash_handler);
   signal(SIGUSR1, crash_handler);
 
-  //abuse of libxml internal pointers results in doublefree;
-#ifdef M_CHECK_ACTION
-  mallopt(M_CHECK_ACTION, 0);
-#endif
+  memory_mgmt_init();
 
   int opt, workers;
   string bus_bindaddress;
