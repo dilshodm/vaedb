@@ -6,7 +6,7 @@
 #include "memory_mgmt.h"
 
 #ifdef VAE_USE_GC
-static char *memory_mgmt_strdup(const char *s) {
+char *memory_mgmt_strdup(const char *s) {
   int len = strlen(s);
   char *buf = (char *) GC_malloc_atomic(len + 1);
   if (buf == NULL) {
@@ -19,7 +19,7 @@ static char *memory_mgmt_strdup(const char *s) {
 }
 
 // No-op free()
-static void memory_mgmt_free(void *ptr) {
+void memory_mgmt_free(void *ptr) {
   return;
 }
 #endif

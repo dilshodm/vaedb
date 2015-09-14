@@ -9,8 +9,11 @@
 
 #include <gc.h>
 
+#define free memory_mgmt_free
 #define malloc GC_malloc
-#define free GC_free
+#define strdup memory_mgmt_strdup
 #endif // VAE_USE_GC
 
+char *memory_mgmt_strdup(const char *s);
+void memory_mgmt_free(void *ptr);
 void memory_mgmt_init(void);
