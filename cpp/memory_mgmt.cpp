@@ -6,9 +6,21 @@
 #include "memory_mgmt.h"
 
 #ifdef VAE_USE_GC
+void *memory_mgmt_malloc(size_t size) {
+  return GC_MALLOC(size);
+}
+
+void *memory_mgmt_malloc_atomic(size_t size) {
+  return GC_MALLOC_ATOMIC(size);
+}
+
+void *memory_mgmt_realloc(void *mem, size_t size) {
+  return GC_REALLOC(mem, size);
+}
+
 char *memory_mgmt_strdup(const char *s) {
   int len = strlen(s);
-  char *buf = (char *) GC_malloc_atomic(len + 1);
+  char *buf = (char *) GC_MALLOC_ATOMIC(len + 1);
   if (buf == NULL) {
     L(error) << "local_gc_strdup malloc fail";
     abort();
@@ -33,7 +45,7 @@ void memory_mgmt_init(void) {
 #ifdef VAE_USE_GC
   // Setup GC for libxml2.
   GC_INIT();
-  if (xmlGcMemSetup(memory_mgmt_free, GC_malloc, GC_malloc_atomic, GC_realloc, memory_mgmt_strdup) != 0) {
+  if (xmlGcMemSetup(memory_mgmt_free, memory_mgmt_malloc, memory_mgmt_malloc_atomic, memory_mgmt_realloc, memory_mgmt_strdup) != 0) {
     L(error) << "Error setting up GC with xmlGcMemSetup";
     abort();
   }
