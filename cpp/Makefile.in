@@ -8,7 +8,7 @@ exec_prefix = @exec_prefix@
 bindir = $(exec_prefix)/bin
 
 CXX = @CXX@
-CXXFLAGS = -g @CXXFLAGS@ @BOOST_CXXFLAGS@ -DVAE_USE_GC -std=c++11 -I../gen-cpp -I/usr/include/malloc `xml2-config --cflags` -c
+CXXFLAGS = -I/usr/local/include -g @CXXFLAGS@ @BOOST_CXXFLAGS@ -DVAE_USE_GC -std=c++11 -I../gen-cpp -I/usr/include/malloc `xml2-config --cflags` -c
 LDFLAGS = -L/usr/local/lib @LDFLAGS@ @BOOST_LDFLAGS@ -g
 LIBS = @LIBS@ -ls3 -lboost_filesystem@BOOST_LIB_SUFFIX@ -lboost_program_options@BOOST_LIB_SUFFIX@ -lboost_system@BOOST_LIB_SUFFIX@ -lboost_thread@BOOST_LIB_SUFFIX@ -lmysqlcppconn -lz -lxml2 -lthrift -lm -lgc -g 
 
