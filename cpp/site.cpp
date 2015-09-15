@@ -38,6 +38,7 @@ Site::~Site() {
   }
   for (StructureMap::iterator it = structures.begin(); it != structures.end(); it++) {
     delete it->second;
+    it->second = NULL;
   }
   nodesToClean.clear();
   nodesToClean2.clear();
@@ -52,6 +53,7 @@ void Site::freeContexts(xmlNodePtr node) {
     if (child->type == XML_ELEMENT_NODE) {    
       if (child->_private != NULL) {
         delete (Context *)child->_private;
+        child->_private = NULL;
       }
       freeContexts(child);
     }

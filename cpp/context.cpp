@@ -124,6 +124,7 @@ void Context::initializeAssociation() {
       /* set up forward association */
       xmlNodePtr associatedNode = _query.getNode(0);
       xmlFreePropList(node->properties);
+      node->properties = NULL;
       site->nodesToClean2.push_back(node);
       if (node->children) xmlFreeNodeList(node->children->next);
       node->children->next = associatedNode->children;

@@ -134,6 +134,7 @@ Response::~Response() {
     vector<char *>::size_type size = filterTerms.size();
     for (vector<char *>::size_type i = 0; i != size; i++) {
       memory_mgmt_free(filterTerms[i]);
+      filterTerms[i] = NULL;
     }
   }
 }

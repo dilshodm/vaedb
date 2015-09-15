@@ -32,6 +32,7 @@ char *memory_mgmt_strdup(const char *s) {
 
 // No-op free()
 void memory_mgmt_free(void *ptr) {
+  GC_FREE(ptr);
   return;
 }
 #endif

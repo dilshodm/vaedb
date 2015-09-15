@@ -43,6 +43,7 @@ void Bus::run() {
     while(it != threads.end()) {
         if((*it)->timed_join(waittime)) {
             delete *it;
+            *it = NULL;
             it = threads.erase(it);
         }
         else {
