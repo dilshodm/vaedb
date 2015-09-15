@@ -4,10 +4,11 @@
 #include <string>
 #include <boost/shared_ptr.hpp>
 
+#include "memory_mgmt.h"
 #include "thrift/concurrency/Thread.h"
 #include "vae_db_handler.h"
 
-class Bus : public apache::thrift::concurrency::Runnable {
+class Bus : public apache::thrift::concurrency::Runnable, public gc {
   std::string _bindaddress;
   boost::shared_ptr<VaeDbHandler> _handler;
 

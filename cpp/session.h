@@ -1,6 +1,8 @@
 #include <boost/thread/mutex.hpp>
 
-class Session {
+#include "memory_mgmt.h"
+
+class Session : public gc {
 
   time_t createdAt;
   vector< boost::shared_ptr<class Response> > responses;

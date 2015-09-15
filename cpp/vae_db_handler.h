@@ -2,7 +2,9 @@
 #define _VAE_THRIFT_DB_HANDLER_H_
 
 #include <boost/thread/mutex.hpp>
+
 #include "../gen-cpp/VaeDb.h"
+#include "memory_mgmt.h"
 #include "memcache_proxy.h"
 #include "mysql_proxy.h"
 #include "query_log.h"
@@ -14,7 +16,7 @@ typedef std::map<std::string,boost::mutex*> SiteMutexesMap;
 
 extern int testMode;
 
-class VaeDbHandler : virtual public VaeDbIf {
+class VaeDbHandler : virtual public VaeDbIf, public gc {
 
  private:
   int nextSessionId;

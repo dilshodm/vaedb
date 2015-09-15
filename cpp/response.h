@@ -3,6 +3,8 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
+#include "memory_mgmt.h"
+
 typedef vector<class Context *> ContextList;
 struct ResponseContext {
   ContextList contexts;
@@ -11,7 +13,7 @@ struct ResponseContext {
 typedef vector<ResponseContext> ResponseContextList;
 typedef vector<VaeDbCreateInfo> CreateInfoList;
   
-class Response {
+class Response : public gc {
 
   enum SortType {None, Reverse, Shuffle, Specific};
   enum SortOrder {Asc, Desc};

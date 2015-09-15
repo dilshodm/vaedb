@@ -4,11 +4,13 @@
 #include <boost/thread/mutex.hpp>
 #include <libxml/tree.h>
 
+#include "memory_mgmt.h"
+
 typedef map<string,int> CachedCountMap;
 typedef map<string,string> DataMap;
 typedef vector<xmlNodePtr> NodeList;
 
-class Context {
+class Context : public gc {
 
   CachedCountMap cachedCounts;
   DataMap cachedQueries;

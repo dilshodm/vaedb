@@ -11,6 +11,7 @@
 #include <libxml/xpathInternals.h>
 
 
+#include "memory_mgmt.h"
 #include "context.h"
 #include "query.h"
 #include "lru_cache.h"
@@ -36,7 +37,7 @@ bool operator<(LRUKey const & a, LRUKey const & b) {
 
 typedef LRUCache<LRUKey, boost::shared_ptr<Query> > QueryCache;
 
-class Site {
+class Site : public gc {
   
   string subdomain;
   string secretKey;

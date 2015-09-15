@@ -45,6 +45,7 @@ void memory_mgmt_init(void) {
 #ifdef VAE_USE_GC
   // Setup GC for libxml2.
   GC_INIT();
+  GC_expand_hp(64 << 20); // crashes without this; who knows why?
   if (xmlGcMemSetup(memory_mgmt_free, memory_mgmt_malloc, memory_mgmt_malloc_atomic, memory_mgmt_realloc, memory_mgmt_strdup) != 0) {
     L(error) << "Error setting up GC with xmlGcMemSetup";
     abort();

@@ -138,19 +138,19 @@ int Query::getSize() {
 }
 
 void Query::result(xmlNode *node) {
-  xmlNodeSetPtr nodeset = (xmlNodeSet *)malloc(sizeof(xmlNodeSet));
+  xmlNodeSetPtr nodeset = (xmlNodeSet *)memory_mgmt_malloc(sizeof(xmlNodeSet));
   if (nodeset == NULL) {
     L(error) << "malloc fail";
     abort();
   }
-  xpathObj = (xmlXPathObject *)malloc(sizeof(xmlXPathObject));
+  xpathObj = (xmlXPathObject *)memory_mgmt_malloc(sizeof(xmlXPathObject));
   if (xpathObj == NULL) {
     L(error) << "malloc fail";
     abort();
   }
   xpathObj->type = XPATH_NODESET;
   xpathObj->boolval = 0;
-  nodeset->nodeTab = (xmlNodePtr *)malloc(sizeof(xmlNodePtr));
+  nodeset->nodeTab = (xmlNodePtr *)memory_mgmt_malloc(sizeof(xmlNodePtr));
   if (nodeset->nodeTab == NULL) {
     L(error) << "malloc fail";
     abort();

@@ -11,6 +11,7 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 
+#include "memory_mgmt.h"
 #include "../gen-cpp/VaeDb.h"
 
 #define NUM_CONNECTIONS 8
@@ -22,7 +23,7 @@ enum {
 
 typedef std::map<sql::Connection*, short> Pool;
 
-class MysqlProxy {
+class MysqlProxy : public gc {
   sql::Driver *driver;
   std::string username;
   std::string password;

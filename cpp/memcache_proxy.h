@@ -7,6 +7,8 @@
 #include <boost/thread/condition_variable.hpp>
 #include <libmemcached/memcached.hpp>
 
+#include "memory_mgmt.h"
+
 #define MEMCACHE_NUM_CONNECTIONS 16
 
 enum {
@@ -16,7 +18,7 @@ enum {
 
 typedef std::map<memcache::Memcache *, short> MemcachePool;
 
-class MemcacheProxy {
+class MemcacheProxy : public gc {
   std::string connectString;
   MemcachePool connPool;
   boost::mutex poolMutex;

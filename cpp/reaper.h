@@ -1,6 +1,7 @@
+#include "memory_mgmt.h"
 #include "mysql_proxy.h"
 
-class Reaper {
+class Reaper : public gc {
 
   class VaeDbHandler *vaeDbHandler;
   MysqlProxy &mysqlProxy;

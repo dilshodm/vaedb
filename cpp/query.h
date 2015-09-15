@@ -7,7 +7,9 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
-class Query {
+#include "memory_mgmt.h"
+
+class Query : public gc {
 
   class Site *site;
   int size;

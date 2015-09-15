@@ -65,7 +65,7 @@ Response::Response(boost::shared_ptr<Site> s, boost::shared_ptr<Response> parent
     stringstream ss(it->second);
     while (ss >> buf) {
       char *cbuf;
-      cbuf = (char *)malloc(buf.length()+1);
+      cbuf = (char *)memory_mgmt_malloc(buf.length()+1);
       if (cbuf == NULL) {
         L(error) << "malloc fail";
         abort();
@@ -133,7 +133,7 @@ Response::~Response() {
   if (filter) {
     vector<char *>::size_type size = filterTerms.size();
     for (vector<char *>::size_type i = 0; i != size; i++) {
-      free(filterTerms[i]);
+      memory_mgmt_free(filterTerms[i]);
     }
   }
 }

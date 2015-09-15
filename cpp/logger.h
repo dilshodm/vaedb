@@ -1,13 +1,15 @@
 #include <iostream>
 #include <sstream>
 
+#include "memory_mgmt.h"
+
 #define L(level) \
 if (level > Logger::displayLevel) ; \
 else Logger().log(level)
 
 enum LogLevel {error, warning, info, debug};
 
-class Logger {
+class Logger : public gc {
  public:
   Logger();
   ~Logger();
