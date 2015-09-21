@@ -34,7 +34,7 @@ bool operator<(LRUKey const & a, LRUKey const & b) {
   return (a.p < b.p) || (a.p == b.p && a.s < b.s);
 }
 
-typedef LRUCache<LRUKey, boost::shared_ptr<Query> > QueryCache;
+typedef LRUCache<LRUKey, Query *> QueryCache;
 
 class Site {
   
@@ -61,7 +61,7 @@ class Site {
   void reset();
   VaeDbStructure *structureFromStructureId(int structureId);
   void validateSecretKey(string testSecretKey);
-  boost::shared_ptr<Query> fetch_query(LRUKey const & key);
+  Query *fetch_query(LRUKey const & key);
 
  private:
   void freeContexts(xmlNodePtr node);
