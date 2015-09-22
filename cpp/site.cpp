@@ -143,15 +143,12 @@ void Site::validateSecretKey(string testSecretKey) {
   }
 }
 
-// We return a raw pointer rather than a smart pointer because all the
-// smarts around memory management and deleting the objects happen
-// inside the LRUCache, and can be confused with a smart pointer.
-Query *Site::fetch_query(LRUKey const & key) {
-  Query **pp_query = query_cache.fetch_ptr(key, false);
+boost::shared_ptr<Query> Site::fetch_query(LRUKey const & key) {
+  boost::shared_ptr<Query> * pp_query = query_cache.fetch_ptr(key, false);
   if(pp_query)
     return *pp_query;
 
-  Query *p_query = new Query(this, key.p, key.s);
+  boost::shared_ptr<Query> p_query(new Query(this, key.p, key.s));
   query_cache.insert(key, p_query);
   return p_query;
 }

@@ -150,7 +150,7 @@ void Response::createInfo(Context *context, const string &query) {
     context = NULL;
   } else if (mainQuery != "") {
     LRUKey key = {context, mainQuery};
-    Query *p_query = site->fetch_query(key);
+    boost::shared_ptr<Query> p_query = site->fetch_query(key);
     if (p_query->getSize() > 0) {
       context = (Context *)p_query->getNode(0)->_private;
     }
@@ -206,7 +206,7 @@ void Response::filterMatchRecursive(xmlNode *node, int reentry) {
 void Response::query(Context *context, const string &q, const map<string, string> &options) {
   int size, start, end, skip_, paginate_, page_;
   LRUKey key = {context, q};
-  Query *p_query = site->fetch_query(key);
+  boost::shared_ptr<Query> p_query = site->fetch_query(key);
   ResponseContext _return;
   _return.total = size = p_query->getSize();
   skip_ = skip;
