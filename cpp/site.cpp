@@ -144,11 +144,12 @@ void Site::validateSecretKey(string testSecretKey) {
 }
 
 boost::shared_ptr<Query> Site::fetch_query(LRUKey const & key) {
-  boost::shared_ptr<Query> * pp_query = query_cache.fetch_ptr(key, false);
-  if(pp_query)
-    return *pp_query;
+  // Disabled cache, possibly temporarily, while we figure out the memory management crap.
+  //boost::shared_ptr<Query> * pp_query = query_cache.fetch_ptr(key, false);
+  //if(pp_query)
+  //  return *pp_query;
 
   boost::shared_ptr<Query> p_query(new Query(this, key.p, key.s));
-  query_cache.insert(key, p_query);
+  //query_cache.insert(key, p_query);
   return p_query;
 }
