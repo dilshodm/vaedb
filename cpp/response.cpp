@@ -283,7 +283,13 @@ void Response::query(Context *context, const string &q, const map<string, string
     sort(_return.contexts.begin(), _return.contexts.end(), boost::bind(&Response::sortCallback, this, _1, _2));
   }
   if (sortType != None) {
-    _return.contexts.erase(_return.contexts.begin(), _return.contexts.begin() + skip_);
+    ContextList::iterator end_of_erase;
+    if (_return.contexts.size() > skip_)
+      end_of_erase = _return.contexts.begin() + skip_;
+    else
+      end_of_erase = _return.contexts.end();
+
+    _return.contexts.erase(_return.contexts.begin(), end_of_erase);
     if (_return.contexts.size() > paginate_) {
       _return.contexts.resize(paginate_);
     }
