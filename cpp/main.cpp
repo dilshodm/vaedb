@@ -50,7 +50,7 @@ void crash_handler(int signal) {
 
 int main(int argc, char **argv) {
 
-  //signal(SIGSEGV, crash_handler);
+  signal(SIGSEGV, crash_handler);
   signal(SIGUSR1, crash_handler);
 
   //abuse of libxml internal pointers results in doublefree;
