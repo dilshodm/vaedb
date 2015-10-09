@@ -1316,8 +1316,8 @@ uint32_t VaeDb_openSession_result::read(::apache::thrift::protocol::TProtocol* i
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->success);
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->success.read(iprot);
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -1350,8 +1350,8 @@ uint32_t VaeDb_openSession_result::write(::apache::thrift::protocol::TProtocol* 
   xfer += oprot->writeStructBegin("VaeDb_openSession_result");
 
   if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_I32, 0);
-    xfer += oprot->writeI32(this->success);
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
+    xfer += this->success.write(oprot);
     xfer += oprot->writeFieldEnd();
   } else if (this->__isset.e) {
     xfer += oprot->writeFieldBegin("e", ::apache::thrift::protocol::T_STRUCT, 1);
@@ -1389,8 +1389,8 @@ uint32_t VaeDb_openSession_presult::read(::apache::thrift::protocol::TProtocol* 
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32((*(this->success)));
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += (*(this->success)).read(iprot);
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -4908,10 +4908,10 @@ void VaeDbClient::recv_get(VaeDbResponse& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "get failed: unknown result");
 }
 
-int32_t VaeDbClient::openSession(const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id)
+void VaeDbClient::openSession(VaeDbOpenSessionResponse& _return, const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id)
 {
   send_openSession(site, secret_key, staging_mode, suggested_session_id);
-  return recv_openSession();
+  recv_openSession(_return);
 }
 
 void VaeDbClient::send_openSession(const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id)
@@ -4931,7 +4931,7 @@ void VaeDbClient::send_openSession(const std::string& site, const std::string& s
   oprot_->getTransport()->flush();
 }
 
-int32_t VaeDbClient::recv_openSession()
+void VaeDbClient::recv_openSession(VaeDbOpenSessionResponse& _return)
 {
 
   int32_t rseqid = 0;
@@ -4956,7 +4956,6 @@ int32_t VaeDbClient::recv_openSession()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  int32_t _return;
   VaeDb_openSession_presult result;
   result.success = &_return;
   result.read(iprot_);
@@ -4964,7 +4963,8 @@ int32_t VaeDbClient::recv_openSession()
   iprot_->getTransport()->readEnd();
 
   if (result.__isset.success) {
-    return _return;
+    // _return pointer has now been filled
+    return;
   }
   if (result.__isset.e) {
     throw result.e;
@@ -6222,7 +6222,7 @@ void VaeDbProcessor::process_openSession(int32_t seqid, ::apache::thrift::protoc
 
   VaeDb_openSession_result result;
   try {
-    result.success = iface_->openSession(args.site, args.secret_key, args.staging_mode, args.suggested_session_id);
+    iface_->openSession(result.success, args.site, args.secret_key, args.staging_mode, args.suggested_session_id);
     result.__isset.success = true;
   } catch (VaeDbInternalError &e) {
     result.e = e;

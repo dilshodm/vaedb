@@ -20,7 +20,7 @@ class VaeDbIf {
   virtual void createInfo(VaeDbCreateInfoResponse& _return, const int32_t session_id, const int32_t response_id, const std::string& query) = 0;
   virtual void data(VaeDbDataResponse& _return, const int32_t session_id, const int32_t response_id) = 0;
   virtual void get(VaeDbResponse& _return, const int32_t session_id, const int32_t response_id, const std::string& query, const std::map<std::string, std::string> & options) = 0;
-  virtual int32_t openSession(const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id) = 0;
+  virtual void openSession(VaeDbOpenSessionResponse& _return, const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id) = 0;
   virtual void openSession2(VaeDbOpenSessionResponse& _return, const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id) = 0;
   virtual void resetSite(const std::string& site, const std::string& secret_key) = 0;
   virtual void structure(VaeDbStructureResponse& _return, const int32_t session_id, const int32_t response_id) = 0;
@@ -82,9 +82,8 @@ class VaeDbNull : virtual public VaeDbIf {
   void get(VaeDbResponse& /* _return */, const int32_t /* session_id */, const int32_t /* response_id */, const std::string& /* query */, const std::map<std::string, std::string> & /* options */) {
     return;
   }
-  int32_t openSession(const std::string& /* site */, const std::string& /* secret_key */, const bool /* staging_mode */, const int32_t /* suggested_session_id */) {
-    int32_t _return = 0;
-    return _return;
+  void openSession(VaeDbOpenSessionResponse& /* _return */, const std::string& /* site */, const std::string& /* secret_key */, const bool /* staging_mode */, const int32_t /* suggested_session_id */) {
+    return;
   }
   void openSession2(VaeDbOpenSessionResponse& /* _return */, const std::string& /* site */, const std::string& /* secret_key */, const bool /* staging_mode */, const int32_t /* suggested_session_id */) {
     return;
@@ -902,21 +901,21 @@ typedef struct _VaeDb_openSession_result__isset {
 class VaeDb_openSession_result {
  public:
 
-  static const char* ascii_fingerprint; // = "434080405F8773F4FEEED0F8CC7A6239";
-  static const uint8_t binary_fingerprint[16]; // = {0x43,0x40,0x80,0x40,0x5F,0x87,0x73,0xF4,0xFE,0xEE,0xD0,0xF8,0xCC,0x7A,0x62,0x39};
+  static const char* ascii_fingerprint; // = "337127417EB899721247BF1F1656B985";
+  static const uint8_t binary_fingerprint[16]; // = {0x33,0x71,0x27,0x41,0x7E,0xB8,0x99,0x72,0x12,0x47,0xBF,0x1F,0x16,0x56,0xB9,0x85};
 
   VaeDb_openSession_result(const VaeDb_openSession_result&);
   VaeDb_openSession_result& operator=(const VaeDb_openSession_result&);
-  VaeDb_openSession_result() : success(0) {
+  VaeDb_openSession_result() {
   }
 
   virtual ~VaeDb_openSession_result() throw();
-  int32_t success;
+  VaeDbOpenSessionResponse success;
   VaeDbInternalError e;
 
   _VaeDb_openSession_result__isset __isset;
 
-  void __set_success(const int32_t val);
+  void __set_success(const VaeDbOpenSessionResponse& val);
 
   void __set_e(const VaeDbInternalError& val);
 
@@ -949,12 +948,12 @@ typedef struct _VaeDb_openSession_presult__isset {
 class VaeDb_openSession_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "434080405F8773F4FEEED0F8CC7A6239";
-  static const uint8_t binary_fingerprint[16]; // = {0x43,0x40,0x80,0x40,0x5F,0x87,0x73,0xF4,0xFE,0xEE,0xD0,0xF8,0xCC,0x7A,0x62,0x39};
+  static const char* ascii_fingerprint; // = "337127417EB899721247BF1F1656B985";
+  static const uint8_t binary_fingerprint[16]; // = {0x33,0x71,0x27,0x41,0x7E,0xB8,0x99,0x72,0x12,0x47,0xBF,0x1F,0x16,0x56,0xB9,0x85};
 
 
   virtual ~VaeDb_openSession_presult() throw();
-  int32_t* success;
+  VaeDbOpenSessionResponse* success;
   VaeDbInternalError e;
 
   _VaeDb_openSession_presult__isset __isset;
@@ -2982,9 +2981,9 @@ class VaeDbClient : virtual public VaeDbIf {
   void get(VaeDbResponse& _return, const int32_t session_id, const int32_t response_id, const std::string& query, const std::map<std::string, std::string> & options);
   void send_get(const int32_t session_id, const int32_t response_id, const std::string& query, const std::map<std::string, std::string> & options);
   void recv_get(VaeDbResponse& _return);
-  int32_t openSession(const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id);
+  void openSession(VaeDbOpenSessionResponse& _return, const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id);
   void send_openSession(const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id);
-  int32_t recv_openSession();
+  void recv_openSession(VaeDbOpenSessionResponse& _return);
   void openSession2(VaeDbOpenSessionResponse& _return, const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id);
   void send_openSession2(const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id);
   void recv_openSession2(VaeDbOpenSessionResponse& _return);
@@ -3171,13 +3170,14 @@ class VaeDbMultiface : virtual public VaeDbIf {
     return;
   }
 
-  int32_t openSession(const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id) {
+  void openSession(VaeDbOpenSessionResponse& _return, const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->openSession(site, secret_key, staging_mode, suggested_session_id);
+      ifaces_[i]->openSession(_return, site, secret_key, staging_mode, suggested_session_id);
     }
-    return ifaces_[i]->openSession(site, secret_key, staging_mode, suggested_session_id);
+    ifaces_[i]->openSession(_return, site, secret_key, staging_mode, suggested_session_id);
+    return;
   }
 
   void openSession2(VaeDbOpenSessionResponse& _return, const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id) {

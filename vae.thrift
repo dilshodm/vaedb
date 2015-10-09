@@ -99,7 +99,7 @@ service VaeDb {
   VaeDbResponse get(1:i32 session_id, 2:i32 response_id, 3:string query, 4:map<string,string> options)
     throws (1:VaeDbInternalError ie, 2:VaeDbQueryError qe)
     
-  i32 openSession(1:string site, 2:string secret_key, 3:bool staging_mode, 4:i32 suggested_session_id)
+  VaeDbOpenSessionResponse openSession(1:string site, 2:string secret_key, 3:bool staging_mode, 4:i32 suggested_session_id)
     throws (1:VaeDbInternalError e)
   
   VaeDbOpenSessionResponse openSession2(1:string site, 2:string secret_key, 3:bool staging_mode, 4:i32 suggested_session_id)

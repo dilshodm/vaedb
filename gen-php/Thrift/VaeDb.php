@@ -58,7 +58,7 @@ interface VaeDbIf {
    * @param string $secret_key
    * @param bool $staging_mode
    * @param int $suggested_session_id
-   * @return int
+   * @return \Thrift\VaeDbOpenSessionResponse
    * @throws \Thrift\VaeDbInternalError
    */
   public function openSession($site, $secret_key, $staging_mode, $suggested_session_id);
@@ -2546,7 +2546,7 @@ class VaeDb_openSession_result {
   static $_TSPEC;
 
   /**
-   * @var int
+   * @var \Thrift\VaeDbOpenSessionResponse
    */
   public $success = null;
   /**
@@ -2559,7 +2559,8 @@ class VaeDb_openSession_result {
       self::$_TSPEC = array(
         0 => array(
           'var' => 'success',
-          'type' => TType::I32,
+          'type' => TType::STRUCT,
+          'class' => '\Thrift\VaeDbOpenSessionResponse',
           ),
         1 => array(
           'var' => 'e',
@@ -2598,8 +2599,9 @@ class VaeDb_openSession_result {
       switch ($fid)
       {
         case 0:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->success);
+          if ($ftype == TType::STRUCT) {
+            $this->success = new \Thrift\VaeDbOpenSessionResponse();
+            $xfer += $this->success->read($input);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -2626,8 +2628,11 @@ class VaeDb_openSession_result {
     $xfer = 0;
     $xfer += $output->writeStructBegin('VaeDb_openSession_result');
     if ($this->success !== null) {
-      $xfer += $output->writeFieldBegin('success', TType::I32, 0);
-      $xfer += $output->writeI32($this->success);
+      if (!is_object($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::STRUCT, 0);
+      $xfer += $this->success->write($output);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->e !== null) {

@@ -752,7 +752,7 @@ module VaeDb
     E = 1
 
     FIELDS = {
-      SUCCESS => {:type => ::Thrift::Types::I32, :name => 'success'},
+      SUCCESS => {:type => ::Thrift::Types::STRUCT, :name => 'success', :class => ::VaeDbOpenSessionResponse},
       E => {:type => ::Thrift::Types::STRUCT, :name => 'e', :class => ::VaeDbInternalError}
     }
 
