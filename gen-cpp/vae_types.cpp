@@ -1462,3 +1462,113 @@ std::ostream& operator<<(std::ostream& out, const VaeDbStructureResponse& obj) {
 }
 
 
+VaeDbOpenSessionResponse::~VaeDbOpenSessionResponse() throw() {
+}
+
+
+void VaeDbOpenSessionResponse::__set_session_id(const int32_t val) {
+  this->session_id = val;
+}
+
+void VaeDbOpenSessionResponse::__set_generation(const int32_t val) {
+  this->generation = val;
+}
+
+const char* VaeDbOpenSessionResponse::ascii_fingerprint = "989D1F1AE8D148D5E2119FFEC4BBBEE3";
+const uint8_t VaeDbOpenSessionResponse::binary_fingerprint[16] = {0x98,0x9D,0x1F,0x1A,0xE8,0xD1,0x48,0xD5,0xE2,0x11,0x9F,0xFE,0xC4,0xBB,0xBE,0xE3};
+
+uint32_t VaeDbOpenSessionResponse::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->session_id);
+          this->__isset.session_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->generation);
+          this->__isset.generation = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t VaeDbOpenSessionResponse::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("VaeDbOpenSessionResponse");
+
+  xfer += oprot->writeFieldBegin("session_id", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeI32(this->session_id);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("generation", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeI32(this->generation);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+void swap(VaeDbOpenSessionResponse &a, VaeDbOpenSessionResponse &b) {
+  using ::std::swap;
+  swap(a.session_id, b.session_id);
+  swap(a.generation, b.generation);
+  swap(a.__isset, b.__isset);
+}
+
+VaeDbOpenSessionResponse::VaeDbOpenSessionResponse(const VaeDbOpenSessionResponse& other70) {
+  session_id = other70.session_id;
+  generation = other70.generation;
+  __isset = other70.__isset;
+}
+VaeDbOpenSessionResponse& VaeDbOpenSessionResponse::operator=(const VaeDbOpenSessionResponse& other71) {
+  session_id = other71.session_id;
+  generation = other71.generation;
+  __isset = other71.__isset;
+  return *this;
+}
+std::ostream& operator<<(std::ostream& out, const VaeDbOpenSessionResponse& obj) {
+  using apache::thrift::to_string;
+  out << "VaeDbOpenSessionResponse(";
+  out << "session_id=" << to_string(obj.session_id);
+  out << ", " << "generation=" << to_string(obj.generation);
+  out << ")";
+  return out;
+}
+
+

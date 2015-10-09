@@ -43,6 +43,8 @@ class VaeDbDataResponse;
 
 class VaeDbStructureResponse;
 
+class VaeDbOpenSessionResponse;
+
 typedef struct _VaeDbInternalError__isset {
   _VaeDbInternalError__isset() : message(false) {}
   bool message :1;
@@ -624,6 +626,55 @@ class VaeDbStructureResponse {
 };
 
 void swap(VaeDbStructureResponse &a, VaeDbStructureResponse &b);
+
+typedef struct _VaeDbOpenSessionResponse__isset {
+  _VaeDbOpenSessionResponse__isset() : session_id(false), generation(false) {}
+  bool session_id :1;
+  bool generation :1;
+} _VaeDbOpenSessionResponse__isset;
+
+class VaeDbOpenSessionResponse {
+ public:
+
+  static const char* ascii_fingerprint; // = "989D1F1AE8D148D5E2119FFEC4BBBEE3";
+  static const uint8_t binary_fingerprint[16]; // = {0x98,0x9D,0x1F,0x1A,0xE8,0xD1,0x48,0xD5,0xE2,0x11,0x9F,0xFE,0xC4,0xBB,0xBE,0xE3};
+
+  VaeDbOpenSessionResponse(const VaeDbOpenSessionResponse&);
+  VaeDbOpenSessionResponse& operator=(const VaeDbOpenSessionResponse&);
+  VaeDbOpenSessionResponse() : session_id(0), generation(0) {
+  }
+
+  virtual ~VaeDbOpenSessionResponse() throw();
+  int32_t session_id;
+  int32_t generation;
+
+  _VaeDbOpenSessionResponse__isset __isset;
+
+  void __set_session_id(const int32_t val);
+
+  void __set_generation(const int32_t val);
+
+  bool operator == (const VaeDbOpenSessionResponse & rhs) const
+  {
+    if (!(session_id == rhs.session_id))
+      return false;
+    if (!(generation == rhs.generation))
+      return false;
+    return true;
+  }
+  bool operator != (const VaeDbOpenSessionResponse &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VaeDbOpenSessionResponse & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const VaeDbOpenSessionResponse& obj);
+};
+
+void swap(VaeDbOpenSessionResponse &a, VaeDbOpenSessionResponse &b);
 
 
 

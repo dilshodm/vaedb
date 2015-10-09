@@ -908,17 +908,17 @@ uint32_t VaeDb_get_args::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->options.clear();
-            uint32_t _size70;
-            ::apache::thrift::protocol::TType _ktype71;
-            ::apache::thrift::protocol::TType _vtype72;
-            xfer += iprot->readMapBegin(_ktype71, _vtype72, _size70);
-            uint32_t _i74;
-            for (_i74 = 0; _i74 < _size70; ++_i74)
+            uint32_t _size72;
+            ::apache::thrift::protocol::TType _ktype73;
+            ::apache::thrift::protocol::TType _vtype74;
+            xfer += iprot->readMapBegin(_ktype73, _vtype74, _size72);
+            uint32_t _i76;
+            for (_i76 = 0; _i76 < _size72; ++_i76)
             {
-              std::string _key75;
-              xfer += iprot->readString(_key75);
-              std::string& _val76 = this->options[_key75];
-              xfer += iprot->readString(_val76);
+              std::string _key77;
+              xfer += iprot->readString(_key77);
+              std::string& _val78 = this->options[_key77];
+              xfer += iprot->readString(_val78);
             }
             xfer += iprot->readMapEnd();
           }
@@ -959,11 +959,11 @@ uint32_t VaeDb_get_args::write(::apache::thrift::protocol::TProtocol* oprot) con
   xfer += oprot->writeFieldBegin("options", ::apache::thrift::protocol::T_MAP, 4);
   {
     xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->options.size()));
-    std::map<std::string, std::string> ::const_iterator _iter77;
-    for (_iter77 = this->options.begin(); _iter77 != this->options.end(); ++_iter77)
+    std::map<std::string, std::string> ::const_iterator _iter79;
+    for (_iter79 = this->options.begin(); _iter79 != this->options.end(); ++_iter79)
     {
-      xfer += oprot->writeString(_iter77->first);
-      xfer += oprot->writeString(_iter77->second);
+      xfer += oprot->writeString(_iter79->first);
+      xfer += oprot->writeString(_iter79->second);
     }
     xfer += oprot->writeMapEnd();
   }
@@ -1000,11 +1000,11 @@ uint32_t VaeDb_get_pargs::write(::apache::thrift::protocol::TProtocol* oprot) co
   xfer += oprot->writeFieldBegin("options", ::apache::thrift::protocol::T_MAP, 4);
   {
     xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>((*(this->options)).size()));
-    std::map<std::string, std::string> ::const_iterator _iter78;
-    for (_iter78 = (*(this->options)).begin(); _iter78 != (*(this->options)).end(); ++_iter78)
+    std::map<std::string, std::string> ::const_iterator _iter80;
+    for (_iter80 = (*(this->options)).begin(); _iter80 != (*(this->options)).end(); ++_iter80)
     {
-      xfer += oprot->writeString(_iter78->first);
-      xfer += oprot->writeString(_iter78->second);
+      xfer += oprot->writeString(_iter80->first);
+      xfer += oprot->writeString(_iter80->second);
     }
     xfer += oprot->writeMapEnd();
   }
@@ -1391,6 +1391,260 @@ uint32_t VaeDb_openSession_presult::read(::apache::thrift::protocol::TProtocol* 
       case 0:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->e.read(iprot);
+          this->__isset.e = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+
+VaeDb_openSession2_args::~VaeDb_openSession2_args() throw() {
+}
+
+
+uint32_t VaeDb_openSession2_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->site);
+          this->__isset.site = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->secret_key);
+          this->__isset.secret_key = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->staging_mode);
+          this->__isset.staging_mode = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->suggested_session_id);
+          this->__isset.suggested_session_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t VaeDb_openSession2_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("VaeDb_openSession2_args");
+
+  xfer += oprot->writeFieldBegin("site", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->site);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("secret_key", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->secret_key);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("staging_mode", ::apache::thrift::protocol::T_BOOL, 3);
+  xfer += oprot->writeBool(this->staging_mode);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("suggested_session_id", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32(this->suggested_session_id);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+
+VaeDb_openSession2_pargs::~VaeDb_openSession2_pargs() throw() {
+}
+
+
+uint32_t VaeDb_openSession2_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  oprot->incrementRecursionDepth();
+  xfer += oprot->writeStructBegin("VaeDb_openSession2_pargs");
+
+  xfer += oprot->writeFieldBegin("site", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->site)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("secret_key", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->secret_key)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("staging_mode", ::apache::thrift::protocol::T_BOOL, 3);
+  xfer += oprot->writeBool((*(this->staging_mode)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("suggested_session_id", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((*(this->suggested_session_id)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  oprot->decrementRecursionDepth();
+  return xfer;
+}
+
+
+VaeDb_openSession2_result::~VaeDb_openSession2_result() throw() {
+}
+
+
+uint32_t VaeDb_openSession2_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->success.read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->e.read(iprot);
+          this->__isset.e = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t VaeDb_openSession2_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("VaeDb_openSession2_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
+    xfer += this->success.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.e) {
+    xfer += oprot->writeFieldBegin("e", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->e.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+
+VaeDb_openSession2_presult::~VaeDb_openSession2_presult() throw() {
+}
+
+
+uint32_t VaeDb_openSession2_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += (*(this->success)).read(iprot);
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -4718,6 +4972,70 @@ int32_t VaeDbClient::recv_openSession()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "openSession failed: unknown result");
 }
 
+void VaeDbClient::openSession2(VaeDbOpenSessionResponse& _return, const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id)
+{
+  send_openSession2(site, secret_key, staging_mode, suggested_session_id);
+  recv_openSession2(_return);
+}
+
+void VaeDbClient::send_openSession2(const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("openSession2", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  VaeDb_openSession2_pargs args;
+  args.site = &site;
+  args.secret_key = &secret_key;
+  args.staging_mode = &staging_mode;
+  args.suggested_session_id = &suggested_session_id;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void VaeDbClient::recv_openSession2(VaeDbOpenSessionResponse& _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("openSession2") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  VaeDb_openSession2_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  if (result.__isset.e) {
+    throw result.e;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "openSession2 failed: unknown result");
+}
+
 void VaeDbClient::resetSite(const std::string& site, const std::string& secret_key)
 {
   send_resetSite(site, secret_key);
@@ -5935,6 +6253,63 @@ void VaeDbProcessor::process_openSession(int32_t seqid, ::apache::thrift::protoc
 
   if (this->eventHandler_.get() != NULL) {
     this->eventHandler_->postWrite(ctx, "VaeDb.openSession", bytes);
+  }
+}
+
+void VaeDbProcessor::process_openSession2(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("VaeDb.openSession2", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "VaeDb.openSession2");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "VaeDb.openSession2");
+  }
+
+  VaeDb_openSession2_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "VaeDb.openSession2", bytes);
+  }
+
+  VaeDb_openSession2_result result;
+  try {
+    iface_->openSession2(result.success, args.site, args.secret_key, args.staging_mode, args.suggested_session_id);
+    result.__isset.success = true;
+  } catch (VaeDbInternalError &e) {
+    result.e = e;
+    result.__isset.e = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "VaeDb.openSession2");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("openSession2", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "VaeDb.openSession2");
+  }
+
+  oprot->writeMessageBegin("openSession2", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "VaeDb.openSession2", bytes);
   }
 }
 

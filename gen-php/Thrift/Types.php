@@ -1378,4 +1378,102 @@ class VaeDbStructureResponse {
 
 }
 
+class VaeDbOpenSessionResponse {
+  static $_TSPEC;
+
+  /**
+   * @var int
+   */
+  public $session_id = null;
+  /**
+   * @var int
+   */
+  public $generation = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'session_id',
+          'type' => TType::I32,
+          ),
+        2 => array(
+          'var' => 'generation',
+          'type' => TType::I32,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['session_id'])) {
+        $this->session_id = $vals['session_id'];
+      }
+      if (isset($vals['generation'])) {
+        $this->generation = $vals['generation'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'VaeDbOpenSessionResponse';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->session_id);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->generation);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('VaeDbOpenSessionResponse');
+    if ($this->session_id !== null) {
+      $xfer += $output->writeFieldBegin('session_id', TType::I32, 1);
+      $xfer += $output->writeI32($this->session_id);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->generation !== null) {
+      $xfer += $output->writeFieldBegin('generation', TType::I32, 2);
+      $xfer += $output->writeI32($this->generation);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 

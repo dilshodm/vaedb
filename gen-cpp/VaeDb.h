@@ -21,6 +21,7 @@ class VaeDbIf {
   virtual void data(VaeDbDataResponse& _return, const int32_t session_id, const int32_t response_id) = 0;
   virtual void get(VaeDbResponse& _return, const int32_t session_id, const int32_t response_id, const std::string& query, const std::map<std::string, std::string> & options) = 0;
   virtual int32_t openSession(const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id) = 0;
+  virtual void openSession2(VaeDbOpenSessionResponse& _return, const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id) = 0;
   virtual void resetSite(const std::string& site, const std::string& secret_key) = 0;
   virtual void structure(VaeDbStructureResponse& _return, const int32_t session_id, const int32_t response_id) = 0;
   virtual void sessionCacheGet(std::string& _return, const int32_t session_id, const std::string& key) = 0;
@@ -84,6 +85,9 @@ class VaeDbNull : virtual public VaeDbIf {
   int32_t openSession(const std::string& /* site */, const std::string& /* secret_key */, const bool /* staging_mode */, const int32_t /* suggested_session_id */) {
     int32_t _return = 0;
     return _return;
+  }
+  void openSession2(VaeDbOpenSessionResponse& /* _return */, const std::string& /* site */, const std::string& /* secret_key */, const bool /* staging_mode */, const int32_t /* suggested_session_id */) {
+    return;
   }
   void resetSite(const std::string& /* site */, const std::string& /* secret_key */) {
     return;
@@ -958,6 +962,155 @@ class VaeDb_openSession_presult {
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
   friend std::ostream& operator<<(std::ostream& out, const VaeDb_openSession_presult& obj);
+};
+
+typedef struct _VaeDb_openSession2_args__isset {
+  _VaeDb_openSession2_args__isset() : site(false), secret_key(false), staging_mode(false), suggested_session_id(false) {}
+  bool site :1;
+  bool secret_key :1;
+  bool staging_mode :1;
+  bool suggested_session_id :1;
+} _VaeDb_openSession2_args__isset;
+
+class VaeDb_openSession2_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "184D24C9A0B8D4415E234DB649CAE740";
+  static const uint8_t binary_fingerprint[16]; // = {0x18,0x4D,0x24,0xC9,0xA0,0xB8,0xD4,0x41,0x5E,0x23,0x4D,0xB6,0x49,0xCA,0xE7,0x40};
+
+  VaeDb_openSession2_args(const VaeDb_openSession2_args&);
+  VaeDb_openSession2_args& operator=(const VaeDb_openSession2_args&);
+  VaeDb_openSession2_args() : site(), secret_key(), staging_mode(0), suggested_session_id(0) {
+  }
+
+  virtual ~VaeDb_openSession2_args() throw();
+  std::string site;
+  std::string secret_key;
+  bool staging_mode;
+  int32_t suggested_session_id;
+
+  _VaeDb_openSession2_args__isset __isset;
+
+  void __set_site(const std::string& val);
+
+  void __set_secret_key(const std::string& val);
+
+  void __set_staging_mode(const bool val);
+
+  void __set_suggested_session_id(const int32_t val);
+
+  bool operator == (const VaeDb_openSession2_args & rhs) const
+  {
+    if (!(site == rhs.site))
+      return false;
+    if (!(secret_key == rhs.secret_key))
+      return false;
+    if (!(staging_mode == rhs.staging_mode))
+      return false;
+    if (!(suggested_session_id == rhs.suggested_session_id))
+      return false;
+    return true;
+  }
+  bool operator != (const VaeDb_openSession2_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VaeDb_openSession2_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const VaeDb_openSession2_args& obj);
+};
+
+
+class VaeDb_openSession2_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "184D24C9A0B8D4415E234DB649CAE740";
+  static const uint8_t binary_fingerprint[16]; // = {0x18,0x4D,0x24,0xC9,0xA0,0xB8,0xD4,0x41,0x5E,0x23,0x4D,0xB6,0x49,0xCA,0xE7,0x40};
+
+
+  virtual ~VaeDb_openSession2_pargs() throw();
+  const std::string* site;
+  const std::string* secret_key;
+  const bool* staging_mode;
+  const int32_t* suggested_session_id;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const VaeDb_openSession2_pargs& obj);
+};
+
+typedef struct _VaeDb_openSession2_result__isset {
+  _VaeDb_openSession2_result__isset() : success(false), e(false) {}
+  bool success :1;
+  bool e :1;
+} _VaeDb_openSession2_result__isset;
+
+class VaeDb_openSession2_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "337127417EB899721247BF1F1656B985";
+  static const uint8_t binary_fingerprint[16]; // = {0x33,0x71,0x27,0x41,0x7E,0xB8,0x99,0x72,0x12,0x47,0xBF,0x1F,0x16,0x56,0xB9,0x85};
+
+  VaeDb_openSession2_result(const VaeDb_openSession2_result&);
+  VaeDb_openSession2_result& operator=(const VaeDb_openSession2_result&);
+  VaeDb_openSession2_result() {
+  }
+
+  virtual ~VaeDb_openSession2_result() throw();
+  VaeDbOpenSessionResponse success;
+  VaeDbInternalError e;
+
+  _VaeDb_openSession2_result__isset __isset;
+
+  void __set_success(const VaeDbOpenSessionResponse& val);
+
+  void __set_e(const VaeDbInternalError& val);
+
+  bool operator == (const VaeDb_openSession2_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(e == rhs.e))
+      return false;
+    return true;
+  }
+  bool operator != (const VaeDb_openSession2_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VaeDb_openSession2_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const VaeDb_openSession2_result& obj);
+};
+
+typedef struct _VaeDb_openSession2_presult__isset {
+  _VaeDb_openSession2_presult__isset() : success(false), e(false) {}
+  bool success :1;
+  bool e :1;
+} _VaeDb_openSession2_presult__isset;
+
+class VaeDb_openSession2_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "337127417EB899721247BF1F1656B985";
+  static const uint8_t binary_fingerprint[16]; // = {0x33,0x71,0x27,0x41,0x7E,0xB8,0x99,0x72,0x12,0x47,0xBF,0x1F,0x16,0x56,0xB9,0x85};
+
+
+  virtual ~VaeDb_openSession2_presult() throw();
+  VaeDbOpenSessionResponse* success;
+  VaeDbInternalError e;
+
+  _VaeDb_openSession2_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const VaeDb_openSession2_presult& obj);
 };
 
 typedef struct _VaeDb_resetSite_args__isset {
@@ -2832,6 +2985,9 @@ class VaeDbClient : virtual public VaeDbIf {
   int32_t openSession(const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id);
   void send_openSession(const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id);
   int32_t recv_openSession();
+  void openSession2(VaeDbOpenSessionResponse& _return, const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id);
+  void send_openSession2(const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id);
+  void recv_openSession2(VaeDbOpenSessionResponse& _return);
   void resetSite(const std::string& site, const std::string& secret_key);
   void send_resetSite(const std::string& site, const std::string& secret_key);
   void recv_resetSite();
@@ -2898,6 +3054,7 @@ class VaeDbProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_data(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_openSession(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_openSession2(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_resetSite(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_structure(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_sessionCacheGet(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -2922,6 +3079,7 @@ class VaeDbProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["data"] = &VaeDbProcessor::process_data;
     processMap_["get"] = &VaeDbProcessor::process_get;
     processMap_["openSession"] = &VaeDbProcessor::process_openSession;
+    processMap_["openSession2"] = &VaeDbProcessor::process_openSession2;
     processMap_["resetSite"] = &VaeDbProcessor::process_resetSite;
     processMap_["structure"] = &VaeDbProcessor::process_structure;
     processMap_["sessionCacheGet"] = &VaeDbProcessor::process_sessionCacheGet;
@@ -3020,6 +3178,16 @@ class VaeDbMultiface : virtual public VaeDbIf {
       ifaces_[i]->openSession(site, secret_key, staging_mode, suggested_session_id);
     }
     return ifaces_[i]->openSession(site, secret_key, staging_mode, suggested_session_id);
+  }
+
+  void openSession2(VaeDbOpenSessionResponse& _return, const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->openSession2(_return, site, secret_key, staging_mode, suggested_session_id);
+    }
+    ifaces_[i]->openSession2(_return, site, secret_key, staging_mode, suggested_session_id);
+    return;
   }
 
   void resetSite(const std::string& site, const std::string& secret_key) {

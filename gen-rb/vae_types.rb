@@ -235,3 +235,21 @@ class VaeDbStructureResponse
   ::Thrift::Struct.generate_accessors self
 end
 
+class VaeDbOpenSessionResponse
+  include ::Thrift::Struct, ::Thrift::Struct_Union
+  SESSION_ID = 1
+  GENERATION = 2
+
+  FIELDS = {
+    SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'},
+    GENERATION => {:type => ::Thrift::Types::I32, :name => 'generation'}
+  }
+
+  def struct_fields; FIELDS; end
+
+  def validate
+  end
+
+  ::Thrift::Struct.generate_accessors self
+end
+

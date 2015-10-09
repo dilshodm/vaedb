@@ -38,6 +38,7 @@ typedef LRUCache<LRUKey, boost::shared_ptr<Query> > QueryCache;
 
 class Site {
   
+  int32_t generation;
   string subdomain;
   string secretKey;
   StructureMap structures;
@@ -57,6 +58,7 @@ class Site {
   
   Site(string su, bool stagingMode, string const & rawxml);
   ~Site();
+  int32_t getGeneration();
   string getSubdomain();
   void reset();
   VaeDbStructure *structureFromStructureId(int structureId);

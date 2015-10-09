@@ -43,6 +43,7 @@ class VaeDbHandler : virtual public VaeDbIf {
   void get(VaeDbResponse& _return, const int32_t session_id, const int32_t  response_id, const std::string& query, const std::map<std::string, std::string> & options);
   SessionMap& getSessions();
   int32_t openSession(const std::string& subdomain, const std::string& secretKey, const bool stagingMode, const int32_t suggestedSessionId);
+  void openSession2(VaeDbOpenSessionResponse& _return, const std::string& subdomain, const std::string& secretKey, const bool stagingMode, const int32_t suggestedSessionId);
   int8_t ping();
   void resetSite(const std::string& subdomain, const std::string& secret_key);
   void reloadSite(std::string const & subdomain);

@@ -16,6 +16,7 @@ using namespace std;
 
 Site::Site(string su, bool stagingMode_, string const & rawxml) : stagingMode(stagingMode_), query_cache(384) {
   subdomain = su;
+  generation = -1;
   if (!testMode) {
     secretKey = read_s3(subdomain+"-secret");
   }
@@ -56,6 +57,10 @@ void Site::freeContexts(xmlNodePtr node) {
       freeContexts(child);
     }
   }
+}
+
+int32_t Site::getGeneration() {
+  return generation;
 }
 
 string Site::getSubdomain() {
@@ -111,6 +116,19 @@ void Site::loadXmlDoc(string const & rawxml) {
     (*it)->initializeAssociation();
   }
   associationsToInitialize.clear();
+  Query _generationQuery(this);
+  _generationQuery.runRawQuery(NULL, "/website/generation", "website generation node");
+  if (_generationQuery.getSize() == 1) {
+    generation = strtol(_generationQuery.getSingleData(), NULL, 10);
+  } else {
+    /*
+    Uncomment this after all XML feeds have been regenerated to include new feed generation node
+      VaeDbInternalError e;
+      e.message = "Could not find feed generation node in XML file";
+      throw e;
+    }
+    */
+  }
 }
 
 VaeDbStructure *Site::structureFromStructureId(int structureId) {

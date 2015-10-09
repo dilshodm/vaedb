@@ -65,6 +65,15 @@ interface VaeDbIf {
   /**
    * @param string $site
    * @param string $secret_key
+   * @param bool $staging_mode
+   * @param int $suggested_session_id
+   * @return \Thrift\VaeDbOpenSessionResponse
+   * @throws \Thrift\VaeDbInternalError
+   */
+  public function openSession2($site, $secret_key, $staging_mode, $suggested_session_id);
+  /**
+   * @param string $site
+   * @param string $secret_key
    * @throws \Thrift\VaeDbInternalError
    */
   public function resetSite($site, $secret_key);
@@ -496,6 +505,63 @@ class VaeDbClient implements \Thrift\VaeDbIf {
       throw $result->e;
     }
     throw new \Exception("openSession failed: unknown result");
+  }
+
+  public function openSession2($site, $secret_key, $staging_mode, $suggested_session_id)
+  {
+    $this->send_openSession2($site, $secret_key, $staging_mode, $suggested_session_id);
+    return $this->recv_openSession2();
+  }
+
+  public function send_openSession2($site, $secret_key, $staging_mode, $suggested_session_id)
+  {
+    $args = new \Thrift\VaeDb_openSession2_args();
+    $args->site = $site;
+    $args->secret_key = $secret_key;
+    $args->staging_mode = $staging_mode;
+    $args->suggested_session_id = $suggested_session_id;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'openSession2', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('openSession2', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_openSession2()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Thrift\VaeDb_openSession2_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Thrift\VaeDb_openSession2_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->e !== null) {
+      throw $result->e;
+    }
+    throw new \Exception("openSession2 failed: unknown result");
   }
 
   public function resetSite($site, $secret_key)
@@ -2562,6 +2628,255 @@ class VaeDb_openSession_result {
     if ($this->success !== null) {
       $xfer += $output->writeFieldBegin('success', TType::I32, 0);
       $xfer += $output->writeI32($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->e !== null) {
+      $xfer += $output->writeFieldBegin('e', TType::STRUCT, 1);
+      $xfer += $this->e->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class VaeDb_openSession2_args {
+  static $_TSPEC;
+
+  /**
+   * @var string
+   */
+  public $site = null;
+  /**
+   * @var string
+   */
+  public $secret_key = null;
+  /**
+   * @var bool
+   */
+  public $staging_mode = null;
+  /**
+   * @var int
+   */
+  public $suggested_session_id = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'site',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'secret_key',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'staging_mode',
+          'type' => TType::BOOL,
+          ),
+        4 => array(
+          'var' => 'suggested_session_id',
+          'type' => TType::I32,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['site'])) {
+        $this->site = $vals['site'];
+      }
+      if (isset($vals['secret_key'])) {
+        $this->secret_key = $vals['secret_key'];
+      }
+      if (isset($vals['staging_mode'])) {
+        $this->staging_mode = $vals['staging_mode'];
+      }
+      if (isset($vals['suggested_session_id'])) {
+        $this->suggested_session_id = $vals['suggested_session_id'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'VaeDb_openSession2_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->site);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->secret_key);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->staging_mode);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->suggested_session_id);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('VaeDb_openSession2_args');
+    if ($this->site !== null) {
+      $xfer += $output->writeFieldBegin('site', TType::STRING, 1);
+      $xfer += $output->writeString($this->site);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->secret_key !== null) {
+      $xfer += $output->writeFieldBegin('secret_key', TType::STRING, 2);
+      $xfer += $output->writeString($this->secret_key);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->staging_mode !== null) {
+      $xfer += $output->writeFieldBegin('staging_mode', TType::BOOL, 3);
+      $xfer += $output->writeBool($this->staging_mode);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->suggested_session_id !== null) {
+      $xfer += $output->writeFieldBegin('suggested_session_id', TType::I32, 4);
+      $xfer += $output->writeI32($this->suggested_session_id);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class VaeDb_openSession2_result {
+  static $_TSPEC;
+
+  /**
+   * @var \Thrift\VaeDbOpenSessionResponse
+   */
+  public $success = null;
+  /**
+   * @var \Thrift\VaeDbInternalError
+   */
+  public $e = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRUCT,
+          'class' => '\Thrift\VaeDbOpenSessionResponse',
+          ),
+        1 => array(
+          'var' => 'e',
+          'type' => TType::STRUCT,
+          'class' => '\Thrift\VaeDbInternalError',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['e'])) {
+        $this->e = $vals['e'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'VaeDb_openSession2_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::STRUCT) {
+            $this->success = new \Thrift\VaeDbOpenSessionResponse();
+            $xfer += $this->success->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->e = new \Thrift\VaeDbInternalError();
+            $xfer += $this->e->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('VaeDb_openSession2_result');
+    if ($this->success !== null) {
+      if (!is_object($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::STRUCT, 0);
+      $xfer += $this->success->write($output);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->e !== null) {
