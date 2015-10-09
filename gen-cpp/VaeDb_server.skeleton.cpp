@@ -50,11 +50,6 @@ class VaeDbHandler : virtual public VaeDbIf {
     printf("openSession\n");
   }
 
-  void openSession2(VaeDbOpenSessionResponse& _return, const std::string& site, const std::string& secret_key, const bool staging_mode, const int32_t suggested_session_id) {
-    // Your implementation goes here
-    printf("openSession2\n");
-  }
-
   void resetSite(const std::string& site, const std::string& secret_key) {
     // Your implementation goes here
     printf("resetSite\n");

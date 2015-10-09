@@ -102,9 +102,6 @@ service VaeDb {
   VaeDbOpenSessionResponse openSession(1:string site, 2:string secret_key, 3:bool staging_mode, 4:i32 suggested_session_id)
     throws (1:VaeDbInternalError e)
   
-  VaeDbOpenSessionResponse openSession2(1:string site, 2:string secret_key, 3:bool staging_mode, 4:i32 suggested_session_id)
-    throws (1:VaeDbInternalError e)
-  
   void resetSite(1:string site, 2:string secret_key)
     throws (1:VaeDbInternalError e)
     

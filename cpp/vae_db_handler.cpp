@@ -177,31 +177,6 @@ void VaeDbHandler::openSession(VaeDbOpenSessionResponse& _return, const string& 
   _return.session_id = sessionId;
 }
 
-void VaeDbHandler::openSession2(VaeDbOpenSessionResponse& _return, const string& subdomain, const string& secretKey, const bool stagingMode, const int32_t suggestedSessionId) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("openSession2") << subdomain << secretKey << stagingMode << suggestedSessionId << "\n";
-
-  if (testMode) {
-    this->resetSite(subdomain, secretKey);
-  }
-
-  int32_t sessionId; 
-  sessionId = suggestedSessionId;
-  boost::shared_ptr<Site> site = getSite(subdomain, secretKey, stagingMode);
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    while (sessions.count(sessionId)) {
-      sessionId = rand();
-    }
-    boost::shared_ptr<Session> session(new Session(site));
-    sessions[sessionId] = session;
-    entry.set_subdomain(session->getSite()->getSubdomain());
-    _return.generation = session->getSite()->getGeneration();
-  }
-
-  _return.session_id = sessionId;
-}
-
 int8_t VaeDbHandler::ping() {
   QueryLogEntry entry(queryLog);
   entry.method_call("ping") << "\n";

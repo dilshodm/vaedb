@@ -121,13 +121,9 @@ void Site::loadXmlDoc(string const & rawxml) {
   if (_generationQuery.getSize() == 1) {
     generation = strtol(_generationQuery.getSingleData(), NULL, 10);
   } else {
-    /*
-    Uncomment this after all XML feeds have been regenerated to include new feed generation node
-      VaeDbInternalError e;
-      e.message = "Could not find feed generation node in XML file";
-      throw e;
-    }
-    */
+    VaeDbInternalError e;
+    e.message = "Could not find feed generation node in XML file";
+    throw e;
   }
 }
 

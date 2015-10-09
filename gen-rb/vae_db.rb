@@ -107,22 +107,6 @@ module VaeDb
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'openSession failed: unknown result')
     end
 
-    def openSession2(site, secret_key, staging_mode, suggested_session_id)
-      send_openSession2(site, secret_key, staging_mode, suggested_session_id)
-      return recv_openSession2()
-    end
-
-    def send_openSession2(site, secret_key, staging_mode, suggested_session_id)
-      send_message('openSession2', OpenSession2_args, :site => site, :secret_key => secret_key, :staging_mode => staging_mode, :suggested_session_id => suggested_session_id)
-    end
-
-    def recv_openSession2()
-      result = receive_message(OpenSession2_result)
-      return result.success unless result.success.nil?
-      raise result.e unless result.e.nil?
-      raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'openSession2 failed: unknown result')
-    end
-
     def resetSite(site, secret_key)
       send_resetSite(site, secret_key)
       recv_resetSite()
@@ -411,17 +395,6 @@ module VaeDb
         result.e = e
       end
       write_result(result, oprot, 'openSession', seqid)
-    end
-
-    def process_openSession2(seqid, iprot, oprot)
-      args = read_args(iprot, OpenSession2_args)
-      result = OpenSession2_result.new()
-      begin
-        result.success = @handler.openSession2(args.site, args.secret_key, args.staging_mode, args.suggested_session_id)
-      rescue ::VaeDbInternalError => e
-        result.e = e
-      end
-      write_result(result, oprot, 'openSession2', seqid)
     end
 
     def process_resetSite(seqid, iprot, oprot)
@@ -747,46 +720,6 @@ module VaeDb
   end
 
   class OpenSession_result
-    include ::Thrift::Struct, ::Thrift::Struct_Union
-    SUCCESS = 0
-    E = 1
-
-    FIELDS = {
-      SUCCESS => {:type => ::Thrift::Types::STRUCT, :name => 'success', :class => ::VaeDbOpenSessionResponse},
-      E => {:type => ::Thrift::Types::STRUCT, :name => 'e', :class => ::VaeDbInternalError}
-    }
-
-    def struct_fields; FIELDS; end
-
-    def validate
-    end
-
-    ::Thrift::Struct.generate_accessors self
-  end
-
-  class OpenSession2_args
-    include ::Thrift::Struct, ::Thrift::Struct_Union
-    SITE = 1
-    SECRET_KEY = 2
-    STAGING_MODE = 3
-    SUGGESTED_SESSION_ID = 4
-
-    FIELDS = {
-      SITE => {:type => ::Thrift::Types::STRING, :name => 'site'},
-      SECRET_KEY => {:type => ::Thrift::Types::STRING, :name => 'secret_key'},
-      STAGING_MODE => {:type => ::Thrift::Types::BOOL, :name => 'staging_mode'},
-      SUGGESTED_SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'suggested_session_id'}
-    }
-
-    def struct_fields; FIELDS; end
-
-    def validate
-    end
-
-    ::Thrift::Struct.generate_accessors self
-  end
-
-  class OpenSession2_result
     include ::Thrift::Struct, ::Thrift::Struct_Union
     SUCCESS = 0
     E = 1
