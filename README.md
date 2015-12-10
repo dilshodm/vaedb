@@ -29,7 +29,7 @@ configure Vae Remote on your development machine.
     git clone https://github.com/bji/libs3.git
     cd libs3
     mv GNUmakefile.osx GNUmakefile
-    sudo make install
+    DESTDIR=/usr/local make install
 
 
 ### Install Prerequisites on Linux:
