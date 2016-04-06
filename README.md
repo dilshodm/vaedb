@@ -34,7 +34,7 @@ configure Vae Remote on your development machine.
 
 ### Install Prerequisites on Linux:
 
-    apt-get install libzmq-dev libpcre3-dev libthrift-dev libmemcached-dev libmysqlcppconn-dev
+    apt-get install libzmq3-dev libboost-all-dev libpcre3-dev libthrift-dev libmemcached-dev libmysqlcppconn-dev
 
     git clone https://github.com/bji/libs3.git
     cd libs3
@@ -52,8 +52,6 @@ Import the schema as follows:
 
 
 ## Compiling VaeDB
-
-    (Ubuntu) Install prerequisites: apt-get install libboost-all-dev libzmq3-dev
 
     cd cpp
     ./configure
