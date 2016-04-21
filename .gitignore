@@ -1,6 +1,3 @@
-
-
-# /cpp/
 /cpp/vaedb
 /cpp/verbdb
 /cpp/Makefile
@@ -9,6 +6,6 @@
 /cpp/config.status
 /cpp/*.o
 /cpp/autom4te.cache
-
+/rb/.sass-cache
 *.swp
 .DS_Store
