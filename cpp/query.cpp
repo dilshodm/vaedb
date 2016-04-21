@@ -52,7 +52,7 @@ Query::Query(Site *s, Context *context, const string &q) : site(s), xpathObj(NUL
     find(atoi(id.c_str()));
     if (size && (query.length() > 0)) {
       context = (Context *)getNode(0)->_private;
-      xmlXPathFreeObject(xpathObj);
+      if (xpathObj != NULL) xmlXPathFreeObject(xpathObj);
       xpathObj = NULL;
       query = query.substr(1);
     } else {
