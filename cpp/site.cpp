@@ -70,7 +70,7 @@ string Site::getSubdomain() {
 void Site::loadXmlDoc(string const & rawxml) {
   if (testMode) {
     doc = xmlParseFile(subdomain.c_str());
-    subdomain = "test";
+    subdomain = "local";
   } else {
     doc = xmlReadMemory(rawxml.c_str(), rawxml.size(), subdomain.c_str(), NULL, 0);
   }
