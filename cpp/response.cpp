@@ -87,13 +87,13 @@ Response::Response(boost::shared_ptr<Site> s, boost::shared_ptr<Response> parent
         boost::split(terms, order, boost::is_any_of(","));
         for (vector<string>::const_iterator it = terms.begin(); it != terms.end(); it++) {
           SortField field;
-          if (pcrecpp::RE("DESC\\(([A-Za-z0-9_()\\/]+)\\)", pcrecpp::RE_Options().set_caseless(true)).FullMatch(*it, &field.field)) {
+          if (pcrecpp::RE("DESC\\(([.A-Za-z0-9_()\\/]+)\\)", pcrecpp::RE_Options().set_caseless(true)).FullMatch(*it, &field.field)) {
             field.direction = Desc;
           } else {
             field.field = *it;
             field.direction = Asc;
           }
-          if (pcrecpp::RE("COUNT\\(([A-Za-z0-9_()\\/]+)\\)", pcrecpp::RE_Options().set_caseless(true)).FullMatch(field.field, &field.field)) {
+          if (pcrecpp::RE("COUNT\\(([.A-Za-z0-9_()\\/]+)\\)", pcrecpp::RE_Options().set_caseless(true)).FullMatch(field.field, &field.field)) {
             field.count = true;
           } else {
             field.count = false;
