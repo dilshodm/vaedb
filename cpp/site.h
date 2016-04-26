@@ -37,12 +37,12 @@ bool operator<(LRUKey const & a, LRUKey const & b) {
 typedef LRUCache<LRUKey, boost::shared_ptr<Query> > QueryCache;
 
 class Site {
-  
+
   int32_t generation;
   string subdomain;
-  string secretKey;
+  vector<string> secretKeys;
   StructureMap structures;
- 
+
  public:
   ContextList associationsToInitialize;
   QueryCache query_cache;
@@ -55,14 +55,14 @@ class Site {
   xmlNodePtr rootDesignNode;
   xmlNodePtr rootNode;
   bool stagingMode;
-  
+
   Site(string su, bool stagingMode, string const & rawxml);
   ~Site();
   int32_t getGeneration();
   string getSubdomain();
   void reset();
   VaeDbStructure *structureFromStructureId(int structureId);
-  void validateSecretKey(string testSecretKey);
+  void validateSecretKey(string secretKey);
   boost::shared_ptr<Query> fetch_query(LRUKey const & key);
 
  private:

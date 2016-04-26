@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <boost/algorithm/string.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/smart_ptr.hpp>
 
@@ -18,12 +19,13 @@ Site::Site(string su, bool stagingMode_, string const & rawxml) : stagingMode(st
   subdomain = su;
   generation = -1;
   if (!testMode) {
-    secretKey = read_s3(subdomain+"-secret");
+    string keys = read_s3(subdomain+"-secret");
+    boost::split(secretKeys, keys, boost::is_any_of(",;\n"));
   }
   loadXmlDoc(rawxml);
   L(info) << "[" << subdomain << "] opened";
 }
-  
+
 Site::~Site() {
   L(info) << "[" << subdomain << "] closed";
   for (NodeList::iterator it = nodesToClean.begin(); it != nodesToClean.end(); it++) {
@@ -50,7 +52,7 @@ Site::~Site() {
 
 void Site::freeContexts(xmlNodePtr node) {
   for (xmlNode *child = node->children; child; child = child->next) {
-    if (child->type == XML_ELEMENT_NODE) {    
+    if (child->type == XML_ELEMENT_NODE) {
       if (child->_private != NULL) {
         delete (Context *)child->_private;
       }
@@ -147,14 +149,16 @@ VaeDbStructure *Site::structureFromStructureId(int structureId) {
   structures[structureId] = structure;
   return structure;
 }
-  
-void Site::validateSecretKey(string testSecretKey) {
-  if (!testMode && secretKey != testSecretKey) {
-    L(warning) << "[" << subdomain << "] secret key mismatch: " << secretKey << " <> " << testSecretKey;
-    VaeDbInternalError e;
-    e.message = "Secret Key Mismatch";
-    throw e;
+
+void Site::validateSecretKey(string secretKey) {
+  if (testMode) return;
+  for (vector<string>::const_iterator it = secretKeys.begin(); it != secretKeys.end(); it++) {
+    if (*it == secretKey) return;
   }
+  L(warning) << "[" << subdomain << "] secret key mismatch: " << secretKey;
+  VaeDbInternalError e;
+  e.message = "Secret Key Mismatch";
+  throw e;
 }
 
 boost::shared_ptr<Query> Site::fetch_query(LRUKey const & key) {
