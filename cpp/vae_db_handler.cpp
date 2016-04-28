@@ -2,7 +2,7 @@
 #include <fstream>
 #include <boost/filesystem/operations.hpp>
 #include <boost/smart_ptr.hpp>
-#include <boost/thread/locks.hpp> 
+#include <boost/thread/locks.hpp>
 
 using namespace boost;
 using namespace std;
@@ -26,7 +26,7 @@ boost::shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey
   boost::shared_ptr<Site> site(_getSite(sitesKey, secretKey));
 
   if (site) return site;
-  
+
   if (!testMode) {
     xml = read_s3(subdomain+"-feed.xml");
   }
@@ -38,7 +38,7 @@ boost::shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey
 inline
 boost::mutex & VaeDbHandler::_get_site_mutex(std::string const & subdomain, bool stagingMode) {
   string sitesKey(stagingMode ? subdomain + ".staging" : subdomain);
-  boost::unique_lock<boost::mutex> lockSites(sitesMutex);  
+  boost::unique_lock<boost::mutex> lockSites(sitesMutex);
   if (siteMutexes.count(sitesKey)) {
     return *siteMutexes[sitesKey];
   } else {
@@ -54,7 +54,7 @@ VaeDbHandler::_loadSite(string const & subdomain, bool stagingMode, string const
   string sitesKey(stagingMode ? subdomain + ".staging" : subdomain);
   return sites[sitesKey] = site;
 }
- 
+
 boost::shared_ptr<Site> VaeDbHandler::_getSite(string const & sitesKey, string const & secretKey) {
   boost::unique_lock<boost::mutex> lock(sitesMutex);
 
@@ -66,18 +66,18 @@ boost::shared_ptr<Site> VaeDbHandler::_getSite(string const & sitesKey, string c
   return boost::shared_ptr<Site>();
 }
 
-VaeDbHandler::VaeDbHandler(QueryLog &queryLog, MemcacheProxy &memcacheProxy, MysqlProxy &mysqlProxy) 
+VaeDbHandler::VaeDbHandler(QueryLog &queryLog, MemcacheProxy &memcacheProxy, MysqlProxy &mysqlProxy)
   :  queryLog(queryLog), memcacheProxy(memcacheProxy), mysqlProxy(mysqlProxy) {
 
   nextSessionId = 1;
   xmlInitParser();
   xmlSetGenericErrorFunc(NULL, eatErrors);
   writePid();
-  new Reaper(this, mysqlProxy);  
+  new Reaper(this, mysqlProxy);
   L(info) << "VaeDB Running";
 }
 
-VaeDbHandler::~VaeDbHandler() { 
+VaeDbHandler::~VaeDbHandler() {
   L(info) << "shutdown";
   xmlCleanupParser();
 }
@@ -129,7 +129,7 @@ void VaeDbHandler::data(VaeDbDataResponse& _return, const int32_t sessionId, con
   entry.set_subdomain(session->getSite()->getSubdomain());
   session->data(_return, responseId);
 }
-  
+
 void VaeDbHandler::get(VaeDbResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query, const map<string, string> & options) {
   QueryLogEntry entry(queryLog);
   entry.method_call("get") << sessionId << responseId << query << options << "\n";
@@ -147,7 +147,7 @@ void VaeDbHandler::get(VaeDbResponse& _return, const int32_t sessionId, const in
   entry.set_subdomain(session->getSite()->getSubdomain());
   session->get(_return, responseId, query, options);
 }
-  
+
 SessionMap& VaeDbHandler::getSessions() {
   return sessions;
 }
@@ -160,7 +160,7 @@ void VaeDbHandler::openSession(VaeDbOpenSessionResponse& _return, const string& 
     this->resetSite(subdomain, secretKey);
   }
 
-  int32_t sessionId; 
+  int32_t sessionId;
   sessionId = suggestedSessionId;
   boost::shared_ptr<Site> site = getSite(subdomain, secretKey, stagingMode);
   {
@@ -226,9 +226,9 @@ void VaeDbHandler::_resetSite(string const & subdomain, string const & secretKey
   }
 
   string staging(subdomain + ".staging");
-  
+
   if (sites.count(staging)) {
-    _eraseSite(staging, secretKey, force); 
+    _eraseSite(staging, secretKey, force);
   }
 }
 
