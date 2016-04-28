@@ -16,13 +16,13 @@ const char EMPTY_STRING[] = "";
 
 boost::mutex Query::mutex;
 
-Query::Query(Site *s) : site(s), xpathObj(NULL) { 
+Query::Query(Site *s) : site(s), xpathObj(NULL) {
 }
 
 Query::Query(Site *s, Context *context, const string &q) : site(s), xpathObj(NULL) {
   string id, permalink, query = q;
   if (pcrecpp::RE("^/").Replace("", &query)) {
-    context = NULL; 
+    context = NULL;
   }
   if (pcrecpp::RE("permalink/(.*)").FullMatch(query, &permalink)) {
     vector<string> pathParts;
@@ -52,14 +52,16 @@ Query::Query(Site *s, Context *context, const string &q) : site(s), xpathObj(NUL
     find(atoi(id.c_str()));
     if (size && (query.length() > 0)) {
       context = (Context *)getNode(0)->_private;
-      if (xpathObj != NULL) xmlXPathFreeObject(xpathObj);
+      if (xpathObj != NULL) {
+        xmlXPathFreeObject(xpathObj);
+      }
       xpathObj = NULL;
       query = query.substr(1);
     } else {
       return;
     }
   }
-  
+
   // prev() and next()
   if (!strcasecmp("prev()", query.c_str())) {
     if (!context) {
@@ -77,7 +79,7 @@ Query::Query(Site *s, Context *context, const string &q) : site(s), xpathObj(NUL
     }
     query = (string)"following-sibling::" + context->getNodeName() + "[1]";
   }
-  
+
   // hack in a /text() to the end of predicate selectors
   vector<string> queryParts;
   boost::split(queryParts, query, boost::is_any_of("'"));
@@ -92,9 +94,9 @@ Query::Query(Site *s, Context *context, const string &q) : site(s), xpathObj(NUL
       e.message = "Double-slashes are not supported in Vae queries.";
       throw e;
     }
-  }  
+  }
   query = boost::join(queryParts, "'");
-  
+
   // hack of the century.  without this, complex lookups fail
   // I haven't the faintest idea why.  But this does seem to fix it.
   if (strstr(query.c_str(), "/") && !strstr(query.c_str(), "[")) {
@@ -104,12 +106,14 @@ Query::Query(Site *s, Context *context, const string &q) : site(s), xpathObj(NUL
       query = boost::join(queryParts, "/");
     }
   }
-  
+
   runQuery(context, query, q);
 }
 
 Query::~Query() {
-  if (xpathObj != NULL) xmlXPathFreeObject(xpathObj);
+  if (xpathObj != NULL) {
+    xmlXPathFreeObject(xpathObj);
+  }
 }
 
 void Query::find(int id) {
@@ -199,7 +203,7 @@ void Query::runRawQuery(xmlNodePtr node, const string &q, const string &displayQ
   }
   xpathContext->node = node;
   xpathObj = xmlXPathEvalExpression((xmlChar *)q.c_str(), xpathContext);
-  xmlXPathFreeContext(xpathContext); 
+  xmlXPathFreeContext(xpathContext);
   if (xpathObj == NULL) {
     L(warning) << "[" << site->getSubdomain() << "] could not evaluate XPath expression: '" << displayQuery << "', transformed into '" << q << "'";
     string error = "could not evaluate XPath expression: '" + displayQuery + "'";

@@ -156,10 +156,6 @@ void VaeDbHandler::openSession(VaeDbOpenSessionResponse& _return, const string& 
   QueryLogEntry entry(queryLog);
   entry.method_call("openSession") << subdomain << secretKey << stagingMode << suggestedSessionId << "\n";
 
-  if (testMode) {
-    this->resetSite(subdomain, secretKey);
-  }
-
   int32_t sessionId;
   sessionId = suggestedSessionId;
   boost::shared_ptr<Site> site = getSite(subdomain, secretKey, stagingMode);
