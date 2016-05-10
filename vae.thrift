@@ -75,10 +75,10 @@ service VaeRubyd {
   string haml(1:string text)
     throws (1:VaeSyntaxError se)
   
-  string sass(1:string text, 2:string load_path)
+  string sass(1:string text, 2:string load_path, 3:string style)
     throws (1:VaeSyntaxError se)
   
-  string scss(1:string text, 2:string load_path)
+  string scss(1:string text, 2:string load_path, 3:string style)
     throws (1:VaeSyntaxError se)
 
 }

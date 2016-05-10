@@ -606,6 +606,14 @@ uint32_t VaeRubyd_sass_args::read(::apache::thrift::protocol::TProtocol* iprot) 
           xfer += iprot->skip(ftype);
         }
         break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->style);
+          this->__isset.style = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -631,6 +639,10 @@ uint32_t VaeRubyd_sass_args::write(::apache::thrift::protocol::TProtocol* oprot)
   xfer += oprot->writeString(this->load_path);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("style", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->style);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -653,6 +665,10 @@ uint32_t VaeRubyd_sass_pargs::write(::apache::thrift::protocol::TProtocol* oprot
 
   xfer += oprot->writeFieldBegin("load_path", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->load_path)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("style", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString((*(this->style)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -828,6 +844,14 @@ uint32_t VaeRubyd_scss_args::read(::apache::thrift::protocol::TProtocol* iprot) 
           xfer += iprot->skip(ftype);
         }
         break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->style);
+          this->__isset.style = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -853,6 +877,10 @@ uint32_t VaeRubyd_scss_args::write(::apache::thrift::protocol::TProtocol* oprot)
   xfer += oprot->writeString(this->load_path);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("style", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->style);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -875,6 +903,10 @@ uint32_t VaeRubyd_scss_pargs::write(::apache::thrift::protocol::TProtocol* oprot
 
   xfer += oprot->writeFieldBegin("load_path", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->load_path)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("style", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString((*(this->style)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -1185,13 +1217,13 @@ void VaeRubydClient::recv_haml(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "haml failed: unknown result");
 }
 
-void VaeRubydClient::sass(std::string& _return, const std::string& text, const std::string& load_path)
+void VaeRubydClient::sass(std::string& _return, const std::string& text, const std::string& load_path, const std::string& style)
 {
-  send_sass(text, load_path);
+  send_sass(text, load_path, style);
   recv_sass(_return);
 }
 
-void VaeRubydClient::send_sass(const std::string& text, const std::string& load_path)
+void VaeRubydClient::send_sass(const std::string& text, const std::string& load_path, const std::string& style)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("sass", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -1199,6 +1231,7 @@ void VaeRubydClient::send_sass(const std::string& text, const std::string& load_
   VaeRubyd_sass_pargs args;
   args.text = &text;
   args.load_path = &load_path;
+  args.style = &style;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -1247,13 +1280,13 @@ void VaeRubydClient::recv_sass(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "sass failed: unknown result");
 }
 
-void VaeRubydClient::scss(std::string& _return, const std::string& text, const std::string& load_path)
+void VaeRubydClient::scss(std::string& _return, const std::string& text, const std::string& load_path, const std::string& style)
 {
-  send_scss(text, load_path);
+  send_scss(text, load_path, style);
   recv_scss(_return);
 }
 
-void VaeRubydClient::send_scss(const std::string& text, const std::string& load_path)
+void VaeRubydClient::send_scss(const std::string& text, const std::string& load_path, const std::string& style)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("scss", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -1261,6 +1294,7 @@ void VaeRubydClient::send_scss(const std::string& text, const std::string& load_
   VaeRubyd_scss_pargs args;
   args.text = &text;
   args.load_path = &load_path;
+  args.style = &style;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -1516,7 +1550,7 @@ void VaeRubydProcessor::process_sass(int32_t seqid, ::apache::thrift::protocol::
 
   VaeRubyd_sass_result result;
   try {
-    iface_->sass(result.success, args.text, args.load_path);
+    iface_->sass(result.success, args.text, args.load_path, args.style);
     result.__isset.success = true;
   } catch (VaeSyntaxError &se) {
     result.se = se;
@@ -1573,7 +1607,7 @@ void VaeRubydProcessor::process_scss(int32_t seqid, ::apache::thrift::protocol::
 
   VaeRubyd_scss_result result;
   try {
-    iface_->scss(result.success, args.text, args.load_path);
+    iface_->scss(result.success, args.text, args.load_path, args.style);
     result.__isset.success = true;
   } catch (VaeSyntaxError &se) {
     result.se = se;

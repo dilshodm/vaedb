@@ -25,11 +25,11 @@ class VaeRubydHandler
     end
   end
 
-  def sass(text, load_path)
+  def sass(text, load_path, style = :compressed)
     begin
       options = Compass.sass_engine_options
       options[:load_paths] << load_path
-      options[:style] = :compressed
+      options[:style] = style.to_sym
       engine = Sass::Engine.new(text, options)
       engine.render
     rescue Sass::SyntaxError => e
@@ -37,11 +37,11 @@ class VaeRubydHandler
     end
   end
 
-  def scss(text, load_path)
+  def scss(text, load_path, style = :compressed)
     begin
       options = Compass.sass_engine_options
       options[:load_paths] << load_path
-      options[:style] = :compressed
+      options[:style] = style.to_sym
       options[:syntax] = :scss
       engine = Sass::Engine.new(text, options)
       engine.render

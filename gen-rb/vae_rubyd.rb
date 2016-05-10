@@ -57,13 +57,13 @@ module VaeRubyd
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'haml failed: unknown result')
     end
 
-    def sass(text, load_path)
-      send_sass(text, load_path)
+    def sass(text, load_path, style)
+      send_sass(text, load_path, style)
       return recv_sass()
     end
 
-    def send_sass(text, load_path)
-      send_message('sass', Sass_args, :text => text, :load_path => load_path)
+    def send_sass(text, load_path, style)
+      send_message('sass', Sass_args, :text => text, :load_path => load_path, :style => style)
     end
 
     def recv_sass()
@@ -73,13 +73,13 @@ module VaeRubyd
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'sass failed: unknown result')
     end
 
-    def scss(text, load_path)
-      send_scss(text, load_path)
+    def scss(text, load_path, style)
+      send_scss(text, load_path, style)
       return recv_scss()
     end
 
-    def send_scss(text, load_path)
-      send_message('scss', Scss_args, :text => text, :load_path => load_path)
+    def send_scss(text, load_path, style)
+      send_message('scss', Scss_args, :text => text, :load_path => load_path, :style => style)
     end
 
     def recv_scss()
@@ -123,7 +123,7 @@ module VaeRubyd
       args = read_args(iprot, Sass_args)
       result = Sass_result.new()
       begin
-        result.success = @handler.sass(args.text, args.load_path)
+        result.success = @handler.sass(args.text, args.load_path, args.style)
       rescue ::VaeSyntaxError => se
         result.se = se
       end
@@ -134,7 +134,7 @@ module VaeRubyd
       args = read_args(iprot, Scss_args)
       result = Scss_result.new()
       begin
-        result.success = @handler.scss(args.text, args.load_path)
+        result.success = @handler.scss(args.text, args.load_path, args.style)
       rescue ::VaeSyntaxError => se
         result.se = se
       end
@@ -246,10 +246,12 @@ module VaeRubyd
     include ::Thrift::Struct, ::Thrift::Struct_Union
     TEXT = 1
     LOAD_PATH = 2
+    STYLE = 3
 
     FIELDS = {
       TEXT => {:type => ::Thrift::Types::STRING, :name => 'text'},
-      LOAD_PATH => {:type => ::Thrift::Types::STRING, :name => 'load_path'}
+      LOAD_PATH => {:type => ::Thrift::Types::STRING, :name => 'load_path'},
+      STYLE => {:type => ::Thrift::Types::STRING, :name => 'style'}
     }
 
     def struct_fields; FIELDS; end
@@ -282,10 +284,12 @@ module VaeRubyd
     include ::Thrift::Struct, ::Thrift::Struct_Union
     TEXT = 1
     LOAD_PATH = 2
+    STYLE = 3
 
     FIELDS = {
       TEXT => {:type => ::Thrift::Types::STRING, :name => 'text'},
-      LOAD_PATH => {:type => ::Thrift::Types::STRING, :name => 'load_path'}
+      LOAD_PATH => {:type => ::Thrift::Types::STRING, :name => 'load_path'},
+      STYLE => {:type => ::Thrift::Types::STRING, :name => 'style'}
     }
 
     def struct_fields; FIELDS; end

@@ -18,8 +18,8 @@ class VaeRubydIf {
   virtual int8_t ping() = 0;
   virtual int8_t fixDocRoot(const std::string& path) = 0;
   virtual void haml(std::string& _return, const std::string& text) = 0;
-  virtual void sass(std::string& _return, const std::string& text, const std::string& load_path) = 0;
-  virtual void scss(std::string& _return, const std::string& text, const std::string& load_path) = 0;
+  virtual void sass(std::string& _return, const std::string& text, const std::string& load_path, const std::string& style) = 0;
+  virtual void scss(std::string& _return, const std::string& text, const std::string& load_path, const std::string& style) = 0;
 };
 
 class VaeRubydIfFactory {
@@ -60,10 +60,10 @@ class VaeRubydNull : virtual public VaeRubydIf {
   void haml(std::string& /* _return */, const std::string& /* text */) {
     return;
   }
-  void sass(std::string& /* _return */, const std::string& /* text */, const std::string& /* load_path */) {
+  void sass(std::string& /* _return */, const std::string& /* text */, const std::string& /* load_path */, const std::string& /* style */) {
     return;
   }
-  void scss(std::string& /* _return */, const std::string& /* text */, const std::string& /* load_path */) {
+  void scss(std::string& /* _return */, const std::string& /* text */, const std::string& /* load_path */, const std::string& /* style */) {
     return;
   }
 };
@@ -425,25 +425,27 @@ class VaeRubyd_haml_presult {
 };
 
 typedef struct _VaeRubyd_sass_args__isset {
-  _VaeRubyd_sass_args__isset() : text(false), load_path(false) {}
+  _VaeRubyd_sass_args__isset() : text(false), load_path(false), style(false) {}
   bool text :1;
   bool load_path :1;
+  bool style :1;
 } _VaeRubyd_sass_args__isset;
 
 class VaeRubyd_sass_args {
  public:
 
-  static const char* ascii_fingerprint; // = "07A9615F837F7D0A952B595DD3020972";
-  static const uint8_t binary_fingerprint[16]; // = {0x07,0xA9,0x61,0x5F,0x83,0x7F,0x7D,0x0A,0x95,0x2B,0x59,0x5D,0xD3,0x02,0x09,0x72};
+  static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
+  static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
 
   VaeRubyd_sass_args(const VaeRubyd_sass_args&);
   VaeRubyd_sass_args& operator=(const VaeRubyd_sass_args&);
-  VaeRubyd_sass_args() : text(), load_path() {
+  VaeRubyd_sass_args() : text(), load_path(), style() {
   }
 
   virtual ~VaeRubyd_sass_args() throw();
   std::string text;
   std::string load_path;
+  std::string style;
 
   _VaeRubyd_sass_args__isset __isset;
 
@@ -451,11 +453,15 @@ class VaeRubyd_sass_args {
 
   void __set_load_path(const std::string& val);
 
+  void __set_style(const std::string& val);
+
   bool operator == (const VaeRubyd_sass_args & rhs) const
   {
     if (!(text == rhs.text))
       return false;
     if (!(load_path == rhs.load_path))
+      return false;
+    if (!(style == rhs.style))
       return false;
     return true;
   }
@@ -475,13 +481,14 @@ class VaeRubyd_sass_args {
 class VaeRubyd_sass_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "07A9615F837F7D0A952B595DD3020972";
-  static const uint8_t binary_fingerprint[16]; // = {0x07,0xA9,0x61,0x5F,0x83,0x7F,0x7D,0x0A,0x95,0x2B,0x59,0x5D,0xD3,0x02,0x09,0x72};
+  static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
+  static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
 
 
   virtual ~VaeRubyd_sass_pargs() throw();
   const std::string* text;
   const std::string* load_path;
+  const std::string* style;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -560,25 +567,27 @@ class VaeRubyd_sass_presult {
 };
 
 typedef struct _VaeRubyd_scss_args__isset {
-  _VaeRubyd_scss_args__isset() : text(false), load_path(false) {}
+  _VaeRubyd_scss_args__isset() : text(false), load_path(false), style(false) {}
   bool text :1;
   bool load_path :1;
+  bool style :1;
 } _VaeRubyd_scss_args__isset;
 
 class VaeRubyd_scss_args {
  public:
 
-  static const char* ascii_fingerprint; // = "07A9615F837F7D0A952B595DD3020972";
-  static const uint8_t binary_fingerprint[16]; // = {0x07,0xA9,0x61,0x5F,0x83,0x7F,0x7D,0x0A,0x95,0x2B,0x59,0x5D,0xD3,0x02,0x09,0x72};
+  static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
+  static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
 
   VaeRubyd_scss_args(const VaeRubyd_scss_args&);
   VaeRubyd_scss_args& operator=(const VaeRubyd_scss_args&);
-  VaeRubyd_scss_args() : text(), load_path() {
+  VaeRubyd_scss_args() : text(), load_path(), style() {
   }
 
   virtual ~VaeRubyd_scss_args() throw();
   std::string text;
   std::string load_path;
+  std::string style;
 
   _VaeRubyd_scss_args__isset __isset;
 
@@ -586,11 +595,15 @@ class VaeRubyd_scss_args {
 
   void __set_load_path(const std::string& val);
 
+  void __set_style(const std::string& val);
+
   bool operator == (const VaeRubyd_scss_args & rhs) const
   {
     if (!(text == rhs.text))
       return false;
     if (!(load_path == rhs.load_path))
+      return false;
+    if (!(style == rhs.style))
       return false;
     return true;
   }
@@ -610,13 +623,14 @@ class VaeRubyd_scss_args {
 class VaeRubyd_scss_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "07A9615F837F7D0A952B595DD3020972";
-  static const uint8_t binary_fingerprint[16]; // = {0x07,0xA9,0x61,0x5F,0x83,0x7F,0x7D,0x0A,0x95,0x2B,0x59,0x5D,0xD3,0x02,0x09,0x72};
+  static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
+  static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
 
 
   virtual ~VaeRubyd_scss_pargs() throw();
   const std::string* text;
   const std::string* load_path;
+  const std::string* style;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -728,11 +742,11 @@ class VaeRubydClient : virtual public VaeRubydIf {
   void haml(std::string& _return, const std::string& text);
   void send_haml(const std::string& text);
   void recv_haml(std::string& _return);
-  void sass(std::string& _return, const std::string& text, const std::string& load_path);
-  void send_sass(const std::string& text, const std::string& load_path);
+  void sass(std::string& _return, const std::string& text, const std::string& load_path, const std::string& style);
+  void send_sass(const std::string& text, const std::string& load_path, const std::string& style);
   void recv_sass(std::string& _return);
-  void scss(std::string& _return, const std::string& text, const std::string& load_path);
-  void send_scss(const std::string& text, const std::string& load_path);
+  void scss(std::string& _return, const std::string& text, const std::string& load_path, const std::string& style);
+  void send_scss(const std::string& text, const std::string& load_path, const std::string& style);
   void recv_scss(std::string& _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
@@ -818,23 +832,23 @@ class VaeRubydMultiface : virtual public VaeRubydIf {
     return;
   }
 
-  void sass(std::string& _return, const std::string& text, const std::string& load_path) {
+  void sass(std::string& _return, const std::string& text, const std::string& load_path, const std::string& style) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->sass(_return, text, load_path);
+      ifaces_[i]->sass(_return, text, load_path, style);
     }
-    ifaces_[i]->sass(_return, text, load_path);
+    ifaces_[i]->sass(_return, text, load_path, style);
     return;
   }
 
-  void scss(std::string& _return, const std::string& text, const std::string& load_path) {
+  void scss(std::string& _return, const std::string& text, const std::string& load_path, const std::string& style) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->scss(_return, text, load_path);
+      ifaces_[i]->scss(_return, text, load_path, style);
     }
-    ifaces_[i]->scss(_return, text, load_path);
+    ifaces_[i]->scss(_return, text, load_path, style);
     return;
   }
 

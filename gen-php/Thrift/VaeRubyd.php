@@ -35,17 +35,19 @@ interface VaeRubydIf {
   /**
    * @param string $text
    * @param string $load_path
+   * @param string $style
    * @return string
    * @throws \Thrift\VaeSyntaxError
    */
-  public function sass($text, $load_path);
+  public function sass($text, $load_path, $style);
   /**
    * @param string $text
    * @param string $load_path
+   * @param string $style
    * @return string
    * @throws \Thrift\VaeSyntaxError
    */
-  public function scss($text, $load_path);
+  public function scss($text, $load_path, $style);
 }
 
 class VaeRubydClient implements \Thrift\VaeRubydIf {
@@ -214,17 +216,18 @@ class VaeRubydClient implements \Thrift\VaeRubydIf {
     throw new \Exception("haml failed: unknown result");
   }
 
-  public function sass($text, $load_path)
+  public function sass($text, $load_path, $style)
   {
-    $this->send_sass($text, $load_path);
+    $this->send_sass($text, $load_path, $style);
     return $this->recv_sass();
   }
 
-  public function send_sass($text, $load_path)
+  public function send_sass($text, $load_path, $style)
   {
     $args = new \Thrift\VaeRubyd_sass_args();
     $args->text = $text;
     $args->load_path = $load_path;
+    $args->style = $style;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -269,17 +272,18 @@ class VaeRubydClient implements \Thrift\VaeRubydIf {
     throw new \Exception("sass failed: unknown result");
   }
 
-  public function scss($text, $load_path)
+  public function scss($text, $load_path, $style)
   {
-    $this->send_scss($text, $load_path);
+    $this->send_scss($text, $load_path, $style);
     return $this->recv_scss();
   }
 
-  public function send_scss($text, $load_path)
+  public function send_scss($text, $load_path, $style)
   {
     $args = new \Thrift\VaeRubyd_scss_args();
     $args->text = $text;
     $args->load_path = $load_path;
+    $args->style = $style;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -789,6 +793,10 @@ class VaeRubyd_sass_args {
    * @var string
    */
   public $load_path = null;
+  /**
+   * @var string
+   */
+  public $style = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -801,6 +809,10 @@ class VaeRubyd_sass_args {
           'var' => 'load_path',
           'type' => TType::STRING,
           ),
+        3 => array(
+          'var' => 'style',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -809,6 +821,9 @@ class VaeRubyd_sass_args {
       }
       if (isset($vals['load_path'])) {
         $this->load_path = $vals['load_path'];
+      }
+      if (isset($vals['style'])) {
+        $this->style = $vals['style'];
       }
     }
   }
@@ -846,6 +861,13 @@ class VaeRubyd_sass_args {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->style);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -867,6 +889,11 @@ class VaeRubyd_sass_args {
     if ($this->load_path !== null) {
       $xfer += $output->writeFieldBegin('load_path', TType::STRING, 2);
       $xfer += $output->writeString($this->load_path);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->style !== null) {
+      $xfer += $output->writeFieldBegin('style', TType::STRING, 3);
+      $xfer += $output->writeString($this->style);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -987,6 +1014,10 @@ class VaeRubyd_scss_args {
    * @var string
    */
   public $load_path = null;
+  /**
+   * @var string
+   */
+  public $style = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -999,6 +1030,10 @@ class VaeRubyd_scss_args {
           'var' => 'load_path',
           'type' => TType::STRING,
           ),
+        3 => array(
+          'var' => 'style',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -1007,6 +1042,9 @@ class VaeRubyd_scss_args {
       }
       if (isset($vals['load_path'])) {
         $this->load_path = $vals['load_path'];
+      }
+      if (isset($vals['style'])) {
+        $this->style = $vals['style'];
       }
     }
   }
@@ -1044,6 +1082,13 @@ class VaeRubyd_scss_args {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->style);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1065,6 +1110,11 @@ class VaeRubyd_scss_args {
     if ($this->load_path !== null) {
       $xfer += $output->writeFieldBegin('load_path', TType::STRING, 2);
       $xfer += $output->writeString($this->load_path);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->style !== null) {
+      $xfer += $output->writeFieldBegin('style', TType::STRING, 3);
+      $xfer += $output->writeString($this->style);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

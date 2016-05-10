@@ -35,12 +35,12 @@ class VaeRubydHandler : virtual public VaeRubydIf {
     printf("haml\n");
   }
 
-  void sass(std::string& _return, const std::string& text, const std::string& load_path) {
+  void sass(std::string& _return, const std::string& text, const std::string& load_path, const std::string& style) {
     // Your implementation goes here
     printf("sass\n");
   }
 
-  void scss(std::string& _return, const std::string& text, const std::string& load_path) {
+  void scss(std::string& _return, const std::string& text, const std::string& load_path, const std::string& style) {
     // Your implementation goes here
     printf("scss\n");
   }
