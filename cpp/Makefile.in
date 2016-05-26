@@ -10,12 +10,12 @@ bindir = $(exec_prefix)/bin
 CXX = @CXX@
 CXXFLAGS = -g @CXXFLAGS@ @BOOST_CXXFLAGS@ -std=c++11 -I../gen-cpp -I/usr/include/malloc `xml2-config --cflags` -c
 LDFLAGS = -L/usr/local/lib @LDFLAGS@ @BOOST_LDFLAGS@ -g
-LIBS = @LIBS@ -ls3 -lboost_filesystem@BOOST_LIB_SUFFIX@ -lboost_program_options@BOOST_LIB_SUFFIX@ -lboost_system@BOOST_LIB_SUFFIX@ -lboost_thread@BOOST_LIB_SUFFIX@ -lmysqlcppconn -lz -lxml2 -lthrift -lm -g 
+LIBS = @LIBS@ -ljemalloc -ls3 -lboost_filesystem@BOOST_LIB_SUFFIX@ -lboost_program_options@BOOST_LIB_SUFFIX@ -lboost_system@BOOST_LIB_SUFFIX@ -lboost_thread@BOOST_LIB_SUFFIX@ -lmysqlcppconn -lz -lxml2 -lthrift -lm -g
 
 GEN_SRC = ../gen-cpp/vae_types.cpp ../gen-cpp/VaeDb.cpp
 OBJS = context.o bus.o s3.o logger.o main.o memcache_proxy.o mysql_proxy.o query.o query_log.o reaper.o response.o session.o site.o util.o vae_db_handler.o vae_types.o VaeDb.o
 HEADERS = context.h bus.h logger.h lru_cache.h memcache_proxy.h mysql_proxy.h query.h query_log.h reaper.h response.h s3.h session.h site.h util.h vae_db_handler.h ../gen-cpp/vae_types.h ../gen-cpp/vae_constants.h ../gen-cpp/VaeDb.h
-	
+
 default: server
 
 clean:
@@ -27,22 +27,22 @@ context.o: context.cpp ${HEADERS}
 install: server
 	install vaedb /app/vaedb/sbin
 	killall -9 vaedb
-	
+
 bus.o: bus.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} bus.cpp
-	
+
 s3.o: s3.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} s3.cpp
-	
+
 logger.o: logger.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} logger.cpp
-	
+
 main.o: main.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} main.cpp
 
 memcache_proxy.o: memcache_proxy.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} memcache_proxy.cpp
-	
+
 mysql_proxy.o: mysql_proxy.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} mysql_proxy.cpp
 
@@ -60,24 +60,24 @@ reaper.o: reaper.cpp ${HEADERS}
 
 response.o: response.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} response.cpp
-	
+
 server: ${OBJS}
 	${CXX} -o vaedb ${OBJS} ${LDFLAGS} ${LIBS}
-	
+
 session.o: session.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} session.cpp
-	
+
 site.o: site.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} site.cpp
-	
+
 util.o: util.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} util.cpp
-	
+
 vae_db_handler.o: vae_db_handler.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} vae_db_handler.cpp
-	
+
 vae_types.o: ../gen-cpp/vae_types.cpp ../gen-cpp/vae_types.h
-	${CXX} ${CXXFLAGS} ../gen-cpp/vae_types.cpp 
-	
+	${CXX} ${CXXFLAGS} ../gen-cpp/vae_types.cpp
+
 VaeDb.o: ../gen-cpp/VaeDb.cpp ../gen-cpp/VaeDb.h
 	${CXX} ${CXXFLAGS} ../gen-cpp/VaeDb.cpp
