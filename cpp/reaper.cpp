@@ -1,6 +1,7 @@
 // not to be feared
 
-#define SESSION_REAP_TIME 300
+#define SESSION_REAP_TIME 62
+// ^ needs to be set at least [PHP script timeout in seconds] + some small safety margin (~2)
 
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
