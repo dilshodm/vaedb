@@ -25,7 +25,7 @@ Reaper::Reaper(VaeDbHandler *h, MysqlProxy &p) : vaeDbHandler(h), mysqlProxy(p) 
 
 void Reaper::Run() {
   while (1) {
-    sleep(SESSION_REAP_TIME);
+    sleep(SESSION_REAP_TIME / 2);
     time_t now = time(NULL);
     {
       boost::unique_lock<boost::mutex> lock(vaeDbHandler->sessionsMutex);
