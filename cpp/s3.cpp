@@ -24,7 +24,7 @@ struct transfer {
     : failed(false),
       cachename(object_cache_path(objectname)),
       tempname(boostfs::unique_path("/tmp/vaedb-%%%%-%%%%-%%%%-%%%%")),
-      error_message("unknown error."), 
+      error_message("unknown error."),
       objectname(objectname) {
 
     tempfs.open(tempname.c_str(), fstream::out);
@@ -32,7 +32,7 @@ struct transfer {
         L(warning) << "Unable to create temporary file " << tempname << " for object " << objectname;
     }
   }
-  
+
   string get_error() const {
     stringstream sb;
     sb << "Error reading " << objectname;
@@ -98,7 +98,7 @@ string _bucket;
 boostfs::path _cache_path;
 
 bool initialize_s3(string const & access_key,
-                   string const & secret_key, 
+                   string const & secret_key,
                    string const & bucket,
                    string const & cache_path) {
   _access_key = access_key;
@@ -137,7 +137,7 @@ void responseCompleteCallback(
 S3Status readObjectDataCallback(int bufferSize, const char *buffer, void *data)
 {
   transfer * p_ts = static_cast<transfer *>(data);
-  return p_ts->commit_buffer(bufferSize, buffer) ? 
+  return p_ts->commit_buffer(bufferSize, buffer) ?
       S3StatusOK : S3StatusAbortedByCallback;
 }
 

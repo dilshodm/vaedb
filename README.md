@@ -34,16 +34,13 @@ If not, see http://www.gnu.org/licenses/.
  - zeromq
  - libs3
  - libmemcached
+ - libjemalloc
  - mysql-connector-c++ (library)
 
 
 ### Install Prerequisites using a Mac:
 
-    brew install pcre
-    brew install zeromq
-    brew install thrift
-    brew install libmemcached
-    brew install mysql-connector-c++
+    brew install pcre zeromq thrift libmemcached mysql-connector-c++ jemalloc
 
     git clone https://github.com/bji/libs3.git
     cd libs3
@@ -53,7 +50,7 @@ If not, see http://www.gnu.org/licenses/.
 
 ### Install Prerequisites on Linux:
 
-    apt-get install libzmq3-dev libboost-all-dev libpcre3-dev libthrift-dev libmemcached-dev libmysqlcppconn-dev
+    apt-get install libzmq3-dev libboost-all-dev libpcre3-dev libthrift-dev libmemcached-dev libmysqlcppconn-dev libjemalloc-dev
 
     git clone https://github.com/bji/libs3.git
     cd libs3
