@@ -84,7 +84,7 @@ void MysqlProxy::garbageCollect() {
   boost::shared_ptr<sql::PreparedStatement> stmt;
   boost::shared_ptr<sql::Connection> con = this->getConnection();
   try {
-    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `session_data` WHERE `expires`<UNIX_TIMESTAMP()"));
+    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `" + database + "`.`session_data` WHERE `expires`<UNIX_TIMESTAMP()"));
     stmt->execute();
   } catch(sql::SQLException &e) {
     L(error) << "MySQL Error Garbage Collecting the Session Cache: " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
@@ -99,8 +99,8 @@ string MysqlProxy::longTermCacheGet(string subdomain, string key, int32_t renewE
   boost::shared_ptr<sql::PreparedStatement> stmt2;
   boost::shared_ptr<sql::ResultSet> res;
   try {
-    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("SELECT `v`,DATEDIFF(`expire_at`,NOW()) AS remaining_days FROM `kvstore` WHERE `k`=? AND `subdomain`=?"));
-    stmt2 = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("UPDATE kvstore SET `expire_at`=DATE_ADD(NOW(),INTERVAL ? DAY) WHERE `k`=? AND `subdomain`=?"));
+    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("SELECT `v`,DATEDIFF(`expire_at`,NOW()) AS remaining_days FROM `" + database + "`.`kvstore` WHERE `k`=? AND `subdomain`=?"));
+    stmt2 = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("UPDATE `" + database + "`.`kvstore` SET `expire_at`=DATE_ADD(NOW(),INTERVAL ? DAY) WHERE `k`=? AND `subdomain`=?"));
     stmt->setString(1, key);
     stmt->setString(2, subdomain);
     res = boost::shared_ptr<sql::ResultSet>(stmt->executeQuery());
@@ -124,8 +124,8 @@ void MysqlProxy::longTermCacheSet(string subdomain, string key, string value, in
   boost::shared_ptr<sql::PreparedStatement> stmt;
   boost::shared_ptr<sql::PreparedStatement> stmt2;
   try {
-    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `kvstore` WHERE `subdomain`=? AND `k`=?"));
-    stmt2 = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("INSERT INTO `kvstore` (`k`,`subdomain`,`v`,`expire_at`,`is_filename`) VALUES(?,?,?,DATE_ADD(NOW(), INTERVAL ? DAY),?)"));
+    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `" + database + "`.`kvstore` WHERE `subdomain`=? AND `k`=?"));
+    stmt2 = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("INSERT INTO `" + database + "`.`kvstore` (`k`,`subdomain`,`v`,`expire_at`,`is_filename`) VALUES(?,?,?,DATE_ADD(NOW(), INTERVAL ? DAY),?)"));
     stmt->setString(1, subdomain);
     stmt->setString(2, key);
     stmt->execute();
@@ -144,7 +144,7 @@ void MysqlProxy::longTermCacheEmpty(string subdomain) {
   boost::shared_ptr<sql::Connection> con = this->getConnection();
   boost::shared_ptr<sql::PreparedStatement> stmt;
   try {
-    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `kvstore` WHERE `subdomain`=?"));
+    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `" + database + "`.`kvstore` WHERE `subdomain`=?"));
     stmt->setString(1, subdomain);
     stmt->execute();
   } catch(sql::SQLException &e) {
@@ -156,7 +156,7 @@ void MysqlProxy::longTermCacheDelete(string subdomain, string key) {
   boost::shared_ptr<sql::Connection> con = this->getConnection();
   boost::shared_ptr<sql::PreparedStatement> stmt;
   try {
-    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `kvstore` WHERE `k`=? AND `subdomain`=?"));
+    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `" + database + "`.`kvstore` WHERE `k`=? AND `subdomain`=?"));
     stmt->setString(1, key);
     stmt->setString(2, subdomain);
     stmt->execute();
@@ -171,8 +171,8 @@ void MysqlProxy::longTermCacheSweeperInfo(VaeDbDataForContext& _return, string s
   boost::shared_ptr<sql::PreparedStatement> stmt2;
   boost::shared_ptr<sql::ResultSet> res;
   try {
-    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("SELECT `k`,`v` FROM `kvstore` WHERE `is_filename`='1' AND `subdomain`=?"));
-    stmt2 = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `kvstore` WHERE `expire_at`<NOW() AND `subdomain`=?"));
+    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("SELECT `k`,`v` FROM `" + database + "`.`kvstore` WHERE `is_filename`='1' AND `subdomain`=?"));
+    stmt2 = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `" + database + "`.`kvstore` WHERE `expire_at`<NOW() AND `subdomain`=?"));
     stmt2->setString(1, subdomain);
     stmt2->execute();
     stmt->setString(1, subdomain);
@@ -191,7 +191,7 @@ string MysqlProxy::sessionCacheGet(string subdomain, string key) {
   boost::shared_ptr<sql::ResultSet> res;
   string out = "";
   try {
-    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("SELECT `data` FROM `session_data` WHERE `id`=? AND `subdomain`=?"));
+    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("SELECT `data` FROM `" + database + "`.`session_data` WHERE `id`=? AND `subdomain`=?"));
     stmt->setString(1, key);
     stmt->setString(2, subdomain);
     res = boost::shared_ptr<sql::ResultSet>(stmt->executeQuery());
@@ -209,8 +209,8 @@ void MysqlProxy::sessionCacheSet(string subdomain, string key, string value) {
   boost::shared_ptr<sql::PreparedStatement> stmt;
   boost::shared_ptr<sql::PreparedStatement> stmt2;
   try {
-    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `session_data` WHERE `id`=? AND `subdomain`=?"));
-    stmt2 = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("INSERT INTO `session_data` (`id`,`subdomain`,`data`,`expires`) VALUES(?,?,?,UNIX_TIMESTAMP()+?)"));
+    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `" + database + "`.`session_data` WHERE `id`=? AND `subdomain`=?"));
+    stmt2 = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("INSERT INTO `" + database + "`.`session_data` (`id`,`subdomain`,`data`,`expires`) VALUES(?,?,?,UNIX_TIMESTAMP()+?)"));
     stmt->setString(1, key);
     stmt->setString(2, subdomain);
     stmt->execute();
@@ -228,7 +228,7 @@ void MysqlProxy::sessionCacheDelete(string subdomain, string key) {
   boost::shared_ptr<sql::Connection> con = this->getConnection();
   boost::shared_ptr<sql::PreparedStatement> stmt;
   try {
-    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `session_data` WHERE `id`=? AND `subdomain`=?"));
+    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `" + database + "`.`session_data` WHERE `id`=? AND `subdomain`=?"));
     stmt->setString(1, key);
     stmt->setString(2, subdomain);
     stmt->execute();
@@ -243,13 +243,13 @@ int32_t MysqlProxy::lock(string subdomain) {
   boost::shared_ptr<sql::PreparedStatement> stmt2;
   int32_t gotLock = 0;
   try {
-    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("INSERT INTO `locks` (subdomain,created_at) VALUES(?,NOW())"));
+    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("INSERT INTO `" + database + "`.`locks` (subdomain,created_at) VALUES(?,NOW())"));
     stmt->setString(1, subdomain);
     stmt->execute();
     gotLock = 1;
   } catch(sql::SQLException &e) {
     try {
-      stmt2 = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `locks` WHERE created_at<DATE_SUB(NOW(), INTERVAL 1 MINUTE)"));
+      stmt2 = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `" + database + "`.`locks` WHERE created_at<DATE_SUB(NOW(), INTERVAL 1 MINUTE)"));
       stmt2->execute();
     } catch(sql::SQLException &e2) {
       L(error) << "MySQL Error Removing Old Locks For " << subdomain << ": " << e2.what() << " (Error Code: " << e2.getErrorCode() << ")";
@@ -262,7 +262,7 @@ int32_t MysqlProxy::unlock(string subdomain) {
   boost::shared_ptr<sql::Connection> con = this->getConnection();
   boost::shared_ptr<sql::PreparedStatement> stmt;
   try {
-    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `locks` WHERE `subdomain`=?"));
+    stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `" + database + "`.`locks` WHERE `subdomain`=?"));
     stmt->setString(1, subdomain);
     stmt->execute();
   } catch(sql::SQLException &e) {
