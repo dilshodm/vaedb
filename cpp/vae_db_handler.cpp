@@ -74,7 +74,7 @@ VaeDbHandler::VaeDbHandler(QueryLog &queryLog, MemcacheProxy &memcacheProxy, Mys
   xmlSetGenericErrorFunc(NULL, eatErrors);
   writePid();
   new Reaper(this, mysqlProxy);
-  L(info) << "VaeDB Running";
+  L(error) << "VaeDB Running";
 }
 
 VaeDbHandler::~VaeDbHandler() {
