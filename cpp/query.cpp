@@ -64,7 +64,7 @@ Query::Query(Site *s, Context *context, const string &q) : site(s), xpathObj(NUL
 
   // prev() and next()
   if (!strcasecmp("prev()", query.c_str())) {
-    if (!context) {
+    if (!context || !context->getNodeName()) {
       VaeDbQueryError e;
       e.message = "You cannot use PREV() outside of a context.";
       throw e;
@@ -72,7 +72,7 @@ Query::Query(Site *s, Context *context, const string &q) : site(s), xpathObj(NUL
     query = (string)"preceding-sibling::" + context->getNodeName() + "[1]";
   }
   if (!strcasecmp("next()", query.c_str())) {
-    if (!context) {
+    if (!context || !context->getNodeName() {
       VaeDbQueryError e;
       e.message = "You cannot use NEXT() outside of a context.";
       throw e;

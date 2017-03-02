@@ -12,7 +12,9 @@
 #include <thrift/server/TThreadPoolServer.h>
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
+#ifndef __MACH__
 #include <malloc.h>
+#endif
 
 using namespace apache::thrift;
 using namespace apache::thrift::concurrency;
