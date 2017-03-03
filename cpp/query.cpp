@@ -72,7 +72,7 @@ Query::Query(Site *s, Context *context, const string &q) : site(s), xpathObj(NUL
     query = (string)"preceding-sibling::" + context->getNodeName() + "[1]";
   }
   if (!strcasecmp("next()", query.c_str())) {
-    if (!context || !context->getNodeName() {
+    if (!context || !context->getNodeName()) {
       VaeDbQueryError e;
       e.message = "You cannot use NEXT() outside of a context.";
       throw e;
