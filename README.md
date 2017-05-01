@@ -40,15 +40,21 @@ If not, see http://www.gnu.org/licenses/.
 
 Install libs3 from source:
 
-    wget https://github.com/bji/libs3/archive/bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip
-    unzip bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip
-    cd libs3-bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb
-    make install
+
 
 
 ### Install Prerequisites using a Mac:
 
     brew install pcre zeromq thrift libmemcached mysql-connector-c++ jemalloc
+
+    wget https://github.com/bji/libs3/archive/bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip
+    unzip bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip
+    cd libs3-bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb
+    mv GNUMakefile.osx Makefile
+    DESTDIR=/usr/local make install
+
+    brew install ruby
+    gem install bundler
 
 
 ### Install Prerequisites on Linux:
@@ -62,7 +68,14 @@ Install libs3 from source:
     make
     make install
 
+    wget https://github.com/bji/libs3/archive/bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip
+    unzip bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip
+    cd libs3-bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb
+    make install
+
     apt install libzmq3-dev libpcre3-dev libmemcached-dev libmysqlcppconn-dev libjemalloc-dev libcurl4-openssl-dev libxml2-dev
+    apt install ruby-full ruby-dev ruby-rspec ruby-bundler rake rubygems libdaemons-ruby libgemplugin-ruby mongrel
+    gem install ffi -v '1.9.10'
 
 
 ### Create Local MySQL Database for Vae Remote
@@ -89,9 +102,6 @@ Import the schema as follows:
 
 
 ### To test run VaeRubyd:
-
-    apt install ruby-full ruby-dev ruby-rspec ruby-bundler rake rubygems libdaemons-ruby libgemplugin-ruby mongrel
-    gem install ffi -v '1.9.10'
 
     cd rb
     bundle install
