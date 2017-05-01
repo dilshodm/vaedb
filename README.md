@@ -59,11 +59,12 @@ If not, see http://www.gnu.org/licenses/.
     make
     make install
 
-    apt install libzmq3-dev libpcre3-dev libmemcached-dev libmysqlcppconn-dev libjemalloc-dev
+    apt install libzmq3-dev libpcre3-dev libmemcached-dev libmysqlcppconn-dev libjemalloc-dev libcurl4-openssl-dev libxml2-dev
 
-    wget https://github.com/bji/libs3/archive/bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip -O libs3.zip
-    cd libs3
-    sudo make install
+    wget https://github.com/bji/libs3/archive/bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip
+    unzip bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip
+    cd libs3-bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb
+    make install
 
 
 ### Create Local MySQL Database for Vae Remote
