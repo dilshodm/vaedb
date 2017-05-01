@@ -50,11 +50,6 @@ Install libs3 from source:
 
     brew install pcre zeromq thrift libmemcached mysql-connector-c++ jemalloc
 
-    git clone https://github.com/bji/libs3.git
-    cd libs3
-    mv GNUmakefile.osx GNUmakefile
-    DESTDIR=/usr/local make install
-
 
 ### Install Prerequisites on Linux:
 
