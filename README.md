@@ -92,6 +92,9 @@ Import the schema as follows:
 
 ### To test run VaeRubyd:
 
+    apt install ruby-full ruby-dev ruby-rspec ruby-bundler rake rubygems libdaemons-ruby libgemplugin-ruby mongrel
+    gem install ffi -v '1.9.10'
+
     cd rb
     bundle install
     ruby vaerubyd.rb
