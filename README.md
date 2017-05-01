@@ -50,9 +50,18 @@ If not, see http://www.gnu.org/licenses/.
 
 ### Install Prerequisites on Linux:
 
-    apt-get install libzmq3-dev libboost-all-dev libpcre3-dev libthrift-dev libmemcached-dev libmysqlcppconn-dev libjemalloc-dev
+    apt install automake bison flex g++ git libboost-all-dev libevent-dev libssl-dev libtool make pkg-config
 
-    git clone https://github.com/bji/libs3.git
+    wget http://archive.apache.org/dist/thrift/0.9.2/thrift-0.9.2.tar.gz
+    tar xf thrift-0.9.2.tar.gz
+    cd thrift-0.9.2
+    ./configure
+    make
+    make install
+
+    apt install libzmq3-dev libpcre3-dev libmemcached-dev libmysqlcppconn-dev libjemalloc-dev
+
+    wget https://github.com/bji/libs3/archive/bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip -O libs3.zip
     cd libs3
     sudo make install
 
