@@ -7,8 +7,6 @@
 #include <boost/thread/condition_variable.hpp>
 #include <libmemcached/memcached.hpp>
 
-#define MEMCACHE_NUM_CONNECTIONS 16
-
 enum {
   MEMCACHE_POOL_FREE,
   MEMCACHE_POOL_INUSE
@@ -24,7 +22,7 @@ class MemcacheProxy {
   int availableConnections;
  
 public:
-  MemcacheProxy(std::string connectString);
+  MemcacheProxy(std::string connectString, int workers);
   ~MemcacheProxy();
   std::string get(const std::string key, const int32_t flags);
   void set(const std::string key, const std::string value, const int32_t flags, const int32_t expireInterval);

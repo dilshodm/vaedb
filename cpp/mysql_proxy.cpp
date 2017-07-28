@@ -15,11 +15,12 @@
 using namespace std;
 
 
-MysqlProxy::MysqlProxy(string host, string username, string password, string database) 
+MysqlProxy::MysqlProxy(string host, string username, string password, string database, int workers) 
   : host(host), username(username), password(password), database(database) {
+  int poolSize = workers / 4;
   this->availableConnections = 0;
   L(info) << " Connecting to MySQL Server: " << host;
-  for (int i = 0; i < NUM_CONNECTIONS; i++) {
+  for (int i = 0; i < poolSize; i++) {
     sql::Connection *con = this->createConnection();
     if (con) {
       connPool[con] = POOL_FREE;

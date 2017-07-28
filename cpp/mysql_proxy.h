@@ -13,8 +13,6 @@
 
 #include "../gen-cpp/VaeDb.h"
 
-#define NUM_CONNECTIONS 8
-
 enum {
   POOL_FREE,
   POOL_INUSE
@@ -34,7 +32,7 @@ class MysqlProxy {
   int availableConnections;
  
 public:
-  MysqlProxy(std::string host, std::string username, std::string password, std::string database);
+  MysqlProxy(std::string host, std::string username, std::string password, std::string database, int workers);
   ~MysqlProxy();
   void garbageCollect();
   std::string sessionCacheGet(std::string subdomain, std::string key);
