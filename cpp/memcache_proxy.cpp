@@ -6,12 +6,13 @@
 
 using std::string;
 
-MemcacheProxy::MemcacheProxy(std::string c) {
+MemcacheProxy::MemcacheProxy(std::string c, int workers) {
+  int poolSize = workers / 4;
   this->availableConnections = 0;
   pcrecpp::RE(",").Replace(" --SERVER=", &c);
   connectString = "--TCP-KEEPALIVE --BINARY-PROTOCOL --SERVER=" + c;
   L(info) << " Connecting to Memcache via: " << connectString;
-  for (int i = 0; i < MEMCACHE_NUM_CONNECTIONS; i++) {
+  for (int i = 0; i < poolSize; i++) {
     memcache::Memcache *con = this->createConnection();
     if (con) {
       connPool[con] = MEMCACHE_POOL_FREE;

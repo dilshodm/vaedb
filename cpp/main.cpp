@@ -128,8 +128,8 @@ int main(int argc, char **argv) {
   }
   
   QueryLog query_log(p_querylog_stream.get());
-  MemcacheProxy memcache(memcached_host);
-  MysqlProxy mysql(mysql_host, mysql_username, mysql_password, mysql_database);
+  MemcacheProxy memcache(memcached_host, workers);
+  MysqlProxy mysql(mysql_host, mysql_username, mysql_password, mysql_database, workers);
 
   if(!initialize_s3(aws_access_key, aws_secret_key, aws_bucket, feed_cache_path)) {
     L(error) << "S3 failed to initialize.";

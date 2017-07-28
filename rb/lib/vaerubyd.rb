@@ -4,7 +4,7 @@ require 'thrift'
 require 'vae_rubyd_handler'
 
 class Vaerubyd
-  
+
   def run
     processor = VaeRubyd::Processor.new(VaeRubydHandler.new)
     transport = Thrift::ServerSocket.new(9090)
@@ -14,5 +14,5 @@ class Vaerubyd
     puts "  Encoding: #{Encoding.default_internal} #{Encoding.default_external}"
     server.serve()
   end
-  
+
 end
