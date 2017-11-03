@@ -122,7 +122,7 @@ service VaeDb {
   void longTermCacheEmpty(1:i32 session_id)
   VaeDbDataForContext longTermCacheSweeperInfo(1:i32 session_id)
 
-  i32 sitewideLock(1:i32 session_id)
-  i32 sitewideUnlock(1:i32 session_id)
+  i32 sitewideLock(1:i32 session_id, 2:string iden)
+  i32 sitewideUnlock(1:i32 session_id, 2:string iden)
 
 }

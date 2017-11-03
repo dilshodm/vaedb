@@ -115,12 +115,12 @@ class VaeDbHandler : virtual public VaeDbIf {
     printf("longTermCacheSweeperInfo\n");
   }
 
-  int32_t sitewideLock(const int32_t session_id) {
+  int32_t sitewideLock(const int32_t session_id, const std::string& iden) {
     // Your implementation goes here
     printf("sitewideLock\n");
   }
 
-  int32_t sitewideUnlock(const int32_t session_id) {
+  int32_t sitewideUnlock(const int32_t session_id, const std::string& iden) {
     // Your implementation goes here
     printf("sitewideUnlock\n");
   }

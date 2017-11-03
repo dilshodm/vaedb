@@ -296,13 +296,13 @@ module VaeDb
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'longTermCacheSweeperInfo failed: unknown result')
     end
 
-    def sitewideLock(session_id)
-      send_sitewideLock(session_id)
+    def sitewideLock(session_id, iden)
+      send_sitewideLock(session_id, iden)
       return recv_sitewideLock()
     end
 
-    def send_sitewideLock(session_id)
-      send_message('sitewideLock', SitewideLock_args, :session_id => session_id)
+    def send_sitewideLock(session_id, iden)
+      send_message('sitewideLock', SitewideLock_args, :session_id => session_id, :iden => iden)
     end
 
     def recv_sitewideLock()
@@ -311,13 +311,13 @@ module VaeDb
       raise ::Thrift::ApplicationException.new(::Thrift::ApplicationException::MISSING_RESULT, 'sitewideLock failed: unknown result')
     end
 
-    def sitewideUnlock(session_id)
-      send_sitewideUnlock(session_id)
+    def sitewideUnlock(session_id, iden)
+      send_sitewideUnlock(session_id, iden)
       return recv_sitewideUnlock()
     end
 
-    def send_sitewideUnlock(session_id)
-      send_message('sitewideUnlock', SitewideUnlock_args, :session_id => session_id)
+    def send_sitewideUnlock(session_id, iden)
+      send_message('sitewideUnlock', SitewideUnlock_args, :session_id => session_id, :iden => iden)
     end
 
     def recv_sitewideUnlock()
@@ -499,14 +499,14 @@ module VaeDb
     def process_sitewideLock(seqid, iprot, oprot)
       args = read_args(iprot, SitewideLock_args)
       result = SitewideLock_result.new()
-      result.success = @handler.sitewideLock(args.session_id)
+      result.success = @handler.sitewideLock(args.session_id, args.iden)
       write_result(result, oprot, 'sitewideLock', seqid)
     end
 
     def process_sitewideUnlock(seqid, iprot, oprot)
       args = read_args(iprot, SitewideUnlock_args)
       result = SitewideUnlock_result.new()
-      result.success = @handler.sitewideUnlock(args.session_id)
+      result.success = @handler.sitewideUnlock(args.session_id, args.iden)
       write_result(result, oprot, 'sitewideUnlock', seqid)
     end
 
@@ -1193,9 +1193,11 @@ module VaeDb
   class SitewideLock_args
     include ::Thrift::Struct, ::Thrift::Struct_Union
     SESSION_ID = 1
+    IDEN = 2
 
     FIELDS = {
-      SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'}
+      SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'},
+      IDEN => {:type => ::Thrift::Types::STRING, :name => 'iden'}
     }
 
     def struct_fields; FIELDS; end
@@ -1225,9 +1227,11 @@ module VaeDb
   class SitewideUnlock_args
     include ::Thrift::Struct, ::Thrift::Struct_Union
     SESSION_ID = 1
+    IDEN = 2
 
     FIELDS = {
-      SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'}
+      SESSION_ID => {:type => ::Thrift::Types::I32, :name => 'session_id'},
+      IDEN => {:type => ::Thrift::Types::STRING, :name => 'iden'}
     }
 
     def struct_fields; FIELDS; end

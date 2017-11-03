@@ -4006,6 +4006,14 @@ uint32_t VaeDb_sitewideLock_args::read(::apache::thrift::protocol::TProtocol* ip
           xfer += iprot->skip(ftype);
         }
         break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->iden);
+          this->__isset.iden = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -4027,6 +4035,10 @@ uint32_t VaeDb_sitewideLock_args::write(::apache::thrift::protocol::TProtocol* o
   xfer += oprot->writeI32(this->session_id);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("iden", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->iden);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -4045,6 +4057,10 @@ uint32_t VaeDb_sitewideLock_pargs::write(::apache::thrift::protocol::TProtocol* 
 
   xfer += oprot->writeFieldBegin("session_id", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32((*(this->session_id)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("iden", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->iden)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -4192,6 +4208,14 @@ uint32_t VaeDb_sitewideUnlock_args::read(::apache::thrift::protocol::TProtocol* 
           xfer += iprot->skip(ftype);
         }
         break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->iden);
+          this->__isset.iden = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -4213,6 +4237,10 @@ uint32_t VaeDb_sitewideUnlock_args::write(::apache::thrift::protocol::TProtocol*
   xfer += oprot->writeI32(this->session_id);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("iden", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->iden);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -4231,6 +4259,10 @@ uint32_t VaeDb_sitewideUnlock_pargs::write(::apache::thrift::protocol::TProtocol
 
   xfer += oprot->writeFieldBegin("session_id", ::apache::thrift::protocol::T_I32, 1);
   xfer += oprot->writeI32((*(this->session_id)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("iden", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->iden)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -5459,19 +5491,20 @@ void VaeDbClient::recv_longTermCacheSweeperInfo(VaeDbDataForContext& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "longTermCacheSweeperInfo failed: unknown result");
 }
 
-int32_t VaeDbClient::sitewideLock(const int32_t session_id)
+int32_t VaeDbClient::sitewideLock(const int32_t session_id, const std::string& iden)
 {
-  send_sitewideLock(session_id);
+  send_sitewideLock(session_id, iden);
   return recv_sitewideLock();
 }
 
-void VaeDbClient::send_sitewideLock(const int32_t session_id)
+void VaeDbClient::send_sitewideLock(const int32_t session_id, const std::string& iden)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("sitewideLock", ::apache::thrift::protocol::T_CALL, cseqid);
 
   VaeDb_sitewideLock_pargs args;
   args.session_id = &session_id;
+  args.iden = &iden;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -5517,19 +5550,20 @@ int32_t VaeDbClient::recv_sitewideLock()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "sitewideLock failed: unknown result");
 }
 
-int32_t VaeDbClient::sitewideUnlock(const int32_t session_id)
+int32_t VaeDbClient::sitewideUnlock(const int32_t session_id, const std::string& iden)
 {
-  send_sitewideUnlock(session_id);
+  send_sitewideUnlock(session_id, iden);
   return recv_sitewideUnlock();
 }
 
-void VaeDbClient::send_sitewideUnlock(const int32_t session_id)
+void VaeDbClient::send_sitewideUnlock(const int32_t session_id, const std::string& iden)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("sitewideUnlock", ::apache::thrift::protocol::T_CALL, cseqid);
 
   VaeDb_sitewideUnlock_pargs args;
   args.session_id = &session_id;
+  args.iden = &iden;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -6661,7 +6695,7 @@ void VaeDbProcessor::process_sitewideLock(int32_t seqid, ::apache::thrift::proto
 
   VaeDb_sitewideLock_result result;
   try {
-    result.success = iface_->sitewideLock(args.session_id);
+    result.success = iface_->sitewideLock(args.session_id, args.iden);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
@@ -6715,7 +6749,7 @@ void VaeDbProcessor::process_sitewideUnlock(int32_t seqid, ::apache::thrift::pro
 
   VaeDb_sitewideUnlock_result result;
   try {
-    result.success = iface_->sitewideUnlock(args.session_id);
+    result.success = iface_->sitewideUnlock(args.session_id, args.iden);
     result.__isset.success = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {

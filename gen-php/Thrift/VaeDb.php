@@ -144,14 +144,16 @@ interface VaeDbIf {
   public function longTermCacheSweeperInfo($session_id);
   /**
    * @param int $session_id
+   * @param string $iden
    * @return int
    */
-  public function sitewideLock($session_id);
+  public function sitewideLock($session_id, $iden);
   /**
    * @param int $session_id
+   * @param string $iden
    * @return int
    */
-  public function sitewideUnlock($session_id);
+  public function sitewideUnlock($session_id, $iden);
 }
 
 class VaeDbClient implements \Thrift\VaeDbIf {
@@ -1164,16 +1166,17 @@ class VaeDbClient implements \Thrift\VaeDbIf {
     throw new \Exception("longTermCacheSweeperInfo failed: unknown result");
   }
 
-  public function sitewideLock($session_id)
+  public function sitewideLock($session_id, $iden)
   {
-    $this->send_sitewideLock($session_id);
+    $this->send_sitewideLock($session_id, $iden);
     return $this->recv_sitewideLock();
   }
 
-  public function send_sitewideLock($session_id)
+  public function send_sitewideLock($session_id, $iden)
   {
     $args = new \Thrift\VaeDb_sitewideLock_args();
     $args->session_id = $session_id;
+    $args->iden = $iden;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -1215,16 +1218,17 @@ class VaeDbClient implements \Thrift\VaeDbIf {
     throw new \Exception("sitewideLock failed: unknown result");
   }
 
-  public function sitewideUnlock($session_id)
+  public function sitewideUnlock($session_id, $iden)
   {
-    $this->send_sitewideUnlock($session_id);
+    $this->send_sitewideUnlock($session_id, $iden);
     return $this->recv_sitewideUnlock();
   }
 
-  public function send_sitewideUnlock($session_id)
+  public function send_sitewideUnlock($session_id, $iden)
   {
     $args = new \Thrift\VaeDb_sitewideUnlock_args();
     $args->session_id = $session_id;
+    $args->iden = $iden;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -4883,6 +4887,10 @@ class VaeDb_sitewideLock_args {
    * @var int
    */
   public $session_id = null;
+  /**
+   * @var string
+   */
+  public $iden = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -4891,11 +4899,18 @@ class VaeDb_sitewideLock_args {
           'var' => 'session_id',
           'type' => TType::I32,
           ),
+        2 => array(
+          'var' => 'iden',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
       if (isset($vals['session_id'])) {
         $this->session_id = $vals['session_id'];
+      }
+      if (isset($vals['iden'])) {
+        $this->iden = $vals['iden'];
       }
     }
   }
@@ -4926,6 +4941,13 @@ class VaeDb_sitewideLock_args {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->iden);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -4942,6 +4964,11 @@ class VaeDb_sitewideLock_args {
     if ($this->session_id !== null) {
       $xfer += $output->writeFieldBegin('session_id', TType::I32, 1);
       $xfer += $output->writeI32($this->session_id);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->iden !== null) {
+      $xfer += $output->writeFieldBegin('iden', TType::STRING, 2);
+      $xfer += $output->writeString($this->iden);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -5033,6 +5060,10 @@ class VaeDb_sitewideUnlock_args {
    * @var int
    */
   public $session_id = null;
+  /**
+   * @var string
+   */
+  public $iden = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -5041,11 +5072,18 @@ class VaeDb_sitewideUnlock_args {
           'var' => 'session_id',
           'type' => TType::I32,
           ),
+        2 => array(
+          'var' => 'iden',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
       if (isset($vals['session_id'])) {
         $this->session_id = $vals['session_id'];
+      }
+      if (isset($vals['iden'])) {
+        $this->iden = $vals['iden'];
       }
     }
   }
@@ -5076,6 +5114,13 @@ class VaeDb_sitewideUnlock_args {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->iden);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -5092,6 +5137,11 @@ class VaeDb_sitewideUnlock_args {
     if ($this->session_id !== null) {
       $xfer += $output->writeFieldBegin('session_id', TType::I32, 1);
       $xfer += $output->writeI32($this->session_id);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->iden !== null) {
+      $xfer += $output->writeFieldBegin('iden', TType::STRING, 2);
+      $xfer += $output->writeString($this->iden);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

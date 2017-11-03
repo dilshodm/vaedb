@@ -61,8 +61,8 @@ class VaeDbHandler : virtual public VaeDbIf {
   void longTermCacheEmpty(const int32_t sessionId);
   void longTermCacheDelete(const int32_t sessionId, string const & key);
   void longTermCacheSweeperInfo(VaeDbDataForContext& _return, const int32_t session_id);
-  int32_t sitewideLock(const int32_t sessionId);
-  int32_t sitewideUnlock(const int32_t sessionId);
+  int32_t sitewideLock(const int32_t sessionId, string const & iden);
+  int32_t sitewideUnlock(const int32_t sessionId, string const & iden);
 
 };
 

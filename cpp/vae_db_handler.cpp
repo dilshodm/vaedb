@@ -438,7 +438,7 @@ void VaeDbHandler::longTermCacheSweeperInfo(VaeDbDataForContext& _return, const 
   mysqlProxy.longTermCacheSweeperInfo(_return, session->getSite()->getSubdomain());
 }
 
-int32_t VaeDbHandler::sitewideLock(const int32_t sessionId) {
+int32_t VaeDbHandler::sitewideLock(const int32_t sessionId, string const & iden) {
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -449,10 +449,11 @@ int32_t VaeDbHandler::sitewideLock(const int32_t sessionId) {
       return -1;
     }
   }
-  return mysqlProxy.lock(session->getSite()->getSubdomain());
+  string fullKey = session->getSite()->getSubdomain() + ":" + iden;
+  return mysqlProxy.lock(fullKey);
 }
 
-int32_t VaeDbHandler::sitewideUnlock(const int32_t sessionId) {
+int32_t VaeDbHandler::sitewideUnlock(const int32_t sessionId, string const & iden) {
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -463,5 +464,6 @@ int32_t VaeDbHandler::sitewideUnlock(const int32_t sessionId) {
       return -1;
     }
   }
-  return mysqlProxy.unlock(session->getSite()->getSubdomain());
+  string fullKey = session->getSite()->getSubdomain() + ":" + iden;
+  return mysqlProxy.unlock(fullKey);
 }

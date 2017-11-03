@@ -34,8 +34,8 @@ class VaeDbIf {
   virtual void longTermCacheDelete(const int32_t session_id, const std::string& key) = 0;
   virtual void longTermCacheEmpty(const int32_t session_id) = 0;
   virtual void longTermCacheSweeperInfo(VaeDbDataForContext& _return, const int32_t session_id) = 0;
-  virtual int32_t sitewideLock(const int32_t session_id) = 0;
-  virtual int32_t sitewideUnlock(const int32_t session_id) = 0;
+  virtual int32_t sitewideLock(const int32_t session_id, const std::string& iden) = 0;
+  virtual int32_t sitewideUnlock(const int32_t session_id, const std::string& iden) = 0;
 };
 
 class VaeDbIfFactory {
@@ -123,11 +123,11 @@ class VaeDbNull : virtual public VaeDbIf {
   void longTermCacheSweeperInfo(VaeDbDataForContext& /* _return */, const int32_t /* session_id */) {
     return;
   }
-  int32_t sitewideLock(const int32_t /* session_id */) {
+  int32_t sitewideLock(const int32_t /* session_id */, const std::string& /* iden */) {
     int32_t _return = 0;
     return _return;
   }
-  int32_t sitewideUnlock(const int32_t /* session_id */) {
+  int32_t sitewideUnlock(const int32_t /* session_id */, const std::string& /* iden */) {
     int32_t _return = 0;
     return _return;
   }
@@ -2549,31 +2549,37 @@ class VaeDb_longTermCacheSweeperInfo_presult {
 };
 
 typedef struct _VaeDb_sitewideLock_args__isset {
-  _VaeDb_sitewideLock_args__isset() : session_id(false) {}
+  _VaeDb_sitewideLock_args__isset() : session_id(false), iden(false) {}
   bool session_id :1;
+  bool iden :1;
 } _VaeDb_sitewideLock_args__isset;
 
 class VaeDb_sitewideLock_args {
  public:
 
-  static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
-  static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
+  static const char* ascii_fingerprint; // = "3F5FC93B338687BC7235B1AB103F47B3";
+  static const uint8_t binary_fingerprint[16]; // = {0x3F,0x5F,0xC9,0x3B,0x33,0x86,0x87,0xBC,0x72,0x35,0xB1,0xAB,0x10,0x3F,0x47,0xB3};
 
   VaeDb_sitewideLock_args(const VaeDb_sitewideLock_args&);
   VaeDb_sitewideLock_args& operator=(const VaeDb_sitewideLock_args&);
-  VaeDb_sitewideLock_args() : session_id(0) {
+  VaeDb_sitewideLock_args() : session_id(0), iden() {
   }
 
   virtual ~VaeDb_sitewideLock_args() throw();
   int32_t session_id;
+  std::string iden;
 
   _VaeDb_sitewideLock_args__isset __isset;
 
   void __set_session_id(const int32_t val);
 
+  void __set_iden(const std::string& val);
+
   bool operator == (const VaeDb_sitewideLock_args & rhs) const
   {
     if (!(session_id == rhs.session_id))
+      return false;
+    if (!(iden == rhs.iden))
       return false;
     return true;
   }
@@ -2593,12 +2599,13 @@ class VaeDb_sitewideLock_args {
 class VaeDb_sitewideLock_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
-  static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
+  static const char* ascii_fingerprint; // = "3F5FC93B338687BC7235B1AB103F47B3";
+  static const uint8_t binary_fingerprint[16]; // = {0x3F,0x5F,0xC9,0x3B,0x33,0x86,0x87,0xBC,0x72,0x35,0xB1,0xAB,0x10,0x3F,0x47,0xB3};
 
 
   virtual ~VaeDb_sitewideLock_pargs() throw();
   const int32_t* session_id;
+  const std::string* iden;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -2669,31 +2676,37 @@ class VaeDb_sitewideLock_presult {
 };
 
 typedef struct _VaeDb_sitewideUnlock_args__isset {
-  _VaeDb_sitewideUnlock_args__isset() : session_id(false) {}
+  _VaeDb_sitewideUnlock_args__isset() : session_id(false), iden(false) {}
   bool session_id :1;
+  bool iden :1;
 } _VaeDb_sitewideUnlock_args__isset;
 
 class VaeDb_sitewideUnlock_args {
  public:
 
-  static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
-  static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
+  static const char* ascii_fingerprint; // = "3F5FC93B338687BC7235B1AB103F47B3";
+  static const uint8_t binary_fingerprint[16]; // = {0x3F,0x5F,0xC9,0x3B,0x33,0x86,0x87,0xBC,0x72,0x35,0xB1,0xAB,0x10,0x3F,0x47,0xB3};
 
   VaeDb_sitewideUnlock_args(const VaeDb_sitewideUnlock_args&);
   VaeDb_sitewideUnlock_args& operator=(const VaeDb_sitewideUnlock_args&);
-  VaeDb_sitewideUnlock_args() : session_id(0) {
+  VaeDb_sitewideUnlock_args() : session_id(0), iden() {
   }
 
   virtual ~VaeDb_sitewideUnlock_args() throw();
   int32_t session_id;
+  std::string iden;
 
   _VaeDb_sitewideUnlock_args__isset __isset;
 
   void __set_session_id(const int32_t val);
 
+  void __set_iden(const std::string& val);
+
   bool operator == (const VaeDb_sitewideUnlock_args & rhs) const
   {
     if (!(session_id == rhs.session_id))
+      return false;
+    if (!(iden == rhs.iden))
       return false;
     return true;
   }
@@ -2713,12 +2726,13 @@ class VaeDb_sitewideUnlock_args {
 class VaeDb_sitewideUnlock_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "E86CACEB22240450EDCBEFC3A83970E4";
-  static const uint8_t binary_fingerprint[16]; // = {0xE8,0x6C,0xAC,0xEB,0x22,0x24,0x04,0x50,0xED,0xCB,0xEF,0xC3,0xA8,0x39,0x70,0xE4};
+  static const char* ascii_fingerprint; // = "3F5FC93B338687BC7235B1AB103F47B3";
+  static const uint8_t binary_fingerprint[16]; // = {0x3F,0x5F,0xC9,0x3B,0x33,0x86,0x87,0xBC,0x72,0x35,0xB1,0xAB,0x10,0x3F,0x47,0xB3};
 
 
   virtual ~VaeDb_sitewideUnlock_pargs() throw();
   const int32_t* session_id;
+  const std::string* iden;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -2870,11 +2884,11 @@ class VaeDbClient : virtual public VaeDbIf {
   void longTermCacheSweeperInfo(VaeDbDataForContext& _return, const int32_t session_id);
   void send_longTermCacheSweeperInfo(const int32_t session_id);
   void recv_longTermCacheSweeperInfo(VaeDbDataForContext& _return);
-  int32_t sitewideLock(const int32_t session_id);
-  void send_sitewideLock(const int32_t session_id);
+  int32_t sitewideLock(const int32_t session_id, const std::string& iden);
+  void send_sitewideLock(const int32_t session_id, const std::string& iden);
   int32_t recv_sitewideLock();
-  int32_t sitewideUnlock(const int32_t session_id);
-  void send_sitewideUnlock(const int32_t session_id);
+  int32_t sitewideUnlock(const int32_t session_id, const std::string& iden);
+  void send_sitewideUnlock(const int32_t session_id, const std::string& iden);
   int32_t recv_sitewideUnlock();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
@@ -3144,22 +3158,22 @@ class VaeDbMultiface : virtual public VaeDbIf {
     return;
   }
 
-  int32_t sitewideLock(const int32_t session_id) {
+  int32_t sitewideLock(const int32_t session_id, const std::string& iden) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->sitewideLock(session_id);
+      ifaces_[i]->sitewideLock(session_id, iden);
     }
-    return ifaces_[i]->sitewideLock(session_id);
+    return ifaces_[i]->sitewideLock(session_id, iden);
   }
 
-  int32_t sitewideUnlock(const int32_t session_id) {
+  int32_t sitewideUnlock(const int32_t session_id, const std::string& iden) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->sitewideUnlock(session_id);
+      ifaces_[i]->sitewideUnlock(session_id, iden);
     }
-    return ifaces_[i]->sitewideUnlock(session_id);
+    return ifaces_[i]->sitewideUnlock(session_id, iden);
   }
 
 };
