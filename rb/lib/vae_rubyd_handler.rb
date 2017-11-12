@@ -18,6 +18,7 @@ class VaeRubydHandler
 
   def haml(text)
     begin
+      puts "rendering Haml - #{text.length} bytes"
       engine = Haml::Engine.new(text, format: :xhtml)
       engine.render
     rescue Haml::SyntaxError => e
@@ -27,6 +28,7 @@ class VaeRubydHandler
 
   def sass(text, load_path, style = :compressed)
     begin
+      puts "rendering Sass - #{text.length} bytes - #{load_path}"
       options = Compass.sass_engine_options
       options[:load_paths] << load_path
       options[:style] = style.to_sym
@@ -39,6 +41,7 @@ class VaeRubydHandler
 
   def scss(text, load_path, style = :compressed)
     begin
+      puts "rendering Scss - #{text.length} bytes - #{load_path}"
       options = Compass.sass_engine_options
       options[:load_paths] << load_path
       options[:style] = style.to_sym
