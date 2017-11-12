@@ -9,7 +9,7 @@ class Vaerubyd
     processor = VaeRubyd::Processor.new(VaeRubydHandler.new)
     transport = Thrift::ServerSocket.new(9090)
     transportFactory = Thrift::BufferedTransportFactory.new
-    server = Thrift::ThreadPoolServer.new(processor, transport, transportFactory)
+    server = Thrift::ThreadPoolServer.new(processor, transport, transportFactory, nil, 300)
     puts "VaeRubyd Running"
     puts "  Encoding: #{Encoding.default_internal} #{Encoding.default_external}"
     server.serve()
