@@ -7,7 +7,7 @@
 using namespace boost;
 using namespace std;
 
-#include "vae_db_handler.h"
+#include "server.h"
 #include "site.h"
 #include "context.h"
 #include "logger.h"
@@ -18,7 +18,7 @@ using namespace std;
 
 void eatErrors(void * ctx, const char * msg, ...) { }
 
-boost::shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey, bool stagingMode) {
+boost::shared_ptr<Site> Server::getSite(string subdomain, string secretKey, bool stagingMode) {
   string xml("");
   string sitesKey(stagingMode ? subdomain + ".staging" : subdomain);
   boost::unique_lock<boost::mutex> lockSite(_get_site_mutex(subdomain, stagingMode));
@@ -36,7 +36,7 @@ boost::shared_ptr<Site> VaeDbHandler::getSite(string subdomain, string secretKey
 }
 
 inline
-boost::mutex & VaeDbHandler::_get_site_mutex(std::string const & subdomain, bool stagingMode) {
+boost::mutex & Server::_get_site_mutex(std::string const & subdomain, bool stagingMode) {
   string sitesKey(stagingMode ? subdomain + ".staging" : subdomain);
   boost::unique_lock<boost::mutex> lockSites(sitesMutex);
   if (siteMutexes.count(sitesKey)) {
@@ -47,7 +47,7 @@ boost::mutex & VaeDbHandler::_get_site_mutex(std::string const & subdomain, bool
 }
 
 inline boost::shared_ptr<class Site>
-VaeDbHandler::_loadSite(string const & subdomain, bool stagingMode, string const & xml) {
+Server::_loadSite(string const & subdomain, bool stagingMode, string const & xml) {
   boost::shared_ptr<Site> site;
   site.reset(new Site(subdomain, stagingMode, xml));
   boost::unique_lock<boost::mutex> lockSites(sitesMutex);
@@ -55,7 +55,7 @@ VaeDbHandler::_loadSite(string const & subdomain, bool stagingMode, string const
   return sites[sitesKey] = site;
 }
 
-boost::shared_ptr<Site> VaeDbHandler::_getSite(string const & sitesKey, string const & secretKey) {
+boost::shared_ptr<Site> Server::_getSite(string const & sitesKey, string const & secretKey) {
   boost::unique_lock<boost::mutex> lock(sitesMutex);
 
   if (sites.count(sitesKey)) {
@@ -66,7 +66,7 @@ boost::shared_ptr<Site> VaeDbHandler::_getSite(string const & sitesKey, string c
   return boost::shared_ptr<Site>();
 }
 
-VaeDbHandler::VaeDbHandler(QueryLog &queryLog, MemcacheProxy &memcacheProxy, MysqlProxy &mysqlProxy)
+Server::Server(QueryLog &queryLog, MemcacheProxy &memcacheProxy, MysqlProxy &mysqlProxy)
   :  queryLog(queryLog), memcacheProxy(memcacheProxy), mysqlProxy(mysqlProxy) {
 
   nextSessionId = 1;
@@ -77,12 +77,12 @@ VaeDbHandler::VaeDbHandler(QueryLog &queryLog, MemcacheProxy &memcacheProxy, Mys
   L(error) << "VaeDB Running";
 }
 
-VaeDbHandler::~VaeDbHandler() {
+Server::~Server() {
   L(info) << "shutdown";
   xmlCleanupParser();
 }
 
-void VaeDbHandler::closeSession(const int32_t sessionId, const string& secretKey) {
+void Server::closeSession(const int32_t sessionId, const string& secretKey) {
   QueryLogEntry entry(queryLog);
   entry.method_call("closeSession") << sessionId << secretKey << "\n";
 
@@ -94,7 +94,7 @@ void VaeDbHandler::closeSession(const int32_t sessionId, const string& secretKey
   }
 }
 
-void VaeDbHandler::createInfo(VaeDbCreateInfoResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query) {
+void Server::createInfo(VaeDbCreateInfoResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query) {
   QueryLogEntry entry(queryLog);
   entry.method_call("createInfo") << sessionId << responseId << query << "\n";
 
@@ -112,7 +112,7 @@ void VaeDbHandler::createInfo(VaeDbCreateInfoResponse& _return, const int32_t se
   session->createInfo(_return, responseId, query);
 }
 
-void VaeDbHandler::data(VaeDbDataResponse& _return, const int32_t sessionId, const int32_t responseId) {
+void Server::data(VaeDbDataResponse& _return, const int32_t sessionId, const int32_t responseId) {
   QueryLogEntry entry(queryLog);
   entry.method_call("data") << sessionId << responseId << "\n";
 
@@ -130,7 +130,7 @@ void VaeDbHandler::data(VaeDbDataResponse& _return, const int32_t sessionId, con
   session->data(_return, responseId);
 }
 
-void VaeDbHandler::get(VaeDbResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query, const map<string, string> & options) {
+void Server::get(VaeDbResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query, const map<string, string> & options) {
   QueryLogEntry entry(queryLog);
   entry.method_call("get") << sessionId << responseId << query << options << "\n";
 
@@ -148,11 +148,11 @@ void VaeDbHandler::get(VaeDbResponse& _return, const int32_t sessionId, const in
   session->get(_return, responseId, query, options);
 }
 
-SessionMap& VaeDbHandler::getSessions() {
+SessionMap& Server::getSessions() {
   return sessions;
 }
 
-void VaeDbHandler::openSession(VaeDbOpenSessionResponse& _return, const string& subdomain, const string& secretKey, const bool stagingMode, const int32_t suggestedSessionId) {
+void Server::openSession(VaeDbOpenSessionResponse& _return, const string& subdomain, const string& secretKey, const bool stagingMode, const int32_t suggestedSessionId) {
   QueryLogEntry entry(queryLog);
   entry.method_call("openSession") << subdomain << secretKey << stagingMode << suggestedSessionId << "\n";
 
@@ -173,7 +173,7 @@ void VaeDbHandler::openSession(VaeDbOpenSessionResponse& _return, const string& 
   _return.session_id = sessionId;
 }
 
-int8_t VaeDbHandler::ping() {
+int8_t Server::ping() {
   QueryLogEntry entry(queryLog);
   entry.method_call("ping") << "\n";
 
@@ -181,7 +181,7 @@ int8_t VaeDbHandler::ping() {
   return 0;
 }
 
-void VaeDbHandler::resetSite(string const & subdomain, string const & secretKey) {
+void Server::resetSite(string const & subdomain, string const & secretKey) {
   QueryLogEntry entry(queryLog);
   entry.method_call("resetSite") << subdomain << secretKey << "\n";
   L(info) << "reset: " << subdomain;
@@ -189,7 +189,7 @@ void VaeDbHandler::resetSite(string const & subdomain, string const & secretKey)
   _resetSite(subdomain, secretKey, false);
 }
 
-void VaeDbHandler::reloadSite(string const & subdomain) {
+void Server::reloadSite(string const & subdomain) {
   bool reload_prod;
   bool reload_staging;
 
@@ -215,7 +215,7 @@ void VaeDbHandler::reloadSite(string const & subdomain) {
 }
 
 inline
-void VaeDbHandler::_resetSite(string const & subdomain, string const & secretKey, bool force) {
+void Server::_resetSite(string const & subdomain, string const & secretKey, bool force) {
   boost::unique_lock<boost::mutex> lock(sitesMutex);
   if (sites.count(subdomain)) {
     _eraseSite(subdomain, secretKey, force);
@@ -229,7 +229,7 @@ void VaeDbHandler::_resetSite(string const & subdomain, string const & secretKey
 }
 
 inline
-void VaeDbHandler::_eraseSite(string const & sitesKey, string const & secretKey, bool force) {
+void Server::_eraseSite(string const & sitesKey, string const & secretKey, bool force) {
   //expects siteMutex held
 
   if(!force)
@@ -238,7 +238,7 @@ void VaeDbHandler::_eraseSite(string const & sitesKey, string const & secretKey,
   sites.erase(sitesKey);
 }
 
-void VaeDbHandler::structure(VaeDbStructureResponse& _return, const int32_t sessionId, const int32_t responseId) {
+void Server::structure(VaeDbStructureResponse& _return, const int32_t sessionId, const int32_t responseId) {
   QueryLogEntry entry(queryLog);
   entry.method_call("structure") << sessionId << responseId << "\n";
 
@@ -256,7 +256,7 @@ void VaeDbHandler::structure(VaeDbStructureResponse& _return, const int32_t sess
   session->structure(_return, responseId);
 }
 
-void VaeDbHandler::writePid() {
+void Server::writePid() {
   ofstream pidfile;
   pidfile.open("/tmp/vaedb.pid");
   if (pidfile.is_open()) {
@@ -267,7 +267,7 @@ void VaeDbHandler::writePid() {
   pidfile.close();
 }
 
-void VaeDbHandler::shortTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t flags) {
+void Server::shortTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t flags) {
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -283,7 +283,7 @@ void VaeDbHandler::shortTermCacheGet(string &_return, const int32_t sessionId, s
   _return = answer;
 }
 
-void VaeDbHandler::shortTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t flags, const int32_t expireInterval) {
+void Server::shortTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t flags, const int32_t expireInterval) {
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -298,7 +298,7 @@ void VaeDbHandler::shortTermCacheSet(const int32_t sessionId, string const & key
   memcacheProxy.set(fullKey, value, flags, expireInterval);
 }
 
-void VaeDbHandler::shortTermCacheDelete(const int32_t sessionId, string const & key) {
+void Server::shortTermCacheDelete(const int32_t sessionId, string const & key) {
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -313,7 +313,7 @@ void VaeDbHandler::shortTermCacheDelete(const int32_t sessionId, string const & 
   memcacheProxy.remove(fullKey);
 }
 
-void VaeDbHandler::sessionCacheGet(string &_return, const int32_t sessionId, string const & key) {
+void Server::sessionCacheGet(string &_return, const int32_t sessionId, string const & key) {
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -327,7 +327,7 @@ void VaeDbHandler::sessionCacheGet(string &_return, const int32_t sessionId, str
   _return = mysqlProxy.sessionCacheGet(session->getSite()->getSubdomain(), key);
 }
 
-void VaeDbHandler::sessionCacheSet(const int32_t sessionId, string const & key, string const & value) {
+void Server::sessionCacheSet(const int32_t sessionId, string const & key, string const & value) {
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -341,7 +341,7 @@ void VaeDbHandler::sessionCacheSet(const int32_t sessionId, string const & key, 
   mysqlProxy.sessionCacheSet(session->getSite()->getSubdomain(), key, value);
 }
 
-void VaeDbHandler::sessionCacheDelete(const int32_t sessionId, string const & key) {
+void Server::sessionCacheDelete(const int32_t sessionId, string const & key) {
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -355,7 +355,7 @@ void VaeDbHandler::sessionCacheDelete(const int32_t sessionId, string const & ke
   mysqlProxy.sessionCacheDelete(session->getSite()->getSubdomain(), key);
 }
 
-void VaeDbHandler::longTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t renewExpiry, const int32_t useShortTermCache) {
+void Server::longTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t renewExpiry, const int32_t useShortTermCache) {
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -378,7 +378,7 @@ void VaeDbHandler::longTermCacheGet(string &_return, const int32_t sessionId, st
   memcacheProxy.set(fullKey, _return, 0, 86400);
 }
 
-void VaeDbHandler::longTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t expireInterval, const int32_t isFilename) {
+void Server::longTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t expireInterval, const int32_t isFilename) {
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -394,7 +394,7 @@ void VaeDbHandler::longTermCacheSet(const int32_t sessionId, string const & key,
   memcacheProxy.set(fullKey, value, 0, 86400);
 }
 
-void VaeDbHandler::longTermCacheDelete(const int32_t sessionId, string const & key) {
+void Server::longTermCacheDelete(const int32_t sessionId, string const & key) {
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -410,7 +410,7 @@ void VaeDbHandler::longTermCacheDelete(const int32_t sessionId, string const & k
   memcacheProxy.remove(fullKey);
 }
 
-void VaeDbHandler::longTermCacheEmpty(const int32_t sessionId) {
+void Server::longTermCacheEmpty(const int32_t sessionId) {
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -424,7 +424,7 @@ void VaeDbHandler::longTermCacheEmpty(const int32_t sessionId) {
   mysqlProxy.longTermCacheEmpty(session->getSite()->getSubdomain());
 }
 
-void VaeDbHandler::longTermCacheSweeperInfo(VaeDbDataForContext& _return, const int32_t sessionId) {
+void Server::longTermCacheSweeperInfo(VaeDbDataForContext& _return, const int32_t sessionId) {
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -438,7 +438,7 @@ void VaeDbHandler::longTermCacheSweeperInfo(VaeDbDataForContext& _return, const 
   mysqlProxy.longTermCacheSweeperInfo(_return, session->getSite()->getSubdomain());
 }
 
-int32_t VaeDbHandler::sitewideLock(const int32_t sessionId, string const & iden) {
+int32_t Server::sitewideLock(const int32_t sessionId, string const & iden) {
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -453,7 +453,7 @@ int32_t VaeDbHandler::sitewideLock(const int32_t sessionId, string const & iden)
   return mysqlProxy.lock(fullKey);
 }
 
-int32_t VaeDbHandler::sitewideUnlock(const int32_t sessionId, string const & iden) {
+int32_t Server::sitewideUnlock(const int32_t sessionId, string const & iden) {
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);

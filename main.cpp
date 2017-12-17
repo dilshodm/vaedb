@@ -5,6 +5,8 @@
 #include <signal.h>
 #include <execinfo.h>
 #include <boost/program_options.hpp>
+#include <served/served.hpp>
+
 #ifndef __MACH__
 #include <malloc.h>
 #endif
@@ -13,14 +15,14 @@ using namespace boost;
 using namespace std;
 namespace po = boost::program_options;
 
-#include "site.h"
+#include "bus.h"
 #include "context.h"
 #include "logger.h"
 #include "response.h"
 #include "s3.h"
+#include "server.h"
 #include "session.h"
-#include "vae_db_handler.h"
-#include "bus.h"
+#include "site.h"
 
 int testMode = 0;
 
@@ -122,10 +124,21 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  boost::shared_ptr<VaeDbHandler> handler(new VaeDbHandler(query_log, memcache, mysql));
+  boost::shared_ptr<Server> handler(new Server(query_log, memcache, mysql));
 
   boost::shared_ptr<Bus> bus(new Bus(handler, vm["busaddress"].as<string>()));
   //threadFactory->newThread(bus)->start();
 
-  return 0;
+  served::multiplexer mux;
+
+  // GET /hello
+  mux.handle("/hello")
+    .get([](served::response & res, const served::request & req) {
+      res << "Hello world!";
+    });
+
+  served::net::server server("127.0.0.1", "9094", mux);
+  server.run(workers);
+
+  return EXIT_SUCCESS;
 }

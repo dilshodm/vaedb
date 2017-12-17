@@ -15,18 +15,18 @@ using namespace boost;
 
 using std::string;
 
-Bus::Bus(boost::shared_ptr<VaeDbHandler> handler, string bindaddress) 
-    : _handler(handler), _bindaddress(bindaddress) { }
+Bus::Bus(boost::shared_ptr<Server> server, string bindaddress)
+    : _server(server), _bindaddress(bindaddress) { }
 
 void Bus::reload(string subdomain) {
-  _handler->reloadSite(subdomain);
+  _server->reloadSite(subdomain);
 }
 
 void Bus::run() {
   zmq::context_t context(1);
   zmq::socket_t subscriber(context, ZMQ_PULL);
   vector<boost::thread*> threads;
-  
+
   boost::posix_time::seconds waittime(0);
 
   subscriber.bind(_bindaddress.c_str());
@@ -37,7 +37,7 @@ void Bus::run() {
     string subdomain(static_cast<char*>(update.data()), update.size());
 
     L(info) << "reloading " << subdomain;
-    _handler->reloadSite(subdomain);
+    _server->reloadSite(subdomain);
 
     vector<boost::thread*>::iterator it = threads.begin();
     while(it != threads.end()) {

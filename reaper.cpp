@@ -15,10 +15,10 @@ using namespace std;
 
 #include "logger.h"
 #include "reaper.h"
+#include "server.h"
 #include "session.h"
-#include "vae_db_handler.h"
 
-Reaper::Reaper(VaeDbHandler *h, MysqlProxy &p) : vaeDbHandler(h), mysqlProxy(p) {
+Reaper::Reaper(Server *h, MysqlProxy &p) : server(h), mysqlProxy(p) {
   thread *t = new thread(boost::bind(&Reaper::Run, this));
 }
 
@@ -27,8 +27,8 @@ void Reaper::Run() {
     sleep(SESSION_REAP_TIME / 2);
     time_t now = time(NULL);
     {
-      boost::unique_lock<boost::mutex> lock(vaeDbHandler->sessionsMutex);
-      SessionMap &sessions = vaeDbHandler->getSessions();
+      boost::unique_lock<boost::mutex> lock(server->sessionsMutex);
+      SessionMap &sessions = server->getSessions();
 
       SessionMap::iterator it = sessions.begin();
       while (it != sessions.end()) {

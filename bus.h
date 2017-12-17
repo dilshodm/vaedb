@@ -4,17 +4,17 @@
 #include <string>
 #include <boost/shared_ptr.hpp>
 
-#include "vae_db_handler.h"
+#include "server.h"
 
 class Bus {
   std::string _bindaddress;
-  boost::shared_ptr<VaeDbHandler> _handler;
+  boost::shared_ptr<Server> _server;
 
   void run();
   void reload(std::string subdomain);
 
 public:
-  Bus(boost::shared_ptr<VaeDbHandler> handler, std::string bindaddress);
+  Bus(boost::shared_ptr<Server> server, std::string bindaddress);
 };
 
 #endif

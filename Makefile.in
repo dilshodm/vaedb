@@ -12,10 +12,10 @@ CXXFLAGS = -g @CXXFLAGS@ @BOOST_CXXFLAGS@ -std=c++11 -I/usr/include/malloc `xml2
 LDFLAGS = -L/usr/local/lib @LDFLAGS@ @BOOST_LDFLAGS@ -g
 LIBS = @LIBS@ -ls3 -lboost_filesystem@BOOST_LIB_SUFFIX@ -lboost_program_options@BOOST_LIB_SUFFIX@ -lboost_system@BOOST_LIB_SUFFIX@ -lboost_thread@BOOST_LIB_SUFFIX@ -lmysqlcppconn -lz -lxml2 -lm -g
 
-OBJS = context.o bus.o s3.o logger.o main.o memcache_proxy.o mysql_proxy.o query.o query_log.o reaper.o response.o session.o site.o util.o vae_db_handler.o
-HEADERS = context.h bus.h logger.h lru_cache.h memcache_proxy.h mysql_proxy.h query.h query_log.h reaper.h response.h s3.h session.h site.h util.h vae_db_handler.h
+OBJS = context.o bus.o s3.o logger.o main.o memcache_proxy.o mysql_proxy.o query.o query_log.o reaper.o response.o server.o session.o site.o util.o
+HEADERS = context.h bus.h logger.h lru_cache.h memcache_proxy.h mysql_proxy.h query.h query_log.h reaper.h response.h s3.h server.h session.h site.h util.h
 
-default: server
+default: vaedb
 
 clean:
 	$(RM) vaedb *.o
@@ -23,7 +23,7 @@ clean:
 context.o: context.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} context.cpp
 
-install: server
+install: vaedb
 	install vaedb /app/vaedb/sbin
 	killall -9 vaedb
 
@@ -57,8 +57,8 @@ reaper.o: reaper.cpp ${HEADERS}
 response.o: response.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} response.cpp
 
-server: ${OBJS}
-	${CXX} -o vaedb ${OBJS} ${LDFLAGS} ${LIBS}
+server.o: server.cpp ${HEADERS}
+	${CXX} ${CXXFLAGS} server.cpp
 
 session.o: session.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} session.cpp
@@ -69,5 +69,5 @@ site.o: site.cpp ${HEADERS}
 util.o: util.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} util.cpp
 
-vae_db_handler.o: vae_db_handler.cpp ${HEADERS}
-	${CXX} ${CXXFLAGS} vae_db_handler.cpp
+vaedb: ${OBJS}
+	${CXX} -o vaedb ${OBJS} ${LDFLAGS} ${LIBS}

@@ -13,7 +13,7 @@ typedef std::map<std::string,boost::mutex*> SiteMutexesMap;
 
 extern int testMode;
 
-class VaeDbHandler : virtual public VaeDbIf {
+class Server : virtual public VaeDbIf {
 
  private:
   int nextSessionId;
@@ -35,8 +35,8 @@ class VaeDbHandler : virtual public VaeDbIf {
  public:
   boost::mutex sessionsMutex;
 
-  VaeDbHandler(QueryLog & queryLog, MemcacheProxy &memcacheProxy, MysqlProxy &mysqlProxy);
-  ~VaeDbHandler();
+  Server(QueryLog & queryLog, MemcacheProxy &memcacheProxy, MysqlProxy &mysqlProxy);
+  ~Server();
   void closeSession(const int32_t sessionId, const std::string& secretKey);
   void createInfo(VaeDbCreateInfoResponse& _return, const int32_t session_id, const int32_t response_id, const std::string& query);
   void data(VaeDbDataResponse& _return, const int32_t session_id, const int32_t response_id);

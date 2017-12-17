@@ -2,11 +2,11 @@
 
 class Reaper {
 
-  class VaeDbHandler *vaeDbHandler;
+  class Server *server;
   MysqlProxy &mysqlProxy;
 
  public:
-   Reaper(class VaeDbHandler *h, MysqlProxy &p);
+   Reaper(class Server *h, MysqlProxy &p);
    void Run();
 
 };
