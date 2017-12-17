@@ -12,7 +12,7 @@ using namespace boost;
 #include "response.h"
 #include "session.h"
 
-Session::Session(boost::shared_ptr<Site> s) { 
+Session::Session(boost::shared_ptr<Site> s) {
   site = s;
   createdAt = time(NULL);
 }
@@ -30,7 +30,7 @@ void Session::createInfo(VaeDbCreateInfoResponse& _return, const int32_t respons
     }
   } else {
     parent = boost::shared_ptr<Response>();
-  } 
+  }
   boost::shared_ptr<Response> response(new Response(site, parent, query));
   response->writeVaeDbCreateInfoResponse(_return);
 }
@@ -61,7 +61,7 @@ void Session::get(VaeDbResponse& _return, const int32_t responseId, const std::s
     }
   } else {
     parent = boost::shared_ptr<Response>();
-  } 
+  }
   boost::shared_ptr<Response> response(new Response(site, parent, query, options));
   response->writeVaeDbResponse(_return);
   _return.id = responses.size()+1;

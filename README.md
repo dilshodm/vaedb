@@ -1,16 +1,17 @@
-# VaeDB and VaeRubyd
+# VaeDB
 
-The vae_thrift repository contains two daemons that run for the purpose
-of servicing Vae Remote.  In a typical Vae installation, these are run
-on separate machines for both security and scaling purposes.
+In-memory database for querying data stored by the Vae CMS application.
 
-You should build and configure VaeDB and VaeRubyd before you attempt to
+This updated version replaces Thrift with a vanilla JSON-over-HTTP
+server implementation.
+
+You should build and configure VaeDB before you attempt to
 configure Vae Remote on your development machine.
 
 
 ## License
 
-Copyright (c) 2009-2016 Action Verb, LLC.
+Copyright (c) 2009-2018 Action Verb, LLC.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as published by
@@ -29,7 +30,7 @@ If not, see http://www.gnu.org/licenses/.
 
 ## Prerequisites
 
- - thrift
+ - served
  - pcre
  - zeromq
  - libs3
@@ -40,7 +41,7 @@ If not, see http://www.gnu.org/licenses/.
 
 ### Install Prerequisites using a Mac:
 
-    brew install pcre zeromq thrift libmemcached mysql-connector-c++ jemalloc
+    brew install pcre zeromq libmemcached mysql-connector-c++ jemalloc
 
     wget https://github.com/bji/libs3/archive/bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip
     unzip bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip
@@ -48,29 +49,24 @@ If not, see http://www.gnu.org/licenses/.
     mv GNUMakefile.osx Makefile
     DESTDIR=/usr/local make install
 
-    brew install ruby
-    gem install bundler
+    git clone git@github.com:datasift/served.git
+    mkdir served.build && cd served.build
+    cmake ../served && make install
 
 
 ### Install Prerequisites on Linux:
 
     apt install automake bison flex g++ git libboost-all-dev libevent-dev libssl-dev libtool make pkg-config
-
-    wget http://archive.apache.org/dist/thrift/0.9.2/thrift-0.9.2.tar.gz
-    tar xf thrift-0.9.2.tar.gz
-    cd thrift-0.9.2
-    ./configure
-    make
-    make install
+    apt install libzmq3-dev libpcre3-dev libmemcached-dev libmysqlcppconn-dev libjemalloc-dev libcurl4-openssl-dev libxml2-dev
 
     wget https://github.com/bji/libs3/archive/bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip
     unzip bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip
     cd libs3-bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb
     make install
 
-    apt install libzmq3-dev libpcre3-dev libmemcached-dev libmysqlcppconn-dev libjemalloc-dev libcurl4-openssl-dev libxml2-dev
-    apt install ruby-full ruby-dev ruby-rspec ruby-bundler rake rubygems libdaemons-ruby libgemplugin-ruby mongrel
-    gem install ffi -v '1.9.10'
+    git clone git@github.com:datasift/served.git
+    mkdir served.build && cd served.build
+    cmake ../served && make install
 
 
 ### Create Local MySQL Database for Vae Remote
@@ -83,41 +79,19 @@ Import the schema as follows:
     mysql -uvaedb < db/schema.sql
 
 
-## Compiling VaeDB
+## Compiling
 
-    cd cpp
     ./configure
     make
 
 
-### To test run VaeDB:
+### To test run:
 
-    cd cpp
     env MYSQL_USERNAME=<user> MYSQL_PASSWORD=<pass> MYSQL_DATABASE=<db> ./vaedb --test
-
-
-### To test run VaeRubyd:
-
-    cd rb
-    bundle install
-    ruby vaerubyd.rb
 
 
 If all that stuff works, you should be golden and the test suite for Vae
 Remote should be ready to run.
-
-
-## Rebuilding the Thrift Defintion File
-
-This only needs to be done when the interface between vae_thrift and
-vae_remote changes.  (I.e. you made changes to the file called
-vae.thrift).
-
-Whenever you need to rebuild the thrift definition file, simply run:
-
-    ./vae.thrift
-
-There is no longer a patch needed after running this.  (Thanks Kevin!)
 
 
 ## Test Suite
