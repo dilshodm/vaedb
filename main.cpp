@@ -5,22 +5,10 @@
 #include <signal.h>
 #include <execinfo.h>
 #include <boost/program_options.hpp>
-#include <thrift/concurrency/ThreadManager.h>
-#include <thrift/concurrency/PosixThreadFactory.h>
-#include <thrift/protocol/TBinaryProtocol.h>
-#include <thrift/server/TSimpleServer.h>
-#include <thrift/server/TThreadPoolServer.h>
-#include <thrift/transport/TServerSocket.h>
-#include <thrift/transport/TBufferTransports.h>
 #ifndef __MACH__
 #include <malloc.h>
 #endif
 
-using namespace apache::thrift;
-using namespace apache::thrift::concurrency;
-using namespace apache::thrift::protocol;
-using namespace apache::thrift::transport;
-using namespace apache::thrift::server;
 using namespace boost;
 using namespace std;
 namespace po = boost::program_options;
@@ -45,12 +33,11 @@ void crash_handler(int signal) {
   cerr << "caught signal " << signal << endl;
   backtrace_symbols_fd(stack_entries, size, 1);
 
-  if(signal == SIGSEGV)
+  if (signal == SIGSEGV)
     exit(-1);
 }
 
 int main(int argc, char **argv) {
-
   signal(SIGSEGV, crash_handler);
   signal(SIGUSR1, crash_handler);
 
@@ -118,7 +105,7 @@ int main(int argc, char **argv) {
   }
 
   auto_ptr<ostream> p_querylog_stream;
-  if(vm.count("query_log")) {
+  if (vm.count("query_log")) {
     p_querylog_stream.reset(new ofstream(vm["query_log"].as<string>().c_str()));
     if(p_querylog_stream->fail()) {
       L(warning) << "Unable to write to query log file: '" << vm["query_log"].as<string>() << "'.";
@@ -130,31 +117,15 @@ int main(int argc, char **argv) {
   MemcacheProxy memcache(memcached_host, workers);
   MysqlProxy mysql(mysql_host, mysql_username, mysql_password, mysql_database, workers);
 
-  if(!initialize_s3(aws_access_key, aws_secret_key, aws_bucket, feed_cache_path)) {
+  if (!initialize_s3(aws_access_key, aws_secret_key, aws_bucket, feed_cache_path)) {
     L(error) << "S3 failed to initialize.";
     return -1;
   }
 
-  boost::shared_ptr<PosixThreadFactory> threadFactory = boost::shared_ptr<PosixThreadFactory>(new PosixThreadFactory());
   boost::shared_ptr<VaeDbHandler> handler(new VaeDbHandler(query_log, memcache, mysql));
-  boost::shared_ptr<TProcessor> processor(new VaeDbProcessor(handler));
-  boost::shared_ptr<TServerSocket> serverSocket(new TServerSocket(vm["port"].as<int>()));
-  boost::shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
-  boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
-#ifdef THREADED
   boost::shared_ptr<Bus> bus(new Bus(handler, vm["busaddress"].as<string>()));
-  threadFactory->newThread(bus)->start();
-
-  boost::shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(workers);
-  threadManager->threadFactory(threadFactory);
-  threadManager->start();
-  boost::shared_ptr<TServer> server(new TThreadPoolServer(processor, serverSocket, transportFactory, protocolFactory, threadManager));
-#else
-  boost::shared_ptr<TServer> server(new TSimpleServer(processor, serverSocket, transportFactory, protocolFactory));
-#endif
-
-  server->serve();
+  //threadFactory->newThread(bus)->start();
 
   return 0;
 }

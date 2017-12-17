@@ -12,7 +12,6 @@ AC_PATH_PROG([XML2_CONFIG], [xml2-config], AC_MSG_ERROR(could not find libxml2))
 
 AX_BOOST_BASE
 AC_CHECK_LIB([zmq], [zmq_socket], [], [AC_MSG_ERROR([Could not find usable ZMQ library])], [])
-AC_CHECK_LIB([thrift], [main], , AC_MSG_ERROR(could not find libthrift))
 AC_CHECK_LIB([s3], [S3_initialize], , AC_MSG_ERROR(could not find libs3))
 AC_CHECK_LIB([memcached], [memcached_get], , AC_MSG_ERROR(could not find memcached library))
 
@@ -20,6 +19,7 @@ AC_LANG_PUSH([C++])
 
 AX_CXX_CHECK_LIB([boost_system-mt],[boost::system::generic_category()],[BOOST_LIB_SUFFIX="-mt"],[BOOST_LIB_SUFFIX=""])
 AX_CXX_CHECK_LIB([mysqlcppconn],[sql::mysql::get_driver_instance()],[],[AC_MSG_ERROR([mysqlcppconn not found])])
+AX_CXX_CHECK_LIB([served], [served::net::server()], , AC_MSG_ERROR(could not find libserved))
 AC_CHECK_LIB([pcrecpp], [main], [], [AC_MSG_ERROR([pcre not found])])
 
 AC_LANG_POP([C++])

@@ -10,7 +10,7 @@ bindir = $(exec_prefix)/bin
 CXX = @CXX@
 CXXFLAGS = -g @CXXFLAGS@ @BOOST_CXXFLAGS@ -std=c++11 -I/usr/include/malloc `xml2-config --cflags` -c
 LDFLAGS = -L/usr/local/lib @LDFLAGS@ @BOOST_LDFLAGS@ -g
-LIBS = @LIBS@ -ls3 -lboost_filesystem@BOOST_LIB_SUFFIX@ -lboost_program_options@BOOST_LIB_SUFFIX@ -lboost_system@BOOST_LIB_SUFFIX@ -lboost_thread@BOOST_LIB_SUFFIX@ -lmysqlcppconn -lz -lxml2 -lthrift -lm -g
+LIBS = @LIBS@ -ls3 -lboost_filesystem@BOOST_LIB_SUFFIX@ -lboost_program_options@BOOST_LIB_SUFFIX@ -lboost_system@BOOST_LIB_SUFFIX@ -lboost_thread@BOOST_LIB_SUFFIX@ -lmysqlcppconn -lz -lxml2 -lm -g
 
 OBJS = context.o bus.o s3.o logger.o main.o memcache_proxy.o mysql_proxy.o query.o query_log.o reaper.o response.o session.o site.o util.o vae_db_handler.o
 HEADERS = context.h bus.h logger.h lru_cache.h memcache_proxy.h mysql_proxy.h query.h query_log.h reaper.h response.h s3.h session.h site.h util.h vae_db_handler.h
