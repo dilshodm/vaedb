@@ -11,8 +11,6 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 
-#include "../gen-cpp/VaeDb.h"
-
 enum {
   POOL_FREE,
   POOL_INUSE
@@ -30,7 +28,7 @@ class MysqlProxy {
   boost::mutex poolMutex;
   boost::condition_variable cond;
   int availableConnections;
- 
+
 public:
   MysqlProxy(std::string host, std::string username, std::string password, std::string database, int workers);
   ~MysqlProxy();

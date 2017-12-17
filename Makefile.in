@@ -8,13 +8,12 @@ exec_prefix = @exec_prefix@
 bindir = $(exec_prefix)/bin
 
 CXX = @CXX@
-CXXFLAGS = -g @CXXFLAGS@ @BOOST_CXXFLAGS@ -std=c++11 -I../gen-cpp -I/usr/include/malloc `xml2-config --cflags` -c
+CXXFLAGS = -g @CXXFLAGS@ @BOOST_CXXFLAGS@ -std=c++11 -I/usr/include/malloc `xml2-config --cflags` -c
 LDFLAGS = -L/usr/local/lib @LDFLAGS@ @BOOST_LDFLAGS@ -g
 LIBS = @LIBS@ -ls3 -lboost_filesystem@BOOST_LIB_SUFFIX@ -lboost_program_options@BOOST_LIB_SUFFIX@ -lboost_system@BOOST_LIB_SUFFIX@ -lboost_thread@BOOST_LIB_SUFFIX@ -lmysqlcppconn -lz -lxml2 -lthrift -lm -g
 
-GEN_SRC = ../gen-cpp/vae_types.cpp ../gen-cpp/VaeDb.cpp
-OBJS = context.o bus.o s3.o logger.o main.o memcache_proxy.o mysql_proxy.o query.o query_log.o reaper.o response.o session.o site.o util.o vae_db_handler.o vae_types.o VaeDb.o
-HEADERS = context.h bus.h logger.h lru_cache.h memcache_proxy.h mysql_proxy.h query.h query_log.h reaper.h response.h s3.h session.h site.h util.h vae_db_handler.h ../gen-cpp/vae_types.h ../gen-cpp/vae_constants.h ../gen-cpp/VaeDb.h
+OBJS = context.o bus.o s3.o logger.o main.o memcache_proxy.o mysql_proxy.o query.o query_log.o reaper.o response.o session.o site.o util.o vae_db_handler.o
+HEADERS = context.h bus.h logger.h lru_cache.h memcache_proxy.h mysql_proxy.h query.h query_log.h reaper.h response.h s3.h session.h site.h util.h vae_db_handler.h
 
 default: server
 
@@ -52,9 +51,6 @@ query.o: query.cpp ${HEADERS}
 query_log.o: query_log.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} query_log.cpp
 
-patch:
-	patch ../gen-cpp/vae_types.h < vae_types.h.patch
-
 reaper.o: reaper.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} reaper.cpp
 
@@ -75,9 +71,3 @@ util.o: util.cpp ${HEADERS}
 
 vae_db_handler.o: vae_db_handler.cpp ${HEADERS}
 	${CXX} ${CXXFLAGS} vae_db_handler.cpp
-
-vae_types.o: ../gen-cpp/vae_types.cpp ../gen-cpp/vae_types.h
-	${CXX} ${CXXFLAGS} ../gen-cpp/vae_types.cpp
-
-VaeDb.o: ../gen-cpp/VaeDb.cpp ../gen-cpp/VaeDb.h
-	${CXX} ${CXXFLAGS} ../gen-cpp/VaeDb.cpp

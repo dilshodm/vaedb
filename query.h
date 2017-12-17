@@ -13,8 +13,8 @@ class Query {
   int size;
   xmlXPathObjectPtr xpathObj;
   static boost::mutex mutex;
-  
- public:  
+
+ public:
   Query(Site *s);
   Query(class Site *s, Context *context, const string &q);
   ~Query();
@@ -26,7 +26,7 @@ class Query {
   void runQuery(Context *context, const string &q, const string &displayQuery);
   void runRawQuery(xmlNodePtr node, const string &q, const string &displayQuery);
   bool singleData();
-  
+
  private:
   void result(xmlNode *node);
 

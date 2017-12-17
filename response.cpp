@@ -8,7 +8,6 @@
 using namespace std;
 using namespace boost;
 
-#include "../gen-cpp/VaeDb.h"
 #include "site.h"
 #include "context.h"
 #include "response.h"
@@ -24,7 +23,7 @@ Response::Response(boost::shared_ptr<Site> s, boost::shared_ptr<Response> parent
   page = 1;
   paginate = 99999999;
   sortType = None;
-  
+
   map<string,string>::const_iterator it;
   if ((it = options.find("skip")) != options.end()) {
     skip = atoi(it->second.c_str());
@@ -103,7 +102,7 @@ Response::Response(boost::shared_ptr<Site> s, boost::shared_ptr<Response> parent
       }
     }
   }
-    
+
   if (parent) {
     for (ResponseContextList::const_iterator it = parent->contexts.begin(); it != parent->contexts.end(); it++) {
       for (ContextList::const_iterator it2 = (*it).contexts.begin(); it2 != (*it).contexts.end(); it2++) {
@@ -248,7 +247,7 @@ void Response::query(Context *context, const string &q, const map<string, string
   if (end > size) {
     end = size;
   }
-  if (filter || unique) { 
+  if (filter || unique) {
     int skipped = 0;
     int included = 0;
     _return.total = 0;

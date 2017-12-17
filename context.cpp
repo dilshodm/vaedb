@@ -8,14 +8,13 @@
 using namespace std;
 using namespace boost;
 
-#include "../gen-cpp/VaeDb.h"
 #include "context.h"
 #include "query.h"
 #include "response.h"
 #include "site.h"
 #include "logger.h"
 
-Context::Context(Site *s, const xmlNodePtr n) : site(s) { 
+Context::Context(Site *s, const xmlNodePtr n) : site(s) {
   node = n;
   id = 0;
   dataPopulated = false;
@@ -28,11 +27,11 @@ Context::Context(Site *s, const xmlNodePtr n) : site(s) {
   }
   if (type == "AssociationItem" || type == "SingleAssociationItem") {
     site->associationsToInitialize.push_back(this);
-  } else {  
+  } else {
     xmlNode *next;
     for (xmlNode *child = node->children; child; child = next) {
       next = child->next;
-      if (child->type == XML_ELEMENT_NODE) {      
+      if (child->type == XML_ELEMENT_NODE) {
         if (child->_private == NULL) {
           Context *ctxt = new Context(site, child);
           if (ctxt->killMe) {
@@ -70,7 +69,7 @@ int Context::getCount(const string &query) {
     return it->second;
   }
   Query _query(site, this, query);
-  int result = _query.getSize();  
+  int result = _query.getSize();
   cachedCounts[query] = result;
   return result;
 }
@@ -91,7 +90,7 @@ string Context::getData(const string &query) {
     return it->second;
   }
   Query _query(site, this, query);
-  string result = _query.getSingleData();  
+  string result = _query.getSingleData();
   cachedQueries[query] = result;
   return result;
 }
@@ -120,7 +119,7 @@ void Context::initializeAssociation() {
   if (id > 0) {
     _query.find(id);
     if (_query.getSize() == 1) {
-    
+
       /* set up forward association */
       xmlNodePtr associatedNode = _query.getNode(0);
       xmlFreePropList(node->properties);
@@ -130,7 +129,7 @@ void Context::initializeAssociation() {
       node->properties = associatedNode->properties;
       node->last = associatedNode->last;
       node->_private = associatedNode->_private;
-    
+
       /* set up reverse association */
       xmlNodePtr pointerNode = xmlCopyNode(node->parent, 0);
       if (pointerNode == NULL) {
@@ -144,7 +143,7 @@ void Context::initializeAssociation() {
       pointerNode->properties = node->parent->properties;
       site->nodesToClean.push_back(pointerNode);
       xmlAddChild(associatedNode, pointerNode);
-    
+
       /* update previously placed pointer nodes to include this stuff */
       Context *parentContext = (Context *)node->parent->_private;
       Context *associatedContext = (Context *)associatedNode->_private;
@@ -152,13 +151,13 @@ void Context::initializeAssociation() {
       for (NodeList::iterator it = associatedContext->pointerNodes.begin(); it != associatedContext->pointerNodes.end(); it++) {
         (*it)->last = associatedNode->last;
       }
-      
+
       /* this context is no longer eneded */
       delete this;
       return;
     }
   }
-  
+
   /* couldn't find association */
   xmlUnlinkNode(node);
   xmlFreeNode(node);
@@ -186,7 +185,7 @@ void Context::populateData() {
   boost::unique_lock<boost::mutex> lock(mutex);
   if (dataPopulated) return;
   for (xmlNode *child = node->children; child; child = child->next) {
-    if (child->type == XML_ELEMENT_NODE) {      
+    if (child->type == XML_ELEMENT_NODE) {
       const char *content = NULL;
       for (xmlNode *child2 = child->children; child2; child2 = child2->next) {
         if (child2->type == XML_TEXT_NODE) {

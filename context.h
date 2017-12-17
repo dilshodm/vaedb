@@ -23,16 +23,16 @@ class Context {
   VaeDbStructure *structure;
   string type;
   VaeDbContext vaeDbContext;
-  
+
  public:
   xmlNodePtr node;
   bool killMe;
-  
+
  private:
   string getSingleData();
   bool populateAttrs();
   void populateData();
-  
+
  public:
   Context(class Site *s, const xmlNodePtr n);
   int getCount(const string &query);

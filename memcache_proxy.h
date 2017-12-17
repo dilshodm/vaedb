@@ -20,7 +20,7 @@ class MemcacheProxy {
   boost::mutex poolMutex;
   boost::condition_variable cond;
   int availableConnections;
- 
+
 public:
   MemcacheProxy(std::string connectString, int workers);
   ~MemcacheProxy();

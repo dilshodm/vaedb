@@ -10,7 +10,7 @@ struct ResponseContext {
 };
 typedef vector<ResponseContext> ResponseContextList;
 typedef vector<VaeDbCreateInfo> CreateInfoList;
-  
+
 class Response {
 
   enum SortType {None, Reverse, Shuffle, Specific};
@@ -37,7 +37,7 @@ class Response {
   bool unique;
   vector<string> uniqueFields;
   set<string> uniqueFound;
-  
+
  public:
   Response(boost::shared_ptr<Site> s, boost::shared_ptr<Response> parent, const string &q, const map<string, string> &options);
   Response(boost::shared_ptr<Site> s, boost::shared_ptr<Response> parent, const string &query);

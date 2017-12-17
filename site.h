@@ -14,7 +14,6 @@
 #include "context.h"
 #include "query.h"
 #include "lru_cache.h"
-#include "../gen-cpp/VaeDb.h"
 
 extern int testMode;
 

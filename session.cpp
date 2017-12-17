@@ -5,7 +5,6 @@
 using namespace std;
 using namespace boost;
 
-#include "../gen-cpp/VaeDb.h"
 #include "site.h"
 #include "context.h"
 #include "logger.h"

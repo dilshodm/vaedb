@@ -4,7 +4,7 @@
 #include <fstream>
 #include <signal.h>
 #include <execinfo.h>
-#include <boost/program_options.hpp> 
+#include <boost/program_options.hpp>
 #include <thrift/concurrency/ThreadManager.h>
 #include <thrift/concurrency/PosixThreadFactory.h>
 #include <thrift/protocol/TBinaryProtocol.h>
@@ -25,7 +25,6 @@ using namespace boost;
 using namespace std;
 namespace po = boost::program_options;
 
-#include "../gen-cpp/VaeDb.h"
 #include "site.h"
 #include "context.h"
 #include "logger.h"
@@ -90,7 +89,7 @@ int main(int argc, char **argv) {
     ("aws_access_key,A", po::value<string>(&aws_access_key)->default_value(aws_access_key), "AWS access key")
     ("aws_secret_key,S", po::value<string>(&aws_secret_key)->default_value(aws_secret_key), "AWS secret key")
     ("aws_bucket,U", po::value<string>(&aws_bucket)->default_value(aws_bucket), "AWS bucket")
-    ("feed_cache_path", po::value<string>(&feed_cache_path)->default_value("/tmp"), "feed cache path") 
+    ("feed_cache_path", po::value<string>(&feed_cache_path)->default_value("/tmp"), "feed cache path")
     ("workers,w", po::value<int>(&workers)->default_value(12), "number of worker threads to spawn")
     ("mysql_username", po::value<string>(&mysql_username), "MySQL username")
     ("mysql_password", po::value<string>(&mysql_password), "MySQL password")
@@ -101,7 +100,7 @@ int main(int argc, char **argv) {
   ;
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
-  po::notify(vm);    
+  po::notify(vm);
 
   if (vm.count("help")) {
     cout << desc << "\n";
@@ -126,7 +125,7 @@ int main(int argc, char **argv) {
       p_querylog_stream.reset();
     }
   }
-  
+
   QueryLog query_log(p_querylog_stream.get());
   MemcacheProxy memcache(memcached_host, workers);
   MysqlProxy mysql(mysql_host, mysql_username, mysql_password, mysql_database, workers);
@@ -143,7 +142,7 @@ int main(int argc, char **argv) {
   boost::shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
   boost::shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
-#ifdef THREADED 
+#ifdef THREADED
   boost::shared_ptr<Bus> bus(new Bus(handler, vm["busaddress"].as<string>()));
   threadFactory->newThread(bus)->start();
 
@@ -156,6 +155,6 @@ int main(int argc, char **argv) {
 #endif
 
   server->serve();
-  
+
   return 0;
 }

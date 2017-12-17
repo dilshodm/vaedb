@@ -13,7 +13,6 @@
 using namespace boost;
 using namespace std;
 
-#include "../gen-cpp/VaeDb.h"
 #include "logger.h"
 #include "reaper.h"
 #include "session.h"

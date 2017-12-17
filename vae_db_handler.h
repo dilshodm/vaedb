@@ -2,7 +2,6 @@
 #define _VAE_THRIFT_DB_HANDLER_H_
 
 #include <boost/thread/mutex.hpp>
-#include "../gen-cpp/VaeDb.h"
 #include "memcache_proxy.h"
 #include "mysql_proxy.h"
 #include "query_log.h"

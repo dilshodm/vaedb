@@ -5,7 +5,7 @@ class Session {
   time_t createdAt;
   vector< boost::shared_ptr<class Response> > responses;
   boost::shared_ptr<class Site> site;
-  
+
  public:
   Session(boost::shared_ptr<class Site> s);
   void createInfo(VaeDbCreateInfoResponse& _return, const int32_t responseId, const string& query);
