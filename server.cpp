@@ -30,13 +30,28 @@ Server::Server(int workers, int port, QueryLog &queryLog, MemcacheProxy &memcach
 
   served::multiplexer mux;
   map <string, boost::function<json(boost::shared_ptr<class Session>, string)>> nonSessionEndpoints = {
-    { "/ping",                 boost::bind(&Server::ping,                 this, _2) },
+    { "/ping",        boost::bind(&Server::ping,        this, _2) },
+    { "/openSession", boost::bind(&Server::openSession, this, _2) },
   };
   map <string, boost::function<json(boost::shared_ptr<class Session>, string)>> sessionEndpoints = {
-    { "/closeSession"     ,    boost::bind(&Server::shortTermCacheGet,    this, _1, _2) },
-    { "/shortTermCacheGet",    boost::bind(&Server::shortTermCacheGet,    this, _1, _2) },
-    { "/sndlhortTermCacheSet", boost::bind(&Server::shortTermCacheSet,    this, _1, _2) },
-    { "/shortTermCacheDelete", boost::bind(&Server::shortTermCacheDelete, this, _1, _2) }
+    { "/closeSession",             boost::bind(&Server::closeSession,             this, _1, _2) },
+    { "/createInfo",               boost::bind(&Server::createInfo,               this, _1, _2) },
+    { "/data",                     boost::bind(&Server::data,                     this, _1, _2) },
+    { "/get",                      boost::bind(&Server::get,                      this, _1, _2) },
+    { "/structure",                boost::bind(&Server::structure,                this, _1, _2) },
+    { "/longTermCacheGet",         boost::bind(&Server::longTermCacheGet,         this, _1, _2) },
+    { "/longTermCacheSet",         boost::bind(&Server::longTermCacheSet,         this, _1, _2) },
+    { "/longTermCacheDelete",      boost::bind(&Server::longTermCacheDelete,      this, _1, _2) },
+    { "/longTermCacheEmpty",       boost::bind(&Server::longTermCacheEmpty,       this, _1, _2) },
+    { "/longTermCacheSweeperInfo", boost::bind(&Server::longTermCacheSweeperInfo, this, _1, _2) },
+    { "/sessionCacheGet",          boost::bind(&Server::sessionCacheGet,          this, _1, _2) },
+    { "/sessionCacheSet",          boost::bind(&Server::sessionCacheSet,          this, _1, _2) },
+    { "/sessionCacheDelete",       boost::bind(&Server::sessionCacheDelete,       this, _1, _2) },
+    { "/shortTermCacheGet",        boost::bind(&Server::shortTermCacheGet,        this, _1, _2) },
+    { "/shortTermCacheSet",        boost::bind(&Server::shortTermCacheSet,        this, _1, _2) },
+    { "/shortTermCacheDelete",     boost::bind(&Server::shortTermCacheDelete,     this, _1, _2) },
+    { "/sitewideLock",             boost::bind(&Server::sitewideLock,             this, _1, _2) },
+    { "/sitewideUnlock",           boost::bind(&Server::sitewideUnlock,           this, _1, _2) },
   };
   for (auto const& it : sessionEndpoints) {
     mux.handle(it.first).get([it, this](served::response &res, const served::request &req) {
@@ -86,6 +101,7 @@ void Server::process(string endpoint, bool requiresSession, const served::reques
         boost::unique_lock<boost::mutex> lock(sessionsMutex);
         if (sessions.count(sessionId)) {
           session = sessions[sessionId];
+          entry.set_subdomain(session->getSite()->getSubdomain());
         } else {
           L(warning) << "[" << endpoint << "] called with an invalid session ID: " << sessionId;
           res.set_status(400);
@@ -210,6 +226,14 @@ SessionMap& Server::getSessions() {
   return sessions;
 }
 
+string Server::longTermKey(boost::shared_ptr<class Session>session, string key) {
+  return "VaedbProxy:" + session->getSite()->getSubdomain() + "LongTerm2:" + key;
+}
+
+string Server::shortTermKey(boost::shared_ptr<class Session>session, string key) {
+  return "VaedbProxy:" + session->getSite()->getSubdomain() + ":" + key;
+}
+
 void Server::writePid() {
   ofstream pidfile;
   pidfile.open("/tmp/vaedb.pid");
@@ -229,6 +253,27 @@ json Server::ping(json params) {
   return json({ { "ping", "pong" } });
 }
 
+json Server::openSession(json params) {
+  string subdomain = params["subdomain"].get<string>();
+  string secretKey = params["secretKey"].get<string>();
+  bool stagingMode = params["stagingMode"].get<bool>();
+  int32_t sessionId = params["suggestedSessionId"].get<int32_t>();
+  int32_t generation = 0;
+
+  boost::shared_ptr<Site> site = getSite(subdomain, secretKey, stagingMode);
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    while (sessions.count(sessionId)) {
+      sessionId = rand();
+    }
+    boost::shared_ptr<Session> session(new Session(site));
+    sessions[sessionId] = session;
+    generation = session->getSite()->getGeneration();
+  }
+
+  return json({ { "sessionId", sessionId }, { "generation", generation } });
+}
+
 json Server::closeSession(boost::shared_ptr<class Session>, json params) {
   int32_t sessionId = params["sessionId"].get<int32_t>();
 
@@ -241,92 +286,31 @@ json Server::closeSession(boost::shared_ptr<class Session>, json params) {
   return json( { { "session", sessionId } });
 }
 
-/*
-json Server::createInfo(const int32_t sessionId, const int32_t responseId, const string& query) {
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "createInfo() called with an invalid session ID: " << sessionId;
-      return;
-    }
-  }
-  entry.set_subdomain(session->getSite()->getSubdomain());
-  return session->createInfo(_return, responseId, query);
+json Server::createInfo(boost::shared_ptr<class Session> session, json params) {
+  string query = params["query"].get<string>();
+  int32_t responseId = params["responseId"].get<int32_t>();
+
+  return session->createInfo(responseId, query);
 }
 
-void Server::data(VaeDbDataResponse& _return, const int32_t sessionId, const int32_t responseId) {
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "data() called with an invalid session ID: " << sessionId;
-      return;
-    }
-  }
-  entry.set_subdomain(session->getSite()->getSubdomain());
-  session->data(_return, responseId);
+json Server::data(boost::shared_ptr<class Session> session, json params) {
+  int32_t responseId = params["responseId"].get<int32_t>();
+
+  return session->data(responseId);
 }
 
-void Server::get(VaeDbResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query, const map<string, string> & options) {
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "get() called with an invalid session ID: " << sessionId;
-      return;
-    }
-  }
-  entry.set_subdomain(session->getSite()->getSubdomain());
-  session->get(_return, responseId, query, options);
+json Server::get(boost::shared_ptr<class Session> session, json params) {
+  string query = params["query"].get<string>();
+  int32_t responseId = params["responseId"].get<int32_t>();
+  map<string,string> options = params["query"].get<map<string,string>>();
+
+  return session->get(responseId, query, options);
 }
 
-void Server::openSession(VaeDbOpenSessionResponse& _return, const string& subdomain, const string& secretKey, const bool stagingMode, const int32_t suggestedSessionId) {
-  int32_t sessionId;
-  sessionId = suggestedSessionId;
-  boost::shared_ptr<Site> site = getSite(subdomain, secretKey, stagingMode);
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    while (sessions.count(sessionId)) {
-      sessionId = rand();
-    }
-    boost::shared_ptr<Session> session(new Session(site));
-    sessions[sessionId] = session;
-    entry.set_subdomain(session->getSite()->getSubdomain());
-    _return.generation = session->getSite()->getGeneration();
-  }
+json Server::structure(boost::shared_ptr<class Session> session, json params) {
+  int32_t responseId = params["responseId"].get<int32_t>();
 
-  _return.session_id = sessionId;
-}
-
-void Server::structure(VaeDbStructureResponse& _return, const int32_t sessionId, const int32_t responseId) {
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "structure() called with an invalid session ID: " << sessionId;
-      return;
-    }
-  }
-  entry.set_subdomain(session->getSite()->getSubdomain());
-  session->structure(_return, responseId);
-}
-*/
-
-string Server::longTermKey(boost::shared_ptr<class Session>session, string key) {
-  return "VaedbProxy:" + session->getSite()->getSubdomain() + "LongTerm2:" + key;
-}
-
-string Server::shortTermKey(boost::shared_ptr<class Session>session, string key) {
-  return "VaedbProxy:" + session->getSite()->getSubdomain() + ":" + key;
+  return session->structure(responseId);
 }
 
 json Server::shortTermCacheGet(boost::shared_ptr<class Session> session, json params) {
