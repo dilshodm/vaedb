@@ -4,9 +4,20 @@
 #include <boost/thread/mutex.hpp>
 #include <libxml/tree.h>
 
+#include "json.hpp"
+
+using namespace nlohmann;
+
 typedef map<string,int> CachedCountMap;
 typedef map<string,string> DataMap;
 typedef vector<xmlNodePtr> NodeList;
+
+struct Structure {
+  int32_t id;
+  string name;
+  string type;
+  string permalink;
+};
 
 class Context {
 
@@ -20,9 +31,8 @@ class Context {
   NodeList pointerNodes;
   string singleData;
   class Site *site;
-  VaeDbStructure *structure;
+  Structure *structure;
   string type;
-  VaeDbContext vaeDbContext;
 
  public:
   xmlNodePtr node;
@@ -41,9 +51,8 @@ class Context {
   const char *getNodeName();
   int32_t getStructureId();
   void initializeAssociation();
-  VaeDbContext toVaeDbContext();
-  VaeDbDataForContext toVaeDbDataForContext();
-  VaeDbStructure toVaeDbStructureForContext();
+  DataMap getData();
+  Structure getStructure();
 };
 
 #endif

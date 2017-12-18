@@ -40,14 +40,13 @@ void Bus::run() {
     _server->reloadSite(subdomain);
 
     vector<boost::thread*>::iterator it = threads.begin();
-    while(it != threads.end()) {
-        if((*it)->timed_join(waittime)) {
-            delete *it;
-            it = threads.erase(it);
-        }
-        else {
-            ++it;
-        }
+    while (it != threads.end()) {
+      if ((*it)->timed_join(waittime)) {
+        delete *it;
+        it = threads.erase(it);
+      } else {
+        ++it;
+      }
     }
 
     threads.push_back(new boost::thread(&Bus::reload, this, subdomain));

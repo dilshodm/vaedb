@@ -77,26 +77,20 @@ void Site::loadXmlDoc(string const & rawxml) {
   }
   if (doc == NULL) {
     L(warning) << "[" << subdomain << "] could not open/parse XML";
-    VaeDbInternalError e;
-    e.message = "Could not open/parse XML file";
-    throw e;
+    throw VaeDbInternalError("Could not open/parse XML file");
   }
   xmlXPathOrderDocElems(doc);
   rootNode = rootDesignNode = NULL;
   Query _rootNodeQuery(this);
   _rootNodeQuery.runRawQuery(NULL, "/website/content", "website root node");
   if (_rootNodeQuery.getSize() != 1) {
-    VaeDbInternalError e;
-    e.message = "Could not find root content node in XML file";
-    throw e;
+    throw VaeDbInternalError("Could not find root content node in XML file");
   }
   rootNode = _rootNodeQuery.getNode(0);
   Query _rootDesignNodeQuery(this);
   _rootDesignNodeQuery.runRawQuery(NULL, "/website/design", "website design node");
   if (_rootDesignNodeQuery.getSize() != 1) {
-    VaeDbInternalError e;
-    e.message = "Could not find root design node in XML file";
-    throw e;
+    throw VaeDbInternalError("Could not find root design node in XML file");
   }
   rootDesignNode = _rootDesignNodeQuery.getNode(0);
   xmlNode *next;
@@ -122,13 +116,11 @@ void Site::loadXmlDoc(string const & rawxml) {
   if (_generationQuery.getSize() == 1) {
     generation = strtol(_generationQuery.getSingleData(), NULL, 10);
   } else {
-    VaeDbInternalError e;
-    e.message = "Could not find feed generation node in XML file";
-    throw e;
+    throw VaeDbInternalError("Could not find feed generation node in XML file");
   }
 }
 
-VaeDbStructure *Site::structureFromStructureId(int structureId) {
+Structure *Site::structureFromStructureId(int structureId) {
   StructureMap::const_iterator it;
   if ((it = structures.find(structureId)) != structures.end()) {
     return it->second;
@@ -138,7 +130,7 @@ VaeDbStructure *Site::structureFromStructureId(int structureId) {
   Query _query(this);
   _query.runRawQuery(NULL, q.str(), q.str());
   if (!_query.getNode(0)) return NULL;
-  VaeDbStructure *structure = new VaeDbStructure();
+  Structure *structure = new Structure();
   structure->id = structureId;
   for (xmlAttr *child = _query.getNode(0)->properties; child; child = child->next) {
     if (!strcmp((const char *)child->name, "name")) structure->name = (const char *)child->children->content;
@@ -155,9 +147,7 @@ void Site::validateSecretKey(string secretKey) {
     if (*it == secretKey) return;
   }
   L(warning) << "[" << subdomain << "] secret key mismatch: " << secretKey;
-  VaeDbInternalError e;
-  e.message = "Secret Key Mismatch";
-  throw e;
+  throw VaeDbInternalError("Secret Key Mismatch");
 }
 
 boost::shared_ptr<Query> Site::fetch_query(LRUKey const & key) {

@@ -11,6 +11,10 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 
+#include "json.hpp"
+
+using namespace nlohmann;
+
 enum {
   POOL_FREE,
   POOL_INUSE
@@ -40,7 +44,7 @@ public:
   void longTermCacheSet(std::string subdomain, std::string key, std::string value, int32_t expireInterval, int32_t isFilename);
   void longTermCacheDelete(std::string subdomain, std::string key);
   void longTermCacheEmpty(std::string subdomain);
-  void longTermCacheSweeperInfo(VaeDbDataForContext& _return, std::string subdomain);
+  json longTermCacheSweeperInfo(std::string subdomain);
   int32_t lock(std::string subdomain);
   int32_t unlock(std::string subdomain);
 

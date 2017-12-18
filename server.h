@@ -13,7 +13,7 @@ typedef std::map<std::string,boost::mutex*> SiteMutexesMap;
 
 extern int testMode;
 
-class Server : virtual public VaeDbIf {
+class Server {
 
  private:
   int nextSessionId;
@@ -35,31 +35,31 @@ class Server : virtual public VaeDbIf {
  public:
   boost::mutex sessionsMutex;
 
-  Server(QueryLog & queryLog, MemcacheProxy &memcacheProxy, MysqlProxy &mysqlProxy);
+  Server(int workers, int port, QueryLog & queryLog, MemcacheProxy &memcacheProxy, MysqlProxy &mysqlProxy);
   ~Server();
   void closeSession(const int32_t sessionId, const std::string& secretKey);
-  void createInfo(VaeDbCreateInfoResponse& _return, const int32_t session_id, const int32_t response_id, const std::string& query);
-  void data(VaeDbDataResponse& _return, const int32_t session_id, const int32_t response_id);
-  void get(VaeDbResponse& _return, const int32_t session_id, const int32_t  response_id, const std::string& query, const std::map<std::string, std::string> & options);
+  json createInfo(const int32_t session_id, const int32_t response_id, const std::string& query);
+  json data(const int32_t session_id, const int32_t response_id);
+  json get(const int32_t session_id, const int32_t  response_id, const std::string& query, const std::map<std::string, std::string> & options);
   SessionMap& getSessions();
-  void openSession(VaeDbOpenSessionResponse& _return, const std::string& subdomain, const std::string& secretKey, const bool stagingMode, const int32_t suggestedSessionId);
+  json openSession(const std::string& subdomain, const std::string& secretKey, const bool stagingMode, const int32_t suggestedSessionId);
   int8_t ping();
   void resetSite(const std::string& subdomain, const std::string& secret_key);
   void reloadSite(std::string const & subdomain);
-  void structure(VaeDbStructureResponse& _return, const int32_t session_id, const int32_t response_id);
+  json structure(const int32_t session_id, const int32_t response_id);
   void writePid();
 
-  void shortTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t flags);
+  string shortTermCacheGet(const int32_t sessionId, string const & key, const int32_t flags);
   void shortTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t flags, const int32_t expireInterval);
   void shortTermCacheDelete(const int32_t sessionId, string const & key);
-  void sessionCacheGet(string &_return, const int32_t sessionId, string const & key);
+  string sessionCacheGet(const int32_t sessionId, string const & key);
   void sessionCacheSet(const int32_t sessionId, string const & key, string const & value);
   void sessionCacheDelete(const int32_t sessionId, string const & key);
-  void longTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t renewExpiry, const int32_t useShortTermCache);
+  string longTermCacheGet(const int32_t sessionId, string const & key, const int32_t renewExpiry, const int32_t useShortTermCache);
   void longTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t expireInterval, const int32_t isFilename);
   void longTermCacheEmpty(const int32_t sessionId);
   void longTermCacheDelete(const int32_t sessionId, string const & key);
-  void longTermCacheSweeperInfo(VaeDbDataForContext& _return, const int32_t session_id);
+  json longTermCacheSweeperInfo(const int32_t session_id);
   int32_t sitewideLock(const int32_t sessionId, string const & iden);
   int32_t sitewideUnlock(const int32_t sessionId, string const & iden);
 

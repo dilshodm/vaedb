@@ -16,55 +16,50 @@ Session::Session(boost::shared_ptr<Site> s) {
   createdAt = time(NULL);
 }
 
-void Session::createInfo(VaeDbCreateInfoResponse& _return, const int32_t responseId, const string& query) {
+json Session::createInfo(const int32_t responseId, const string& query) {
   boost::shared_ptr<Response> parent;
   L(info) << "[" << site->getSubdomain() << "] createInfo '" << query << "'";
   if (responseId) {
     if (responses.size() >= responseId) {
       parent = responses[responseId-1];
     } else {
-      VaeDbInternalError e;
-      e.message = "Invalid responseId";
-      throw e;
+      throw VaeDbInternalError("Invalid responseId");
     }
   } else {
     parent = boost::shared_ptr<Response>();
   }
   boost::shared_ptr<Response> response(new Response(site, parent, query));
-  response->writeVaeDbCreateInfoResponse(_return);
+  return response->getCreateInfo();
 }
 
-void Session::data(VaeDbDataResponse& _return, const int32_t responseId) {
+json Session::data(const int32_t responseId) {
   boost::shared_ptr<Response> response;
   L(info) << "[" << site->getSubdomain() << "] data";
   if (responses.size() >= responseId) {
     response = responses[responseId-1];
   } else {
-    VaeDbInternalError e;
-    e.message = "Invalid responseId";
-    throw e;
+    throw VaeDbInternalError("Invalid responseId");
   }
-  response->writeVaeDbDataResponse(_return);
+  return response->getData();
 }
 
-void Session::get(VaeDbResponse& _return, const int32_t responseId, const std::string& query, const std::map<std::string, std::string> & options) {
+json Session::get(const int32_t responseId, const std::string& query, const std::map<std::string, std::string> & options) {
   boost::shared_ptr<Response> parent;
   L(info) << "[" << site->getSubdomain() << "] get '" << query << "'";
   if (responseId) {
     if (responses.size() >= responseId) {
       parent = responses[responseId-1];
     } else {
-      VaeDbInternalError e;
-      e.message = "Invalid responseId";
-      throw e;
+      throw VaeDbInternalError("Invalid responseId");
     }
   } else {
     parent = boost::shared_ptr<Response>();
   }
   boost::shared_ptr<Response> response(new Response(site, parent, query, options));
-  response->writeVaeDbResponse(_return);
-  _return.id = responses.size()+1;
+  json res = response->getJson();
+  res["id"] = responses.size()+1;
   responses.push_back(response);
+  return res;
 }
 
 time_t Session::getCreatedAt() {
@@ -75,15 +70,13 @@ boost::shared_ptr<Site> Session::getSite() {
   return site;
 }
 
-void Session::structure(VaeDbStructureResponse& _return, const int32_t responseId) {
+json Session::structure(const int32_t responseId) {
   boost::shared_ptr<Response> response;
   L(info) << "[" << site->getSubdomain() << "] structure";
   if (responses.size() >= responseId) {
     response = responses[responseId-1];
   } else {
-    VaeDbInternalError e;
-    e.message = "Invalid responseId";
-    throw e;
+    throw VaeDbInternalError("Invalid responseId");
   }
-  response->writeVaeDbStructureResponse(_return);
+  return response->getStructure();
 }

@@ -46,20 +46,7 @@ Context::Context(Site *s, const xmlNodePtr n) : site(s) {
     }
   }
   site->nodes[id] = node;
-  vaeDbContext.id = id;
-  if (structure) {
-    vaeDbContext.structure_id = structure->id;
-    vaeDbContext.type = type;
-  }
-  if (permalink) {
-    vaeDbContext.permalink = permalink;
-    site->permalinks[permalink] = node;
-  } else {
-    vaeDbContext.permalink = "";
-  }
-  if (id == 0) {
-    vaeDbContext.data = getSingleData();
-  }
+
 }
 
 int Context::getCount(const string &query) {
@@ -78,9 +65,7 @@ string Context::getData(const string &query) {
   if (!dataPopulated) populateData();
   boost::unique_lock<boost::mutex> lock(mutex);
   if (query == "") {
-    VaeDbInternalError e;
-    e.message = "Empty query passed to Context::getData";
-    throw e;
+    throw VaeDbInternalError("Empty query passed to Context::getData");
   }
   DataMap::const_iterator it;
   if ((it = data.find(query)) != data.end()) {
@@ -133,9 +118,7 @@ void Context::initializeAssociation() {
       /* set up reverse association */
       xmlNodePtr pointerNode = xmlCopyNode(node->parent, 0);
       if (pointerNode == NULL) {
-        VaeDbInternalError e;
-        e.message = "xmlCopyNode returned NULL";
-        throw e;
+        throw VaeDbInternalError("xmlCopyNode returned NULL");
       }
       pointerNode->_private = node->parent->_private;
       pointerNode->children = node->parent->children;
@@ -203,21 +186,32 @@ void Context::populateData() {
   dataPopulated = true;
 }
 
-VaeDbContext Context::toVaeDbContext() {
-  return vaeDbContext;
+DataMap Context::getData() {
+  return data;
 }
 
-VaeDbDataForContext Context::toVaeDbDataForContext() {
-  VaeDbDataForContext _return;
-  if (!dataPopulated) populateData();
-  _return.data = data;
-  return _return;
-}
-
-VaeDbStructure Context::toVaeDbStructureForContext() {
+Structure Context::getStructure() {
   if (structure) {
     return *structure;
   } else {
-    return VaeDbStructure();
+    return Structure();
   }
+}
+
+json toJson() {
+  /*
+  if (structure) {
+    vaeDbContext.structure_id = structure->id;
+    vaeDbContext.type = type;
+  }
+  if (permalink) {
+    vaeDbContext.permalink = permalink;
+    site->permalinks[permalink] = node;
+  } else {
+    vaeDbContext.permalink = "";
+  }
+  if (id == 0) {
+    vaeDbContext.data = getSingleData();
+  }*/
+  return NULL;
 }

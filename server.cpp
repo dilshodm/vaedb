@@ -3,6 +3,7 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/smart_ptr.hpp>
 #include <boost/thread/locks.hpp>
+#include <served/served.hpp>
 
 using namespace boost;
 using namespace std;
@@ -17,6 +18,31 @@ using namespace std;
 #include "s3.h"
 
 void eatErrors(void * ctx, const char * msg, ...) { }
+
+Server::Server(int workers, int port, QueryLog &queryLog, MemcacheProxy &memcacheProxy, MysqlProxy &mysqlProxy)
+  :  queryLog(queryLog), memcacheProxy(memcacheProxy), mysqlProxy(mysqlProxy) {
+
+  nextSessionId = 1;
+  xmlInitParser();
+  xmlSetGenericErrorFunc(NULL, eatErrors);
+  writePid();
+  new Reaper(this, mysqlProxy);
+
+  served::multiplexer mux;
+  mux.handle("/hello")
+    .get([](served::response & res, const served::request & req) {
+      res << "Hello world!";
+    });
+  served::net::server server("127.0.0.1", to_string(port), mux);
+  server.run(workers);
+
+  L(error) << "VaeDB Running";
+}
+
+Server::~Server() {
+  L(info) << "shutdown";
+  xmlCleanupParser();
+}
 
 boost::shared_ptr<Site> Server::getSite(string subdomain, string secretKey, bool stagingMode) {
   string xml("");
@@ -66,22 +92,6 @@ boost::shared_ptr<Site> Server::_getSite(string const & sitesKey, string const &
   return boost::shared_ptr<Site>();
 }
 
-Server::Server(QueryLog &queryLog, MemcacheProxy &memcacheProxy, MysqlProxy &mysqlProxy)
-  :  queryLog(queryLog), memcacheProxy(memcacheProxy), mysqlProxy(mysqlProxy) {
-
-  nextSessionId = 1;
-  xmlInitParser();
-  xmlSetGenericErrorFunc(NULL, eatErrors);
-  writePid();
-  new Reaper(this, mysqlProxy);
-  L(error) << "VaeDB Running";
-}
-
-Server::~Server() {
-  L(info) << "shutdown";
-  xmlCleanupParser();
-}
-
 void Server::closeSession(const int32_t sessionId, const string& secretKey) {
   QueryLogEntry entry(queryLog);
   entry.method_call("closeSession") << sessionId << secretKey << "\n";
@@ -92,101 +102,6 @@ void Server::closeSession(const int32_t sessionId, const string& secretKey) {
   } else {
     L(warning) << "closeSession() called with an invalid session ID: " << sessionId;
   }
-}
-
-void Server::createInfo(VaeDbCreateInfoResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("createInfo") << sessionId << responseId << query << "\n";
-
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "createInfo() called with an invalid session ID: " << sessionId;
-      return;
-    }
-  }
-  entry.set_subdomain(session->getSite()->getSubdomain());
-  session->createInfo(_return, responseId, query);
-}
-
-void Server::data(VaeDbDataResponse& _return, const int32_t sessionId, const int32_t responseId) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("data") << sessionId << responseId << "\n";
-
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "data() called with an invalid session ID: " << sessionId;
-      return;
-    }
-  }
-  entry.set_subdomain(session->getSite()->getSubdomain());
-  session->data(_return, responseId);
-}
-
-void Server::get(VaeDbResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query, const map<string, string> & options) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("get") << sessionId << responseId << query << options << "\n";
-
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "get() called with an invalid session ID: " << sessionId;
-      return;
-    }
-  }
-  entry.set_subdomain(session->getSite()->getSubdomain());
-  session->get(_return, responseId, query, options);
-}
-
-SessionMap& Server::getSessions() {
-  return sessions;
-}
-
-void Server::openSession(VaeDbOpenSessionResponse& _return, const string& subdomain, const string& secretKey, const bool stagingMode, const int32_t suggestedSessionId) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("openSession") << subdomain << secretKey << stagingMode << suggestedSessionId << "\n";
-
-  int32_t sessionId;
-  sessionId = suggestedSessionId;
-  boost::shared_ptr<Site> site = getSite(subdomain, secretKey, stagingMode);
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    while (sessions.count(sessionId)) {
-      sessionId = rand();
-    }
-    boost::shared_ptr<Session> session(new Session(site));
-    sessions[sessionId] = session;
-    entry.set_subdomain(session->getSite()->getSubdomain());
-    _return.generation = session->getSite()->getGeneration();
-  }
-
-  _return.session_id = sessionId;
-}
-
-int8_t Server::ping() {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("ping") << "\n";
-
-  L(info) << "[ping]";
-  return 0;
-}
-
-void Server::resetSite(string const & subdomain, string const & secretKey) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("resetSite") << subdomain << secretKey << "\n";
-  L(info) << "reset: " << subdomain;
-
-  _resetSite(subdomain, secretKey, false);
 }
 
 void Server::reloadSite(string const & subdomain) {
@@ -238,6 +153,113 @@ void Server::_eraseSite(string const & sitesKey, string const & secretKey, bool 
   sites.erase(sitesKey);
 }
 
+SessionMap& Server::getSessions() {
+  return sessions;
+}
+
+void Server::writePid() {
+  ofstream pidfile;
+  pidfile.open("/tmp/vaedb.pid");
+  if (pidfile.is_open()) {
+    pidfile << getpid();
+  } else {
+    L(warning) << "Could not write PID file /tmp/vaedb.pid";
+  }
+  pidfile.close();
+}
+
+/*
+json Server::createInfo(const int32_t sessionId, const int32_t responseId, const string& query) {
+  QueryLogEntry entry(queryLog);
+  entry.method_call("createInfo") << sessionId << responseId << query << "\n";
+
+  boost::shared_ptr<class Session> session;
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    if (sessions.count(sessionId)) {
+      session = sessions[sessionId];
+    } else {
+      L(warning) << "createInfo() called with an invalid session ID: " << sessionId;
+      return;
+    }
+  }
+  entry.set_subdomain(session->getSite()->getSubdomain());
+  return session->createInfo(_return, responseId, query);
+}
+
+void Server::data(VaeDbDataResponse& _return, const int32_t sessionId, const int32_t responseId) {
+  QueryLogEntry entry(queryLog);
+  entry.method_call("data") << sessionId << responseId << "\n";
+
+  boost::shared_ptr<class Session> session;
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    if (sessions.count(sessionId)) {
+      session = sessions[sessionId];
+    } else {
+      L(warning) << "data() called with an invalid session ID: " << sessionId;
+      return;
+    }
+  }
+  entry.set_subdomain(session->getSite()->getSubdomain());
+  session->data(_return, responseId);
+}
+
+void Server::get(VaeDbResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query, const map<string, string> & options) {
+  QueryLogEntry entry(queryLog);
+  entry.method_call("get") << sessionId << responseId << query << options << "\n";
+
+  boost::shared_ptr<class Session> session;
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    if (sessions.count(sessionId)) {
+      session = sessions[sessionId];
+    } else {
+      L(warning) << "get() called with an invalid session ID: " << sessionId;
+      return;
+    }
+  }
+  entry.set_subdomain(session->getSite()->getSubdomain());
+  session->get(_return, responseId, query, options);
+}
+
+void Server::openSession(VaeDbOpenSessionResponse& _return, const string& subdomain, const string& secretKey, const bool stagingMode, const int32_t suggestedSessionId) {
+  QueryLogEntry entry(queryLog);
+  entry.method_call("openSession") << subdomain << secretKey << stagingMode << suggestedSessionId << "\n";
+
+  int32_t sessionId;
+  sessionId = suggestedSessionId;
+  boost::shared_ptr<Site> site = getSite(subdomain, secretKey, stagingMode);
+  {
+    boost::unique_lock<boost::mutex> lock(sessionsMutex);
+    while (sessions.count(sessionId)) {
+      sessionId = rand();
+    }
+    boost::shared_ptr<Session> session(new Session(site));
+    sessions[sessionId] = session;
+    entry.set_subdomain(session->getSite()->getSubdomain());
+    _return.generation = session->getSite()->getGeneration();
+  }
+
+  _return.session_id = sessionId;
+}
+
+int8_t Server::ping() {
+  QueryLogEntry entry(queryLog);
+  entry.method_call("ping") << "\n";
+
+  L(info) << "[ping]";
+  return 0;
+}
+
+void Server::resetSite(string const & subdomain, string const & secretKey) {
+  QueryLogEntry entry(queryLog);
+  entry.method_call("resetSite") << subdomain << secretKey << "\n";
+  L(info) << "reset: " << subdomain;
+
+  _resetSite(subdomain, secretKey, false);
+}
+
 void Server::structure(VaeDbStructureResponse& _return, const int32_t sessionId, const int32_t responseId) {
   QueryLogEntry entry(queryLog);
   entry.method_call("structure") << sessionId << responseId << "\n";
@@ -254,17 +276,6 @@ void Server::structure(VaeDbStructureResponse& _return, const int32_t sessionId,
   }
   entry.set_subdomain(session->getSite()->getSubdomain());
   session->structure(_return, responseId);
-}
-
-void Server::writePid() {
-  ofstream pidfile;
-  pidfile.open("/tmp/vaedb.pid");
-  if (pidfile.is_open()) {
-    pidfile << getpid();
-  } else {
-    L(warning) << "Could not write PID file /tmp/vaedb.pid";
-  }
-  pidfile.close();
 }
 
 void Server::shortTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t flags) {
@@ -467,3 +478,4 @@ int32_t Server::sitewideUnlock(const int32_t sessionId, string const & iden) {
   string fullKey = session->getSite()->getSubdomain() + ":" + iden;
   return mysqlProxy.unlock(fullKey);
 }
+*/

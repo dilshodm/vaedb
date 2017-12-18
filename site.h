@@ -10,18 +10,25 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
-
 #include "context.h"
 #include "query.h"
 #include "lru_cache.h"
 
 extern int testMode;
 
+class VaeDbInternalError: public std::runtime_error {
+  using std::runtime_error::runtime_error;
+};
+
+class VaeDbQueryError: public std::runtime_error {
+  using std::runtime_error::runtime_error;
+};
+
 typedef vector<class Context *> ContextList;
 typedef map<int,xmlNodePtr> NodeIdMap;
 typedef vector<xmlNodePtr> NodeList;
 typedef map<string,xmlNodePtr> PermalinkMap;
-typedef map<int,VaeDbStructure *> StructureMap;
+typedef map<int,Structure *> StructureMap;
 
 struct LRUKey {
   Context * p;
@@ -60,7 +67,7 @@ class Site {
   int32_t getGeneration();
   string getSubdomain();
   void reset();
-  VaeDbStructure *structureFromStructureId(int structureId);
+  Structure *structureFromStructureId(int structureId);
   void validateSecretKey(string secretKey);
   boost::shared_ptr<Query> fetch_query(LRUKey const & key);
 

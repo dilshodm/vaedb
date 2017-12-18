@@ -166,11 +166,12 @@ void MysqlProxy::longTermCacheDelete(string subdomain, string key) {
   }
 }
 
-void MysqlProxy::longTermCacheSweeperInfo(VaeDbDataForContext& _return, string subdomain) {
+json MysqlProxy::longTermCacheSweeperInfo(string subdomain) {
   boost::shared_ptr<sql::Connection> con = this->getConnection();
   boost::shared_ptr<sql::PreparedStatement> stmt;
   boost::shared_ptr<sql::PreparedStatement> stmt2;
   boost::shared_ptr<sql::ResultSet> res;
+  std::map<std::string, std::string> data;
   try {
     stmt = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("SELECT `k`,`v` FROM `" + database + "`.`kvstore` WHERE `is_filename`='1' AND `subdomain`=?"));
     stmt2 = boost::shared_ptr<sql::PreparedStatement>(con->prepareStatement("DELETE FROM `" + database + "`.`kvstore` WHERE `expire_at`<NOW() AND `subdomain`=?"));
@@ -179,11 +180,12 @@ void MysqlProxy::longTermCacheSweeperInfo(VaeDbDataForContext& _return, string s
     stmt->setString(1, subdomain);
     res = boost::shared_ptr<sql::ResultSet>(stmt->executeQuery());
     while (res->next()) {
-      _return.data[res->getString("k")] = res->getString("v");
+      data[res->getString("k")] = res->getString("v");
     }
   } catch(sql::SQLException &e) {
     L(error) << "MySQL Error Getting From the Long Term Cache: " << e.what() << " (Error Code: " << e.getErrorCode() << ")";
   }
+  return json(data);
 }
 
 string MysqlProxy::sessionCacheGet(string subdomain, string key) {

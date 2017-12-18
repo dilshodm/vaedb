@@ -137,7 +137,7 @@ Response::~Response() {
 }
 
 void Response::createInfo(Context *context, const string &query) {
-  VaeDbCreateInfo ci;
+  CreateInfo ci;
   string mainQuery, lastPart;
   vector<string> queryParts;
   boost::split(queryParts, query, boost::is_any_of("/"));
@@ -160,10 +160,7 @@ void Response::createInfo(Context *context, const string &query) {
     ci.row_id = 0;
   }
   if (atoi(lastPart.c_str()) != 0) {
-    string error = "invalid path for creating: '" + query + "'";
-    VaeDbQueryError e;
-    e.message = error.c_str();
-    throw e;
+    throw VaeDbQueryError("invalid path for creating: '" + query + "'");
   }
   Query structureQuery(site.get());
   structureQuery.runDesignQuery(context, lastPart);
@@ -172,10 +169,7 @@ void Response::createInfo(Context *context, const string &query) {
       if (!strcmp((const char *)child->name, "id")) ci.structure_id = atoi((const char *)child->children->content);
     }
   } else {
-    string error = "could not find path for creating: '" + query + "'";
-    VaeDbQueryError e;
-    e.message = error.c_str();
-    throw e;
+    throw VaeDbQueryError("could not find path for creating: '" + query + "'");
   }
   createInfos.push_back(ci);
 }
@@ -334,35 +328,42 @@ bool Response::uniqueMatch(xmlNode *node) {
   return false;
 }
 
-void Response::writeVaeDbCreateInfoResponse(VaeDbCreateInfoResponse &_return) {
-  for (CreateInfoList::iterator it = createInfos.begin(); it != createInfos.end(); it++) {
-    _return.contexts.push_back(*it);
-  }
+json Response::getCreateInfo() {
+  return json();
 }
 
-void Response::writeVaeDbDataResponse(VaeDbDataResponse &_return) {
+json Response::getData() {
+  vector<DataMap> contexts;
+  /*
   for (ResponseContextList::const_iterator it = contexts.begin(); it != contexts.end(); it++) {
     for (ContextList::const_iterator it2 = (*it).contexts.begin(); it2 != (*it).contexts.end(); it2++) {
-      if (*it2) _return.contexts.push_back((*it2)->toVaeDbDataForContext());
+      if (*it2) contexts.push_back((*it2)->getData());
     }
-  }
+  }*/
+  return json();
 }
 
-void Response::writeVaeDbResponse(VaeDbResponse &_return) {
+json Response::getJson() {
+  vector<DataMap> contexts;
+  return json();
+  /*
   for (ResponseContextList::const_iterator it = contexts.begin(); it != contexts.end(); it++) {
     VaeDbResponseForContext context_list;
     for (ContextList::const_iterator it2 = (*it).contexts.begin(); it2 != (*it).contexts.end(); it2++) {
       if (*it2) context_list.contexts.push_back((*it2)->toVaeDbContext());
     }
     context_list.totalItems = (*it).total;
-    _return.contexts.push_back(context_list);
-  }
+    contexts.push_back(context_list);
+  }*/
 }
 
-void Response::writeVaeDbStructureResponse(VaeDbStructureResponse &_return) {
+json Response::getStructure() {
+  vector<Structure> contexts;
+  /*
   for (ResponseContextList::const_iterator it = contexts.begin(); it != contexts.end(); it++) {
     for (ContextList::const_iterator it2 = (*it).contexts.begin(); it2 != (*it).contexts.end(); it2++) {
-      if (*it2) _return.contexts.push_back((*it2)->toVaeDbStructureForContext());
+      if (*it2) _return.contexts.push_back((*it2)->getStructure());
     }
-  }
+  }*/
+  return json();
 }

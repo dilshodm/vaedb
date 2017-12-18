@@ -10,11 +10,11 @@ class Bus {
   std::string _bindaddress;
   boost::shared_ptr<Server> _server;
 
-  void run();
   void reload(std::string subdomain);
 
 public:
   Bus(boost::shared_ptr<Server> server, std::string bindaddress);
+  void run();
 };
 
 #endif

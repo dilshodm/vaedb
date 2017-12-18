@@ -3,13 +3,21 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
+#include <set>
+
 typedef vector<class Context *> ContextList;
 struct ResponseContext {
   ContextList contexts;
   int32_t total;
 };
+typedef struct ResponseContext ResponseContext;
+struct CreateInfo {
+  int32_t structure_id;
+  int32_t row_id;
+};
+typedef struct CreateInfo CreateInfo;
 typedef vector<ResponseContext> ResponseContextList;
-typedef vector<VaeDbCreateInfo> CreateInfoList;
+typedef vector<CreateInfo> CreateInfoList;
 
 class Response {
 
@@ -44,10 +52,10 @@ class Response {
   ~Response();
   bool containsContexts();
   bool sortCallback(Context *lhs, Context *rhs);
-  void writeVaeDbCreateInfoResponse(VaeDbCreateInfoResponse &_return);
-  void writeVaeDbDataResponse(VaeDbDataResponse &_return);
-  void writeVaeDbResponse(VaeDbResponse &_return);
-  void writeVaeDbStructureResponse(VaeDbStructureResponse &_return);
+  json getCreateInfo();
+  json getData();
+  json getJson();
+  json getStructure();
 
  private:
   void createInfo(Context *context, const string &query);

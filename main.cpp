@@ -5,7 +5,6 @@
 #include <signal.h>
 #include <execinfo.h>
 #include <boost/program_options.hpp>
-#include <served/served.hpp>
 
 #ifndef __MACH__
 #include <malloc.h>
@@ -16,13 +15,9 @@ using namespace std;
 namespace po = boost::program_options;
 
 #include "bus.h"
-#include "context.h"
 #include "logger.h"
-#include "response.h"
 #include "s3.h"
 #include "server.h"
-#include "session.h"
-#include "site.h"
 
 int testMode = 0;
 
@@ -48,7 +43,7 @@ int main(int argc, char **argv) {
   mallopt(M_CHECK_ACTION, 0);
 #endif
 
-  int opt, workers;
+  int port, workers;
   string bus_bindaddress;
   char *_access_key = getenv("AWS_ACCESS_KEY");
   char *_secret_key = getenv("AWS_SECRET_KEY");
@@ -73,7 +68,7 @@ int main(int argc, char **argv) {
     ("help,H", "outputs this help message")
     ("log_level,L", po::value<string>(), "log level.  Acceptable values: error, warning, info, debug")
     ("query_log,Q", po::value<string>(), "file to log queries to")
-    ("port,P", po::value<int>(&opt)->default_value(9091), "port to run the server on")
+    ("port,P", po::value<int>(&port)->default_value(9094), "port to run the server on")
     ("busaddress,B", po::value<string>(&bus_bindaddress)->default_value("tcp://*:5091"), "bind address for the zmq subscriber")
     ("aws_access_key,A", po::value<string>(&aws_access_key)->default_value(aws_access_key), "AWS access key")
     ("aws_secret_key,S", po::value<string>(&aws_secret_key)->default_value(aws_secret_key), "AWS secret key")
@@ -115,30 +110,17 @@ int main(int argc, char **argv) {
     }
   }
 
-  QueryLog query_log(p_querylog_stream.get());
-  MemcacheProxy memcache(memcached_host, workers);
-  MysqlProxy mysql(mysql_host, mysql_username, mysql_password, mysql_database, workers);
-
   if (!initialize_s3(aws_access_key, aws_secret_key, aws_bucket, feed_cache_path)) {
     L(error) << "S3 failed to initialize.";
     return -1;
   }
 
-  boost::shared_ptr<Server> handler(new Server(query_log, memcache, mysql));
-
-  boost::shared_ptr<Bus> bus(new Bus(handler, vm["busaddress"].as<string>()));
-  //threadFactory->newThread(bus)->start();
-
-  served::multiplexer mux;
-
-  // GET /hello
-  mux.handle("/hello")
-    .get([](served::response & res, const served::request & req) {
-      res << "Hello world!";
-    });
-
-  served::net::server server("127.0.0.1", "9094", mux);
-  server.run(workers);
+  QueryLog query_log(p_querylog_stream.get());
+  MemcacheProxy memcache(memcached_host, workers);
+  MysqlProxy mysql(mysql_host, mysql_username, mysql_password, mysql_database, workers);
+  boost::shared_ptr<Server> server(new Server(workers, port, query_log, memcache, mysql));
+  Bus *bus(new Bus(server, vm["busaddress"].as<string>()));
+  bus->run();
 
   return EXIT_SUCCESS;
 }
