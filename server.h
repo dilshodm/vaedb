@@ -1,7 +1,9 @@
 #ifndef _VAE_THRIFT_DB_HANDLER_H_
 #define _VAE_THRIFT_DB_HANDLER_H_
 
+#include <boost/function.hpp>
 #include <boost/thread/mutex.hpp>
+#include <served/served.hpp>
 #include "memcache_proxy.h"
 #include "mysql_proxy.h"
 #include "query_log.h"
@@ -37,31 +39,33 @@ class Server {
 
   Server(int workers, int port, QueryLog & queryLog, MemcacheProxy &memcacheProxy, MysqlProxy &mysqlProxy);
   ~Server();
-  void closeSession(const int32_t sessionId, const std::string& secretKey);
+  void process(string endpoint, const served::request &req, served::response &res, boost::function<json(json)> func);
+  SessionMap& getSessions();
+  void reloadSite(std::string const & subdomain);
+  void writePid();
+
+  json closeSession(const int32_t sessionId, const std::string& secretKey);
   json createInfo(const int32_t session_id, const int32_t response_id, const std::string& query);
   json data(const int32_t session_id, const int32_t response_id);
   json get(const int32_t session_id, const int32_t  response_id, const std::string& query, const std::map<std::string, std::string> & options);
-  SessionMap& getSessions();
   json openSession(const std::string& subdomain, const std::string& secretKey, const bool stagingMode, const int32_t suggestedSessionId);
-  int8_t ping();
-  void resetSite(const std::string& subdomain, const std::string& secret_key);
-  void reloadSite(std::string const & subdomain);
+  json ping(json params);
+  json resetSite(const std::string& subdomain, const std::string& secret_key);
   json structure(const int32_t session_id, const int32_t response_id);
-  void writePid();
 
-  string shortTermCacheGet(const int32_t sessionId, string const & key, const int32_t flags);
-  void shortTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t flags, const int32_t expireInterval);
-  void shortTermCacheDelete(const int32_t sessionId, string const & key);
-  string sessionCacheGet(const int32_t sessionId, string const & key);
-  void sessionCacheSet(const int32_t sessionId, string const & key, string const & value);
-  void sessionCacheDelete(const int32_t sessionId, string const & key);
-  string longTermCacheGet(const int32_t sessionId, string const & key, const int32_t renewExpiry, const int32_t useShortTermCache);
-  void longTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t expireInterval, const int32_t isFilename);
-  void longTermCacheEmpty(const int32_t sessionId);
-  void longTermCacheDelete(const int32_t sessionId, string const & key);
+  json shortTermCacheGet(json params);
+  json shortTermCacheSet(json params);
+  json shortTermCacheDelete(json params);
+  json sessionCacheGet(const int32_t sessionId, string const & key);
+  json sessionCacheSet(const int32_t sessionId, string const & key, string const & value);
+  json sessionCacheDelete(const int32_t sessionId, string const & key);
+  json longTermCacheGet(const int32_t sessionId, string const & key, const int32_t renewExpiry, const int32_t useShortTermCache);
+  json longTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t expireInterval, const int32_t isFilename);
+  json longTermCacheEmpty(const int32_t sessionId);
+  json longTermCacheDelete(const int32_t sessionId, string const & key);
   json longTermCacheSweeperInfo(const int32_t session_id);
-  int32_t sitewideLock(const int32_t sessionId, string const & iden);
-  int32_t sitewideUnlock(const int32_t sessionId, string const & iden);
+  json sitewideLock(const int32_t sessionId, string const & iden);
+  json sitewideUnlock(const int32_t sessionId, string const & iden);
 
 };
 
