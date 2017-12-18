@@ -29,17 +29,27 @@ Server::Server(int workers, int port, QueryLog &queryLog, MemcacheProxy &memcach
   new Reaper(this, mysqlProxy);
 
   served::multiplexer mux;
-  map <string, boost::function<json(string)>> endpoints = {
-    { "/ping", boost::bind(&Server::ping, this, _1) },
-    { "/shortTermCacheGet", boost::bind(&Server::shortTermCacheGet, this, _1) },
-    { "/sndlhortTermCacheSet", boost::bind(&Server::shortTermCacheSet, this, _1) },
-    { "/shortTermCacheDelete", boost::bind(&Server::shortTermCacheDelete, this, _1) }
+  map <string, boost::function<json(boost::shared_ptr<class Session>, string)>> nonSessionEndpoints = {
+    { "/ping",                 boost::bind(&Server::ping,                 this, _2) },
   };
-  for (auto const& it : endpoints) {
+  map <string, boost::function<json(boost::shared_ptr<class Session>, string)>> sessionEndpoints = {
+    { "/closeSession"     ,    boost::bind(&Server::shortTermCacheGet,    this, _1, _2) },
+    { "/shortTermCacheGet",    boost::bind(&Server::shortTermCacheGet,    this, _1, _2) },
+    { "/sndlhortTermCacheSet", boost::bind(&Server::shortTermCacheSet,    this, _1, _2) },
+    { "/shortTermCacheDelete", boost::bind(&Server::shortTermCacheDelete, this, _1, _2) }
+  };
+  for (auto const& it : sessionEndpoints) {
     mux.handle(it.first).get([it, this](served::response &res, const served::request &req) {
-      process(it.first, req, res, it.second);
+      process(it.first, true, req, res, it.second);
     }).post([it, this](served::response &res, const served::request &req) {
-      process(it.first, req, res, it.second);
+      process(it.first, true, req, res, it.second);
+    });
+  }
+  for (auto const& it : nonSessionEndpoints) {
+    mux.handle(it.first).get([it, this](served::response &res, const served::request &req) {
+      process(it.first, false, req, res, it.second);
+    }).post([it, this](served::response &res, const served::request &req) {
+      process(it.first, false, req, res, it.second);
     });
   }
   served::net::server server("127.0.0.1", to_string(port), mux);
@@ -53,16 +63,40 @@ Server::~Server() {
   xmlCleanupParser();
 }
 
-void Server::process(string endpoint, const served::request &req, served::response &res, boost::function<json(json)> func) {
+void Server::process(string endpoint, bool requiresSession, const served::request &req, served::response &res, boost::function<json(boost::shared_ptr<class Session>, json)> func) {
   try {
     res.set_header("Content-type", "application/json");
     res.set_header("Server", "vaedb");
-    QueryLogEntry entry(queryLog);
-    entry.method_call(endpoint);
     L(info) << "[" << endpoint << "]";
     string body = req.body();
-    json jsonReq = body.length() > 0 ? json::parse(req.body()) : json("{}");
-    json jsonRes = func(jsonReq);
+    json params = body.length() > 0 ? json::parse(req.body()) : json::parse("{}");
+    QueryLogEntry entry(queryLog);
+    entry.method_call(endpoint);
+
+    boost::shared_ptr<class Session> session = NULL;
+    if (requiresSession) {
+      if (params["sessionId"].is_null()) {
+        L(warning) << "[" << endpoint << "] called with missing session ID";
+        res.set_status(400);
+        res << "{error:'missing session ID'}";
+        return;
+      }
+      int32_t sessionId = params["sessionId"].get<int32_t>();
+      {
+        boost::unique_lock<boost::mutex> lock(sessionsMutex);
+        if (sessions.count(sessionId)) {
+          session = sessions[sessionId];
+        } else {
+          L(warning) << "[" << endpoint << "] called with an invalid session ID: " << sessionId;
+          res.set_status(400);
+          res << "{error:'invalid session ID'}";
+          return;
+        }
+      }
+    }
+
+    L(debug) << "  invoking handler";
+    json jsonRes = func(session, params);
     if (!jsonRes.is_null()) res << jsonRes.dump();
   } catch (const std::exception& ex) {
     res.set_status(500);
@@ -121,19 +155,6 @@ boost::shared_ptr<Site> Server::_getSite(string const & sitesKey, string const &
   }
 
   return boost::shared_ptr<Site>();
-}
-
-json Server::closeSession(const int32_t sessionId, const string& secretKey) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("closeSession") << sessionId << secretKey << "\n";
-
-  boost::unique_lock<boost::mutex> lock(sessionsMutex);
-  if (sessions.count(sessionId)) {
-    sessions.erase(sessionId);
-  } else {
-    L(warning) << "closeSession() called with an invalid session ID: " << sessionId;
-  }
-  return json("{}");
 }
 
 void Server::reloadSite(string const & subdomain) {
@@ -200,15 +221,28 @@ void Server::writePid() {
   pidfile.close();
 }
 
+
+// Handlers
+
+
 json Server::ping(json params) {
   return json({ { "ping", "pong" } });
 }
 
+json Server::closeSession(boost::shared_ptr<class Session>, json params) {
+  int32_t sessionId = params["sessionId"].get<int32_t>();
+
+  boost::unique_lock<boost::mutex> lock(sessionsMutex);
+  if (sessions.count(sessionId)) {
+    sessions.erase(sessionId);
+  } else {
+    L(warning) << "closeSession() called with an invalid session ID: " << sessionId;
+  }
+  return json( { { "session", sessionId } });
+}
+
 /*
 json Server::createInfo(const int32_t sessionId, const int32_t responseId, const string& query) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("createInfo") << sessionId << responseId << query << "\n";
-
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -224,9 +258,6 @@ json Server::createInfo(const int32_t sessionId, const int32_t responseId, const
 }
 
 void Server::data(VaeDbDataResponse& _return, const int32_t sessionId, const int32_t responseId) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("data") << sessionId << responseId << "\n";
-
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -242,9 +273,6 @@ void Server::data(VaeDbDataResponse& _return, const int32_t sessionId, const int
 }
 
 void Server::get(VaeDbResponse& _return, const int32_t sessionId, const int32_t responseId, const string& query, const map<string, string> & options) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("get") << sessionId << responseId << query << options << "\n";
-
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -260,9 +288,6 @@ void Server::get(VaeDbResponse& _return, const int32_t sessionId, const int32_t 
 }
 
 void Server::openSession(VaeDbOpenSessionResponse& _return, const string& subdomain, const string& secretKey, const bool stagingMode, const int32_t suggestedSessionId) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("openSession") << subdomain << secretKey << stagingMode << suggestedSessionId << "\n";
-
   int32_t sessionId;
   sessionId = suggestedSessionId;
   boost::shared_ptr<Site> site = getSite(subdomain, secretKey, stagingMode);
@@ -280,18 +305,7 @@ void Server::openSession(VaeDbOpenSessionResponse& _return, const string& subdom
   _return.session_id = sessionId;
 }
 
-void Server::resetSite(string const & subdomain, string const & secretKey) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("resetSite") << subdomain << secretKey << "\n";
-  L(info) << "reset: " << subdomain;
-
-  _resetSite(subdomain, secretKey, false);
-}
-
 void Server::structure(VaeDbStructureResponse& _return, const int32_t sessionId, const int32_t responseId) {
-  QueryLogEntry entry(queryLog);
-  entry.method_call("structure") << sessionId << responseId << "\n";
-
   boost::shared_ptr<class Session> session;
   {
     boost::unique_lock<boost::mutex> lock(sessionsMutex);
@@ -306,65 +320,37 @@ void Server::structure(VaeDbStructureResponse& _return, const int32_t sessionId,
   session->structure(_return, responseId);
 }
 */
-json Server::shortTermCacheGet(json params) {
-  int32_t sessionId = params["sessionId"];
-  string key = params["key"];
-  int32_t flags = params["flags"];
 
-  json res;
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "shortTermCacheGet() called with an invalid session ID: " << sessionId;
-      return res;
-    }
-  }
-  res["value"] = memcacheProxy.get("VaedbProxy:" + session->getSite()->getSubdomain() + ":" + key, flags);
-  return res;
+string Server::longTermKey(boost::shared_ptr<class Session>session, string key) {
+  return "VaedbProxy:" + session->getSite()->getSubdomain() + "LongTerm2:" + key;
 }
 
-json Server::shortTermCacheSet(json params) {
-  int32_t sessionId = params["sessionId"];
-  string key = params["key"];
-  string value = params["value"];
-  int32_t flags = params["flags"];
-  int32_t expireInterval = params["expireInterval"];
-
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "shortTermCacheSet() called with an invalid session ID: " << sessionId;
-      return json("{}");
-    }
-  }
-  string fullKey = "VaedbProxy:" + session->getSite()->getSubdomain() + ":" + key;
-  memcacheProxy.set(fullKey, value, flags, expireInterval);
-  return json("{}");
+string Server::shortTermKey(boost::shared_ptr<class Session>session, string key) {
+  return "VaedbProxy:" + session->getSite()->getSubdomain() + ":" + key;
 }
 
-json Server::shortTermCacheDelete(json params) {
-  int32_t sessionId = params["sessionId"];
-  string key = params["key"];
+json Server::shortTermCacheGet(boost::shared_ptr<class Session> session, json params) {
+  string key = params["key"].get<string>();
+  int32_t flags = params["flags"].get<int32_t>();
 
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "shortTermCacheDelete() called with an invalid session ID: " << sessionId;
-      return json("{}");
-    }
-  }
-  string fullKey = "VaedbProxy:" + session->getSite()->getSubdomain() + ":" + key;
-  memcacheProxy.remove(fullKey);
-  return json("{}");
+  return json( { { "key", key }, { "value", memcacheProxy.get(shortTermKey(session, key), flags) } });
+}
+
+json Server::shortTermCacheSet(boost::shared_ptr<class Session> session, json params) {
+  string key = params["key"].get<string>();
+  string value = params["value"].get<string>();
+  int32_t flags = params["flags"].get<int32_t>();
+  int32_t expireInterval = params["expireInterval"].get<int32_t>();
+
+  memcacheProxy.set(shortTermKey(session, key), value, flags, expireInterval);
+  return json( { { "key", key }, { "value", value } });
+}
+
+json Server::shortTermCacheDelete(boost::shared_ptr<class Session> session, json params) {
+  string key = params["key"].get<string>();
+
+  memcacheProxy.remove(shortTermKey(session, key));
+  return json({ { "key", key } });
 }
 
 /*

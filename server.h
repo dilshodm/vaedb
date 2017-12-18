@@ -29,8 +29,8 @@ class Server {
 
   boost::shared_ptr<class Site> getSite(std::string subdomain, std::string secretKey, bool stagingMode);
   inline boost::shared_ptr<class Site> _getSite(std::string const & sitesKey, std::string const & secretKey);
-  inline void _resetSite(std::string const & sitesKey, std::string const & secretKey, bool force);
   inline void _eraseSite(std::string const & sitesKey, std::string const & secretKey, bool force);
+  inline void _resetSite(std::string const & sitesKey, std::string const & secretKey, bool force);
   inline boost::shared_ptr<class Site> _loadSite(std::string const & subdomain, bool stagingMode, std::string const & xml);
   inline boost::mutex & _get_site_mutex(std::string const & subdomain, bool stagingMode);
 
@@ -39,33 +39,34 @@ class Server {
 
   Server(int workers, int port, QueryLog & queryLog, MemcacheProxy &memcacheProxy, MysqlProxy &mysqlProxy);
   ~Server();
-  void process(string endpoint, const served::request &req, served::response &res, boost::function<json(json)> func);
   SessionMap& getSessions();
+  string longTermKey(boost::shared_ptr<class Session>, string key);
+  string shortTermKey(boost::shared_ptr<class Session>, string key);
+  void process(string endpoint, bool requiresSession, const served::request &req, served::response &res, boost::function<json(boost::shared_ptr<class Session>, json)> func);
   void reloadSite(std::string const & subdomain);
   void writePid();
 
-  json closeSession(const int32_t sessionId, const std::string& secretKey);
-  json createInfo(const int32_t session_id, const int32_t response_id, const std::string& query);
-  json data(const int32_t session_id, const int32_t response_id);
-  json get(const int32_t session_id, const int32_t  response_id, const std::string& query, const std::map<std::string, std::string> & options);
-  json openSession(const std::string& subdomain, const std::string& secretKey, const bool stagingMode, const int32_t suggestedSessionId);
+  json openSession(json params);
   json ping(json params);
-  json resetSite(const std::string& subdomain, const std::string& secret_key);
-  json structure(const int32_t session_id, const int32_t response_id);
 
-  json shortTermCacheGet(json params);
-  json shortTermCacheSet(json params);
-  json shortTermCacheDelete(json params);
-  json sessionCacheGet(const int32_t sessionId, string const & key);
-  json sessionCacheSet(const int32_t sessionId, string const & key, string const & value);
-  json sessionCacheDelete(const int32_t sessionId, string const & key);
-  json longTermCacheGet(const int32_t sessionId, string const & key, const int32_t renewExpiry, const int32_t useShortTermCache);
-  json longTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t expireInterval, const int32_t isFilename);
-  json longTermCacheEmpty(const int32_t sessionId);
-  json longTermCacheDelete(const int32_t sessionId, string const & key);
-  json longTermCacheSweeperInfo(const int32_t session_id);
-  json sitewideLock(const int32_t sessionId, string const & iden);
-  json sitewideUnlock(const int32_t sessionId, string const & iden);
+  json closeSession(boost::shared_ptr<class Session>, json params);
+  json createInfo(boost::shared_ptr<class Session>, json params);
+  json data(boost::shared_ptr<class Session>, json params);
+  json get(boost::shared_ptr<class Session>, json params);
+  json longTermCacheGet(boost::shared_ptr<class Session>, json params);
+  json longTermCacheSet(boost::shared_ptr<class Session>, json params);
+  json longTermCacheEmpty(boost::shared_ptr<class Session>, json params);
+  json longTermCacheDelete(boost::shared_ptr<class Session>, json params);
+  json longTermCacheSweeperInfo(boost::shared_ptr<class Session>, json params);
+  json sessionCacheGet(boost::shared_ptr<class Session>, json params);
+  json sessionCacheSet(boost::shared_ptr<class Session>, json params);
+  json sessionCacheDelete(boost::shared_ptr<class Session>, json params);
+  json shortTermCacheGet(boost::shared_ptr<class Session>, json params);
+  json shortTermCacheSet(boost::shared_ptr<class Session>, json params);
+  json shortTermCacheDelete(boost::shared_ptr<class Session>, json params);
+  json sitewideLock(boost::shared_ptr<class Session>, json params);
+  json sitewideUnlock(boost::shared_ptr<class Session>, json params);
+  json structure(boost::shared_ptr<class Session>, json params);
 
 };
 
