@@ -353,159 +353,81 @@ json Server::shortTermCacheDelete(boost::shared_ptr<class Session> session, json
   return json({ { "key", key } });
 }
 
-/*
-void Server::sessionCacheGet(string &_return, const int32_t sessionId, string const & key) {
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "sessionCacheGet() called with an invalid session ID: " << sessionId;
-      return;
-    }
-  }
-  _return = mysqlProxy.sessionCacheGet(session->getSite()->getSubdomain(), key);
+json Server::sessionCacheGet(boost::shared_ptr<class Session> session, json params) {
+  string key = params["key"].get<string>();
+
+  return json( { { "key", key }, { "value", mysqlProxy.sessionCacheGet(session->getSite()->getSubdomain(), key) } });
 }
 
-void Server::sessionCacheSet(const int32_t sessionId, string const & key, string const & value) {
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "sessionCacheSet() called with an invalid session ID: " << sessionId;
-      return;
-    }
-  }
+json Server::sessionCacheSet(boost::shared_ptr<class Session> session, json params) {
+  string key = params["key"].get<string>();
+  string value = params["value"].get<string>();
+
   mysqlProxy.sessionCacheSet(session->getSite()->getSubdomain(), key, value);
+  return json( { { "key", key }, { "value", value } });
 }
 
-void Server::sessionCacheDelete(const int32_t sessionId, string const & key) {
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "sessionCacheDelete() called with an invalid session ID: " << sessionId;
-      return;
-    }
-  }
+json Server::sessionCacheDelete(boost::shared_ptr<class Session> session, json params) {
+  string key = params["key"].get<string>();
+
   mysqlProxy.sessionCacheDelete(session->getSite()->getSubdomain(), key);
+  return json( { { "key", key } });
 }
 
-void Server::longTermCacheGet(string &_return, const int32_t sessionId, string const & key, const int32_t renewExpiry, const int32_t useShortTermCache) {
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "longTermCacheGet() called with an invalid session ID: " << sessionId;
-      return;
-    }
-  }
-  string fullKey = "VaedbProxy:" + session->getSite()->getSubdomain() + "LongTerm2:" + key;
+json Server::longTermCacheGet(boost::shared_ptr<class Session> session, json params) {
+  string key = params["key"].get<string>();
+  int32_t renewExpiry = params["renewExpiry"].get<int32_t>();
+  int32_t useShortTermCache = params["useShortTermCache"].get<int32_t>();
+
   if (useShortTermCache) {
-    string answer(memcacheProxy.get(fullKey, 0));
+    string answer(memcacheProxy.get(longTermKey(session, key), 0));
     if (answer.length() > 0) {
-      _return = answer;
-      return;
+      return json( { { "key", key }, { "value", answer } });
     }
   }
-  _return = mysqlProxy.longTermCacheGet(session->getSite()->getSubdomain(), key, renewExpiry);
-  memcacheProxy.set(fullKey, _return, 0, 86400);
+  string value = mysqlProxy.longTermCacheGet(session->getSite()->getSubdomain(), key, renewExpiry);
+  memcacheProxy.set(longTermKey(session, key), value, 0, 86400);
+  return json( { { "key", key }, { "value", value } });
 }
 
-void Server::longTermCacheSet(const int32_t sessionId, string const & key, string const & value, const int32_t expireInterval, const int32_t isFilename) {
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "longTermCacheSet() called with an invalid session ID: " << sessionId;
-      return;
-    }
-  }
-  string fullKey = "VaedbProxy:" + session->getSite()->getSubdomain() + "LongTerm2:" + key;
+json Server::longTermCacheSet(boost::shared_ptr<class Session> session, json params) {
+  string key = params["key"].get<string>();
+  string value = params["value"].get<string>();
+  int32_t expireInterval = params["expireInterval"].get<int32_t>();
+  int32_t isFilename = params["isFilename"].get<int32_t>();
+
   mysqlProxy.longTermCacheSet(session->getSite()->getSubdomain(), key, value, expireInterval, isFilename);
-  memcacheProxy.set(fullKey, value, 0, 86400);
+  memcacheProxy.set(longTermKey(session, key), value, 0, 86400);
+  return json( { { "key", key }, { "value", value } });
 }
 
-void Server::longTermCacheDelete(const int32_t sessionId, string const & key) {
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "longTermCacheDelete() called with an invalid session ID: " << sessionId;
-      return;
-    }
-  }
-  string fullKey = "VaedbProxy:" + session->getSite()->getSubdomain() + "LongTerm2:" + key;
+json Server::longTermCacheDelete(boost::shared_ptr<class Session> session, json params) {
+  string key = params["key"].get<string>();
+
   mysqlProxy.longTermCacheDelete(session->getSite()->getSubdomain(), key);
-  memcacheProxy.remove(fullKey);
+  memcacheProxy.remove(longTermKey(session, key));
+  return json( { { "key", key } });
 }
 
-void Server::longTermCacheEmpty(const int32_t sessionId) {
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "longTermCacheEmpty() called with an invalid session ID: " << sessionId;
-      return;
-    }
-  }
+json Server::longTermCacheEmpty(boost::shared_ptr<class Session> session, json params) {
   mysqlProxy.longTermCacheEmpty(session->getSite()->getSubdomain());
+  return json( { { "empty", true } });
 }
 
-void Server::longTermCacheSweeperInfo(VaeDbDataForContext& _return, const int32_t sessionId) {
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "longTermCacheSweeperInfo() called with an invalid session ID: " << sessionId;
-      return;
-    }
-  }
-  mysqlProxy.longTermCacheSweeperInfo(_return, session->getSite()->getSubdomain());
+json Server::longTermCacheSweeperInfo(boost::shared_ptr<class Session> session, json params) {
+  return mysqlProxy.longTermCacheSweeperInfo(session->getSite()->getSubdomain());
 }
 
-int32_t Server::sitewideLock(const int32_t sessionId, string const & iden) {
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "sitewideLock() called with an invalid session ID: " << sessionId;
-      return -1;
-    }
-  }
+json Server::sitewideLock(boost::shared_ptr<class Session> session, json params) {
+  string iden = params["iden"].get<string>();
+
   string fullKey = session->getSite()->getSubdomain() + ":" + iden;
-  return mysqlProxy.lock(fullKey);
+  return { { "status", mysqlProxy.lock(fullKey) } };
 }
 
-int32_t Server::sitewideUnlock(const int32_t sessionId, string const & iden) {
-  boost::shared_ptr<class Session> session;
-  {
-    boost::unique_lock<boost::mutex> lock(sessionsMutex);
-    if (sessions.count(sessionId)) {
-      session = sessions[sessionId];
-    } else {
-      L(warning) << "sitewideUnlock() called with an invalid session ID: " << sessionId;
-      return -1;
-    }
-  }
+json Server::sitewideUnlock(boost::shared_ptr<class Session> session, json params) {
+  string iden = params["iden"].get<string>();
+
   string fullKey = session->getSite()->getSubdomain() + ":" + iden;
-  return mysqlProxy.unlock(fullKey);
+  return { { "status", mysqlProxy.unlock(fullKey) } };
 }
-*/
