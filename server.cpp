@@ -201,9 +201,7 @@ void Server::writePid() {
 }
 
 json Server::ping(json params) {
-  json res;
-  res["ping"] = "pong";
-  return res;
+  return json({ { "ping", "pong" } });
 }
 
 /*
