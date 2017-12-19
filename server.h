@@ -46,6 +46,8 @@ class Server {
   void process(string endpoint, bool requiresSession, const served::request &req, served::response &res, boost::function<json(boost::shared_ptr<class Session>, json&)> func);
   void reloadSite(std::string const & subdomain);
   void writePid();
+  int32_t iparam(json &params, string name);
+  string sparam(json &params, string name);
 
   json closeSession(boost::shared_ptr<class Session>, json &params);
   json createInfo(boost::shared_ptr<class Session>, json &params);

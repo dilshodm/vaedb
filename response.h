@@ -10,13 +10,14 @@ struct ResponseContext {
   ContextList contexts;
   int32_t total;
 };
-typedef struct ResponseContext ResponseContext;
 struct CreateInfo {
   int32_t structure_id;
   int32_t row_id;
 };
-typedef struct CreateInfo CreateInfo;
+
+typedef struct ResponseContext ResponseContext;
 typedef vector<ResponseContext> ResponseContextList;
+typedef struct CreateInfo CreateInfo;
 typedef vector<CreateInfo> CreateInfoList;
 
 class Response {

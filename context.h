@@ -51,6 +51,7 @@ class Context {
   const char *getNodeName();
   int32_t getStructureId();
   void initializeAssociation();
+  json toJson();
   DataMap getData();
   Structure getStructure();
 };

@@ -30,45 +30,53 @@ Server::Server(int workers, int port, QueryLog &queryLog, MemcacheProxy &memcach
 
   served::multiplexer mux;
   map <string, HandlerFunction> nonSessionEndpoints = {
-    { "/ping",        boost::bind(&Server::ping,        this, _1, _2) },
-    { "/openSession", boost::bind(&Server::openSession, this, _1, _2) },
+    { "ping",        boost::bind(&Server::ping,        this, _1, _2) },
+    { "openSession", boost::bind(&Server::openSession, this, _1, _2) },
   };
   map <string, HandlerFunction> sessionEndpoints = {
-    { "/closeSession",             boost::bind(&Server::closeSession,             this, _1, _2) },
-    { "/createInfo",               boost::bind(&Server::createInfo,               this, _1, _2) },
-    { "/data",                     boost::bind(&Server::data,                     this, _1, _2) },
-    { "/get",                      boost::bind(&Server::get,                      this, _1, _2) },
-    { "/structure",                boost::bind(&Server::structure,                this, _1, _2) },
-    { "/longTermCacheGet",         boost::bind(&Server::longTermCacheGet,         this, _1, _2) },
-    { "/longTermCacheSet",         boost::bind(&Server::longTermCacheSet,         this, _1, _2) },
-    { "/longTermCacheDelete",      boost::bind(&Server::longTermCacheDelete,      this, _1, _2) },
-    { "/longTermCacheEmpty",       boost::bind(&Server::longTermCacheEmpty,       this, _1, _2) },
-    { "/longTermCacheSweeperInfo", boost::bind(&Server::longTermCacheSweeperInfo, this, _1, _2) },
-    { "/sessionCacheGet",          boost::bind(&Server::sessionCacheGet,          this, _1, _2) },
-    { "/sessionCacheSet",          boost::bind(&Server::sessionCacheSet,          this, _1, _2) },
-    { "/sessionCacheDelete",       boost::bind(&Server::sessionCacheDelete,       this, _1, _2) },
-    { "/shortTermCacheGet",        boost::bind(&Server::shortTermCacheGet,        this, _1, _2) },
-    { "/shortTermCacheSet",        boost::bind(&Server::shortTermCacheSet,        this, _1, _2) },
-    { "/shortTermCacheDelete",     boost::bind(&Server::shortTermCacheDelete,     this, _1, _2) },
-    { "/sitewideLock",             boost::bind(&Server::sitewideLock,             this, _1, _2) },
-    { "/sitewideUnlock",           boost::bind(&Server::sitewideUnlock,           this, _1, _2) },
+    { "closeSession",             boost::bind(&Server::closeSession,             this, _1, _2) },
+    { "createInfo",               boost::bind(&Server::createInfo,               this, _1, _2) },
+    { "data",                     boost::bind(&Server::data,                     this, _1, _2) },
+    { "get",                      boost::bind(&Server::get,                      this, _1, _2) },
+    { "structure",                boost::bind(&Server::structure,                this, _1, _2) },
+    { "longTermCacheGet",         boost::bind(&Server::longTermCacheGet,         this, _1, _2) },
+    { "longTermCacheSet",         boost::bind(&Server::longTermCacheSet,         this, _1, _2) },
+    { "longTermCacheDelete",      boost::bind(&Server::longTermCacheDelete,      this, _1, _2) },
+    { "longTermCacheEmpty",       boost::bind(&Server::longTermCacheEmpty,       this, _1, _2) },
+    { "longTermCacheSweeperInfo", boost::bind(&Server::longTermCacheSweeperInfo, this, _1, _2) },
+    { "sessionCacheGet",          boost::bind(&Server::sessionCacheGet,          this, _1, _2) },
+    { "sessionCacheSet",          boost::bind(&Server::sessionCacheSet,          this, _1, _2) },
+    { "sessionCacheDelete",       boost::bind(&Server::sessionCacheDelete,       this, _1, _2) },
+    { "shortTermCacheGet",        boost::bind(&Server::shortTermCacheGet,        this, _1, _2) },
+    { "shortTermCacheSet",        boost::bind(&Server::shortTermCacheSet,        this, _1, _2) },
+    { "shortTermCacheDelete",     boost::bind(&Server::shortTermCacheDelete,     this, _1, _2) },
+    { "sitewideLock",             boost::bind(&Server::sitewideLock,             this, _1, _2) },
+    { "sitewideUnlock",           boost::bind(&Server::sitewideUnlock,           this, _1, _2) },
   };
   for (auto const& it : sessionEndpoints) {
-    mux.handle(it.first).get([it, this](served::response &res, const served::request &req) {
+    string path = "/" + it.first;
+    mux.handle(path).get([it, this](served::response &res, const served::request &req) {
       process(it.first, true, req, res, it.second);
     }).post([it, this](served::response &res, const served::request &req) {
       process(it.first, true, req, res, it.second);
     });
   }
   for (auto const& it : nonSessionEndpoints) {
-    mux.handle(it.first).get([it, this](served::response &res, const served::request &req) {
+    string path = "/" + it.first;
+    mux.handle(path).get([it, this](served::response &res, const served::request &req) {
       process(it.first, false, req, res, it.second);
     }).post([it, this](served::response &res, const served::request &req) {
       process(it.first, false, req, res, it.second);
     });
   }
-  served::net::server server("127.0.0.1", to_string(port), mux);
-  server.run(workers);
+
+  try {
+    served::net::server server("127.0.0.1", to_string(port), mux);
+    server.run(workers);
+  } catch (const std::exception& ex) {
+    L(error) << ex.what();
+    exit(-1);
+  }
 
   L(error) << "VaeDB Running";
 }
@@ -111,8 +119,12 @@ void Server::process(string endpoint, bool requiresSession, const served::reques
       }
     }
 
+    L(debug) << "Params: " + params.dump();
     json jsonRes = func(session, params);
-    if (!jsonRes.is_null()) res << jsonRes.dump();
+    if (!jsonRes.is_null()) {
+      res << jsonRes.dump();
+      L(debug) << "Response: " + jsonRes.dump();
+    }
   } catch (const std::exception& ex) {
     res.set_status(500);
     res << "{error:'error'}";
@@ -233,6 +245,22 @@ string Server::shortTermKey(boost::shared_ptr<class Session>session, string key)
   return "VaedbProxy:" + session->getSite()->getSubdomain() + ":" + key;
 }
 
+int32_t Server::iparam(json &params, string name) {
+  if (params[name].is_null()) {
+    return 0;
+  } else {
+    return params[name].get<int32_t>();
+  }
+}
+
+string Server::sparam(json &params, string name) {
+  if (params[name].is_null()) {
+    return "";
+  } else {
+    return params[name].get<string>();
+  }
+}
+
 void Server::writePid() {
   ofstream pidfile;
   pidfile.open("/tmp/vaedb.pid");
@@ -247,16 +275,15 @@ void Server::writePid() {
 
 // Handlers
 
-
 json Server::ping(boost::shared_ptr<class Session> session, json &params) {
   return json({ { "ping", "pong" } });
 }
 
 json Server::openSession(boost::shared_ptr<class Session> session, json &params) {
-  string subdomain = params["subdomain"].get<string>();
-  string secretKey = params["secretKey"].get<string>();
-  bool stagingMode = params["stagingMode"].get<bool>();
-  int32_t sessionId = params["suggestedSessionId"].get<int32_t>();
+  string subdomain = sparam(params, "subdomain");
+  string secretKey = sparam(params, "secretKey");
+  int32_t stagingMode = iparam(params, "stagingMode");
+  int32_t sessionId = iparam(params, "suggestedSessionId");
   int32_t generation = 0;
 
   boost::shared_ptr<Site> site = getSite(subdomain, secretKey, stagingMode);
@@ -274,7 +301,7 @@ json Server::openSession(boost::shared_ptr<class Session> session, json &params)
 }
 
 json Server::closeSession(boost::shared_ptr<class Session>, json &params) {
-  int32_t sessionId = params["sessionId"].get<int32_t>();
+  int32_t sessionId = iparam(params, "sessionId");
 
   boost::unique_lock<boost::mutex> lock(sessionsMutex);
   if (sessions.count(sessionId)) {
@@ -286,81 +313,82 @@ json Server::closeSession(boost::shared_ptr<class Session>, json &params) {
 }
 
 json Server::createInfo(boost::shared_ptr<class Session> session, json &params) {
-  string query = params["query"].get<string>();
-  int32_t responseId = params["responseId"].get<int32_t>();
+  string query = sparam(params, "query");
+  int32_t responseId = iparam(params, "responseId");
 
   return session->createInfo(responseId, query);
 }
 
 json Server::data(boost::shared_ptr<class Session> session, json &params) {
-  int32_t responseId = params["responseId"].get<int32_t>();
+  int32_t responseId = iparam(params, "responseId");
 
   return session->data(responseId);
 }
 
 json Server::get(boost::shared_ptr<class Session> session, json &params) {
-  string query = params["query"].get<string>();
-  int32_t responseId = params["responseId"].get<int32_t>();
-  map<string,string> options = params["query"].get<map<string,string>>();
+  string query = sparam(params, "query");
+  int32_t responseId = iparam(params, "responseId");
+  map<string,string> options;
+  if (!params["options"].is_null()) options = params["options"].get<map<string,string>>();
 
   return session->get(responseId, query, options);
 }
 
 json Server::structure(boost::shared_ptr<class Session> session, json &params) {
-  int32_t responseId = params["responseId"].get<int32_t>();
+  int32_t responseId = iparam(params, "responseId");
 
   return session->structure(responseId);
 }
 
 json Server::shortTermCacheGet(boost::shared_ptr<class Session> session, json &params) {
-  string key = params["key"].get<string>();
-  int32_t flags = params["flags"].get<int32_t>();
+  string key = sparam(params, "key");
+  int32_t flags = iparam(params, "flags");
 
   return json( { { "key", key }, { "value", memcacheProxy.get(shortTermKey(session, key), flags) } });
 }
 
 json Server::shortTermCacheSet(boost::shared_ptr<class Session> session, json &params) {
-  string key = params["key"].get<string>();
-  string value = params["value"].get<string>();
-  int32_t flags = params["flags"].get<int32_t>();
-  int32_t expireInterval = params["expireInterval"].get<int32_t>();
+  string key = sparam(params, "key");
+  string value = sparam(params, "value");
+  int32_t flags = iparam(params, "flags");
+  int32_t expireInterval = iparam(params, "expireInterval");
 
   memcacheProxy.set(shortTermKey(session, key), value, flags, expireInterval);
   return json( { { "key", key }, { "value", value } });
 }
 
 json Server::shortTermCacheDelete(boost::shared_ptr<class Session> session, json &params) {
-  string key = params["key"].get<string>();
+  string key = sparam(params, "key");
 
   memcacheProxy.remove(shortTermKey(session, key));
   return json({ { "key", key } });
 }
 
 json Server::sessionCacheGet(boost::shared_ptr<class Session> session, json &params) {
-  string key = params["key"].get<string>();
+  string key = sparam(params, "key");
 
   return json( { { "key", key }, { "value", mysqlProxy.sessionCacheGet(session->getSite()->getSubdomain(), key) } });
 }
 
 json Server::sessionCacheSet(boost::shared_ptr<class Session> session, json &params) {
-  string key = params["key"].get<string>();
-  string value = params["value"].get<string>();
+  string key = sparam(params, "key");
+  string value = sparam(params, "value");
 
   mysqlProxy.sessionCacheSet(session->getSite()->getSubdomain(), key, value);
   return json( { { "key", key }, { "value", value } });
 }
 
 json Server::sessionCacheDelete(boost::shared_ptr<class Session> session, json &params) {
-  string key = params["key"].get<string>();
+  string key = sparam(params, "key");
 
   mysqlProxy.sessionCacheDelete(session->getSite()->getSubdomain(), key);
   return json( { { "key", key } });
 }
 
 json Server::longTermCacheGet(boost::shared_ptr<class Session> session, json &params) {
-  string key = params["key"].get<string>();
-  int32_t renewExpiry = params["renewExpiry"].get<int32_t>();
-  int32_t useShortTermCache = params["useShortTermCache"].get<int32_t>();
+  string key = sparam(params, "key");
+  int32_t renewExpiry = iparam(params, "renewExpiry");
+  int32_t useShortTermCache = iparam(params, "useShortTermCache");
 
   if (useShortTermCache) {
     string answer(memcacheProxy.get(longTermKey(session, key), 0));
@@ -374,10 +402,10 @@ json Server::longTermCacheGet(boost::shared_ptr<class Session> session, json &pa
 }
 
 json Server::longTermCacheSet(boost::shared_ptr<class Session> session, json &params) {
-  string key = params["key"].get<string>();
-  string value = params["value"].get<string>();
-  int32_t expireInterval = params["expireInterval"].get<int32_t>();
-  int32_t isFilename = params["isFilename"].get<int32_t>();
+  string key = sparam(params, "key");
+  string value = sparam(params, "value");
+  int32_t expireInterval = iparam(params, "expireInterval");
+  int32_t isFilename = iparam(params, "isFilename");
 
   mysqlProxy.longTermCacheSet(session->getSite()->getSubdomain(), key, value, expireInterval, isFilename);
   memcacheProxy.set(longTermKey(session, key), value, 0, 86400);
@@ -385,7 +413,7 @@ json Server::longTermCacheSet(boost::shared_ptr<class Session> session, json &pa
 }
 
 json Server::longTermCacheDelete(boost::shared_ptr<class Session> session, json &params) {
-  string key = params["key"].get<string>();
+  string key = sparam(params, "key");
 
   mysqlProxy.longTermCacheDelete(session->getSite()->getSubdomain(), key);
   memcacheProxy.remove(longTermKey(session, key));
@@ -402,14 +430,14 @@ json Server::longTermCacheSweeperInfo(boost::shared_ptr<class Session> session, 
 }
 
 json Server::sitewideLock(boost::shared_ptr<class Session> session, json &params) {
-  string iden = params["iden"].get<string>();
+  string iden = sparam(params, "iden");
 
   string fullKey = session->getSite()->getSubdomain() + ":" + iden;
   return { { "status", mysqlProxy.lock(fullKey) } };
 }
 
 json Server::sitewideUnlock(boost::shared_ptr<class Session> session, json &params) {
-  string iden = params["iden"].get<string>();
+  string iden = sparam(params, "iden");
 
   string fullKey = session->getSite()->getSubdomain() + ":" + iden;
   return { { "status", mysqlProxy.unlock(fullKey) } };

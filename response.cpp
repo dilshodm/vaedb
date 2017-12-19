@@ -328,12 +328,26 @@ bool Response::uniqueMatch(xmlNode *node) {
   return false;
 }
 
+void to_json(json &j, const ResponseContext &response) {
+  j = json{ { "totalItems", response.total }, { "contexts", response.contexts } };
+}
+
+void to_json(json &j, const ContextList &contexts) {
+  j = json::array();
+  for (ContextList::const_iterator it = contexts.begin(); it != contexts.end(); it++) {
+    if (*it) j.push_back((*it)->toJson());
+  }
+}
+
+json Response::getJson() {
+  return json({ { "contexts", contexts } });
+}
+
 json Response::getCreateInfo() {
   return json();
 }
 
 json Response::getData() {
-  vector<DataMap> contexts;
   /*
   for (ResponseContextList::const_iterator it = contexts.begin(); it != contexts.end(); it++) {
     for (ContextList::const_iterator it2 = (*it).contexts.begin(); it2 != (*it).contexts.end(); it2++) {
@@ -343,22 +357,7 @@ json Response::getData() {
   return json();
 }
 
-json Response::getJson() {
-  vector<DataMap> contexts;
-  return json();
-  /*
-  for (ResponseContextList::const_iterator it = contexts.begin(); it != contexts.end(); it++) {
-    VaeDbResponseForContext context_list;
-    for (ContextList::const_iterator it2 = (*it).contexts.begin(); it2 != (*it).contexts.end(); it2++) {
-      if (*it2) context_list.contexts.push_back((*it2)->toVaeDbContext());
-    }
-    context_list.totalItems = (*it).total;
-    contexts.push_back(context_list);
-  }*/
-}
-
 json Response::getStructure() {
-  vector<Structure> contexts;
   /*
   for (ResponseContextList::const_iterator it = contexts.begin(); it != contexts.end(); it++) {
     for (ContextList::const_iterator it2 = (*it).contexts.begin(); it2 != (*it).contexts.end(); it2++) {

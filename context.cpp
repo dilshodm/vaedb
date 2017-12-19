@@ -198,20 +198,20 @@ Structure Context::getStructure() {
   }
 }
 
-json toJson() {
-  /*
+json Context::toJson() {
+  json j;
   if (structure) {
-    vaeDbContext.structure_id = structure->id;
-    vaeDbContext.type = type;
+    j["structure_id"] = structure->id;
+    j["type"] = type;
   }
   if (permalink) {
-    vaeDbContext.permalink = permalink;
+    j["permalink"] = permalink;
     site->permalinks[permalink] = node;
-  } else {
-    vaeDbContext.permalink = "";
   }
   if (id == 0) {
-    vaeDbContext.data = getSingleData();
-  }*/
-  return NULL;
+    j["data"] = getSingleData();
+  } else {
+    j["id"] = id;
+  }
+  return j;
 }
