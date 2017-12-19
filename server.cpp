@@ -90,7 +90,7 @@ void Server::process(string endpoint, bool requiresSession, const served::reques
   try {
     res.set_header("Content-type", "application/json");
     res.set_header("Server", "vaedb");
-    L(info) << "[" << endpoint << "]";
+    L(debug) << "[" << endpoint << "]";
     string body = req.body();
     json params = body.length() > 0 ? json::parse(req.body()) : json({});
     QueryLogEntry entry(queryLog);
