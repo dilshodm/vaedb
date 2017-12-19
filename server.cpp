@@ -125,6 +125,16 @@ void Server::process(string endpoint, bool requiresSession, const served::reques
       res << jsonRes.dump();
       L(debug) << "Response: " + jsonRes.dump();
     }
+  } catch (const VaeDbQueryError& ex) {
+    res.set_status(400);
+    json jsonRes({ { "VaedbQueryError", ex.what() } });
+    res << jsonRes.dump();
+    L(info) << "[" << endpoint << "] Bad Query: " << ex.what();
+  } catch (const VaeDbInternalError& ex) {
+    res.set_status(500);
+    json jsonRes({ { "VaedbInternalError", ex.what() } });
+    res << jsonRes.dump();
+    L(info) << "[" << endpoint << "] Internal Error: " << ex.what();
   } catch (const std::exception& ex) {
     res.set_status(500);
     res << "{error:'error'}";

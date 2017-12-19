@@ -339,30 +339,42 @@ void to_json(json &j, const ContextList &contexts) {
   }
 }
 
+void to_json(json &j, const CreateInfo &ci) {
+  j = json{ { "structure_id", ci.structure_id }, { "row_id", ci.row_id } };
+}
+
+void to_json(json &j, const Structure &s) {
+  j = json{ { "id", s.id }, { "name", s.name }, { "type", s.type }, { "permalink", s.permalink } };
+}
+
 json Response::getJson() {
   return json({ { "contexts", contexts } });
 }
 
 json Response::getCreateInfo() {
-  return json();
+  json j = json::array();
+  for (CreateInfoList::iterator it = createInfos.begin(); it != createInfos.end(); it++) {
+    j.push_back(*it);
+  }
+  return j;
 }
 
 json Response::getData() {
-  /*
+  json j = json::array();
   for (ResponseContextList::const_iterator it = contexts.begin(); it != contexts.end(); it++) {
     for (ContextList::const_iterator it2 = (*it).contexts.begin(); it2 != (*it).contexts.end(); it2++) {
-      if (*it2) contexts.push_back((*it2)->getData());
+      if (*it2) j.push_back((*it2)->getData());
     }
-  }*/
-  return json();
+  }
+  return j;
 }
 
 json Response::getStructure() {
-  /*
+  json j = json::array();
   for (ResponseContextList::const_iterator it = contexts.begin(); it != contexts.end(); it++) {
     for (ContextList::const_iterator it2 = (*it).contexts.begin(); it2 != (*it).contexts.end(); it2++) {
-      if (*it2) _return.contexts.push_back((*it2)->getStructure());
+      if (*it2) j.push_back((*it2)->getStructure());
     }
-  }*/
-  return json();
+  }
+  return j;
 }

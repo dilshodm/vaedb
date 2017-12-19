@@ -187,6 +187,7 @@ void Context::populateData() {
 }
 
 DataMap Context::getData() {
+  if (!dataPopulated) populateData();
   return data;
 }
 
