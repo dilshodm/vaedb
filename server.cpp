@@ -71,7 +71,7 @@ Server::Server(int workers, int port, QueryLog &queryLog, MemcacheProxy &memcach
   }
 
   try {
-    served::net::server server("127.0.0.1", to_string(port), mux);
+    served::net::server server("0.0.0.0", to_string(port), mux);
     server.run(workers);
   } catch (const std::exception& ex) {
     L(error) << ex.what();
