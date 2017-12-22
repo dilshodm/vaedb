@@ -43,7 +43,7 @@ If not, see http://www.gnu.org/licenses/.
 
 ### Install Prerequisites using a Mac:
 
-    brew install re2 ragel pcre zeromq libmemcached mysql-connector-c++ jemalloc
+    brew install boost re2 ragel pcre zeromq libmemcached mysql-connector-c++ jemalloc
 
     wget https://github.com/bji/libs3/archive/bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip
     unzip bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip
