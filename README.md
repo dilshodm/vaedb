@@ -48,6 +48,7 @@ If not, see http://www.gnu.org/licenses/.
     wget https://github.com/bji/libs3/archive/bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip
     unzip bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb.zip
     cd libs3-bb96e59583266a7abc9be7fc5d4d4f0e9c1167cb
+    rm GNUmakefile
     mv GNUMakefile.osx Makefile
     DESTDIR=/usr/local make install
 
