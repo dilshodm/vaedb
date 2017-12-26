@@ -18,7 +18,6 @@ Session::Session(boost::shared_ptr<Site> s) {
 
 json Session::createInfo(const int32_t responseId, const string& query) {
   boost::shared_ptr<Response> parent;
-  L(info) << "[" << site->getSubdomain() << "] createInfo '" << query << "'";
   if (responseId) {
     if (responses.size() >= responseId) {
       parent = responses[responseId-1];
@@ -34,7 +33,6 @@ json Session::createInfo(const int32_t responseId, const string& query) {
 
 json Session::data(const int32_t responseId) {
   boost::shared_ptr<Response> response;
-  L(info) << "[" << site->getSubdomain() << "] data";
   if (responses.size() >= responseId) {
     response = responses[responseId-1];
   } else {
@@ -45,7 +43,6 @@ json Session::data(const int32_t responseId) {
 
 json Session::get(const int32_t responseId, const std::string& query, const std::map<std::string, std::string> & options) {
   boost::shared_ptr<Response> parent;
-  L(info) << "[" << site->getSubdomain() << "] get '" << query << "'";
   if (responseId) {
     if (responses.size() >= responseId) {
       parent = responses[responseId-1];
@@ -72,7 +69,6 @@ boost::shared_ptr<Site> Session::getSite() {
 
 json Session::structure(const int32_t responseId) {
   boost::shared_ptr<Response> response;
-  L(info) << "[" << site->getSubdomain() << "] structure";
   if (responses.size() >= responseId) {
     response = responses[responseId-1];
   } else {

@@ -18,6 +18,7 @@ using namespace std;
 MysqlProxy::MysqlProxy(string host, string username, string password, string database, int workers) 
   : host(host), username(username), password(password), database(database) {
   int poolSize = workers / 4;
+  if (poolSize < 1) poolSize = 1;
   this->availableConnections = 0;
   L(info) << " Connecting to MySQL Server: " << host;
   for (int i = 0; i < poolSize; i++) {

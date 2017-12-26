@@ -8,6 +8,7 @@ using std::string;
 
 MemcacheProxy::MemcacheProxy(std::string c, int workers) {
   int poolSize = workers / 4;
+  if (poolSize < 1) poolSize = 1;
   this->availableConnections = 0;
   pcrecpp::RE(",").Replace(" --SERVER=", &c);
   connectString = "--TCP-KEEPALIVE --BINARY-PROTOCOL --SERVER=" + c;
