@@ -29,7 +29,7 @@ struct transfer {
 
     tempfs.open(tempname.c_str(), fstream::out);
     if (!tempfs.is_open()) {
-        L(warning) << "Unable to create temporary file " << tempname << " for object " << objectname;
+        L(warning) << "Unable to create temporary file " << tempname << " for S3 object " << objectname;
     }
   }
 
@@ -71,15 +71,14 @@ struct transfer {
   }
 
   string get_value() {
-    if(!failed)
-      return ss.str();
+    if (!failed) return ss.str();
 
-    if(boostfs::exists(cachename)) {
-      L(warning) << "Pulling object from cache: " + objectname;
+    if (boostfs::exists(cachename)) {
+      L(warning) << "Pulling object from S3 cache: " + objectname;
       return read_cache(objectname);
     }
 
-    L(error) << "Fetch of object failed and cache unavailable: " + objectname;
+    L(error) << "Could not download object from S3: " + objectname;
     return "";
   }
 
