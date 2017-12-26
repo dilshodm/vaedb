@@ -47,6 +47,7 @@ int main(int argc, char **argv) {
   string bus_bindaddress;
   char *_access_key = getenv("AWS_ACCESS_KEY");
   char *_secret_key = getenv("AWS_SECRET_KEY");
+  char *_aws_bucket = getenv("AWS_BUCKET_PRIVATE");
   char *_mysql_username = getenv("MYSQL_USERNAME");
   char *_mysql_password = getenv("MYSQL_PASSWORD");
   char *_mysql_database = getenv("MYSQL_DATABASE");
@@ -60,7 +61,7 @@ int main(int argc, char **argv) {
   string mysql_database(_mysql_database ? _mysql_database : "vaedb");
   string mysql_host(_mysql_host ? _mysql_host : "localhost");
   string memcached_host(_memcached_host ? _memcached_host : "127.0.0.1");
-  string aws_bucket;
+  string aws_bucket(_aws_bucket ? _aws_bucket : "");
   string feed_cache_path;
 
   po::options_description desc("vaedb options", 80);
