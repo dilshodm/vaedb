@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
     ("aws_secret_key,S", po::value<string>(&aws_secret_key)->default_value(aws_secret_key), "AWS secret key")
     ("aws_bucket,U", po::value<string>(&aws_bucket)->default_value(aws_bucket), "AWS bucket")
     ("feed_cache_path", po::value<string>(&feed_cache_path)->default_value("/tmp"), "feed cache path")
-    ("workers,w", po::value<int>(&workers)->default_value(12), "number of worker threads to spawn")
+    ("workers,w", po::value<int>(&workers)->default_value(128), "number of worker threads to spawn")
     ("mysql_username", po::value<string>(&mysql_username), "MySQL username")
     ("mysql_password", po::value<string>(&mysql_password), "MySQL password")
     ("mysql_database", po::value<string>(&mysql_database), "MySQL database name")
