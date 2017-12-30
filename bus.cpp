@@ -16,7 +16,9 @@ using namespace boost;
 using std::string;
 
 Bus::Bus(boost::shared_ptr<Server> server, string bindaddress)
-    : _server(server), _bindaddress(bindaddress) { }
+    : _server(server), _bindaddress(bindaddress) {
+  boost::thread *t = new boost::thread(boost::bind(&Bus::run, this));
+}
 
 void Bus::reload(string subdomain) {
   _server->reloadSite(subdomain);
@@ -30,6 +32,8 @@ void Bus::run() {
   boost::posix_time::seconds waittime(0);
 
   subscriber.bind(_bindaddress.c_str());
+  L(info) << " ZMQ listening at " << _bindaddress;
+
   while(true) {
     zmq::message_t update;
     subscriber.recv(&update);

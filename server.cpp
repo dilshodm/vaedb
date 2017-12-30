@@ -20,14 +20,16 @@ using namespace std;
 void eatErrors(void * ctx, const char * msg, ...) { }
 
 Server::Server(int workers, int port, QueryLog &queryLog, MemcacheProxy &memcacheProxy, MysqlProxy &mysqlProxy)
-  :  queryLog(queryLog), memcacheProxy(memcacheProxy), mysqlProxy(mysqlProxy) {
+  : workers(workers), port(port), queryLog(queryLog), memcacheProxy(memcacheProxy), mysqlProxy(mysqlProxy) {
 
   nextSessionId = 1;
   xmlInitParser();
   xmlSetGenericErrorFunc(NULL, eatErrors);
   writePid();
   new Reaper(this, mysqlProxy);
+}
 
+int Server::start() {
   served::multiplexer mux;
   map <string, HandlerFunction> nonSessionEndpoints = {
     { "ping",        boost::bind(&Server::ping,        this, _1, _2) },
@@ -75,10 +77,9 @@ Server::Server(int workers, int port, QueryLog &queryLog, MemcacheProxy &memcach
     server.run(workers);
   } catch (const std::exception& ex) {
     L(error) << ex.what();
-    exit(-1);
   }
 
-  L(error) << "VaeDB Running";
+  return 0;
 }
 
 Server::~Server() {

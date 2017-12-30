@@ -20,6 +20,8 @@ class Server {
 
  private:
   int nextSessionId;
+  int workers;
+  int port;
   SessionMap sessions;
   SiteMap sites;
   SiteMutexesMap siteMutexes;
@@ -40,6 +42,7 @@ class Server {
 
   Server(int workers, int port, QueryLog & queryLog, MemcacheProxy &memcacheProxy, MysqlProxy &mysqlProxy);
   ~Server();
+  int start();
   SessionMap& getSessions();
   string longTermKey(boost::shared_ptr<class Session>, string key);
   string shortTermKey(boost::shared_ptr<class Session>, string key);

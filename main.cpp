@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
   MysqlProxy mysql(mysql_host, mysql_username, mysql_password, mysql_database, workers);
   boost::shared_ptr<Server> server(new Server(workers, port, query_log, memcache, mysql));
   Bus *bus(new Bus(server, vm["busaddress"].as<string>()));
-  bus->run();
+  server->start();
 
   return EXIT_SUCCESS;
 }
