@@ -45,8 +45,10 @@ Context::Context(Site *s, const xmlNodePtr n) : site(s) {
       }
     }
   }
+  if (permalink) {
+    site->permalinks[permalink] = node;
+  }
   site->nodes[id] = node;
-
 }
 
 int Context::getCount(const string &query) {
@@ -207,7 +209,6 @@ json Context::toJson() {
   }
   if (permalink) {
     j["permalink"] = permalink;
-    site->permalinks[permalink] = node;
   }
   if (id == 0) {
     j["data"] = getSingleData();
