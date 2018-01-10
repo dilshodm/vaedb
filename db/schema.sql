@@ -2,7 +2,7 @@ USE vaedb;
 
 CREATE TABLE `kvstore` (
   `subdomain` char(25) NOT NULL,
-  `k` varchar(191) NOT NULL,
+  `k` varchar(190) NOT NULL,
   `v` text NOT NULL,
   `expire_at` datetime DEFAULT NULL,
   `is_filename` tinyint(1) DEFAULT '0',
@@ -11,7 +11,7 @@ CREATE TABLE `kvstore` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `locks` (
-  `subdomain` varchar(25) DEFAULT NULL,
+  `subdomain` varchar(190) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   UNIQUE KEY `subdomain` (`subdomain`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
