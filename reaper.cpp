@@ -24,7 +24,7 @@ Reaper::Reaper(Server *h, MysqlProxy &p) : server(h), mysqlProxy(p) {
 
 void Reaper::Run() {
   while (1) {
-    sleep(SESSION_REAP_TIME / 2);
+    sleep(2);
     time_t now = time(NULL);
     {
       boost::unique_lock<boost::mutex> lock(server->sessionsMutex);
