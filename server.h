@@ -32,8 +32,6 @@ class Server {
 
   boost::shared_ptr<class Site> getSite(std::string subdomain, std::string secretKey, bool stagingMode);
   inline boost::shared_ptr<class Site> _getSite(std::string const & sitesKey, std::string const & secretKey);
-  inline void _eraseSite(std::string const & sitesKey, std::string const & secretKey, bool force);
-  inline void _resetSite(std::string const & sitesKey, std::string const & secretKey, bool force);
   inline boost::shared_ptr<class Site> _loadSite(std::string const & subdomain, bool stagingMode, std::string const & xml);
   inline boost::mutex & _get_site_mutex(std::string const & subdomain, bool stagingMode);
 

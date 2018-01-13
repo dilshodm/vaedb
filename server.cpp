@@ -196,52 +196,16 @@ boost::shared_ptr<Site> Server::_getSite(string const & sitesKey, string const &
 }
 
 void Server::reloadSite(string const & subdomain) {
-  bool reload_prod;
-  bool reload_staging;
-
-  {
-    boost::unique_lock<boost::mutex> lock(sitesMutex);
-    reload_prod = sites.count(subdomain) > 0;
-    reload_staging = sites.count(subdomain + ".staging") > 0;
-  }
-
-  string rawxml(read_s3(subdomain+"-feed.xml"));
-  _resetSite(subdomain, "", true);
-
-
-  if (reload_prod) {
-     boost::unique_lock<boost::mutex> lockSite(_get_site_mutex(subdomain, 0));
-    _loadSite(subdomain, 0, rawxml);
-  }
-
-  if (reload_staging) {
-     boost::unique_lock<boost::mutex> lockSite(_get_site_mutex(subdomain, 1));
-    _loadSite(subdomain, 1, rawxml);
-  }
-}
-
-inline
-void Server::_resetSite(string const & subdomain, string const & secretKey, bool force) {
   boost::unique_lock<boost::mutex> lock(sitesMutex);
+  if (subdomain == "all") {
+    sites.clear();
+  }
   if (sites.count(subdomain)) {
-    _eraseSite(subdomain, secretKey, force);
+    sites.erase(subdomain);
   }
-
-  string staging(subdomain + ".staging");
-
-  if (sites.count(staging)) {
-    _eraseSite(staging, secretKey, force);
+  if (sites.count(subdomain + ".staging")) {
+    sites.erase(subdomain + ".staging");
   }
-}
-
-inline
-void Server::_eraseSite(string const & sitesKey, string const & secretKey, bool force) {
-  //expects siteMutex held
-
-  if(!force)
-    sites[sitesKey]->validateSecretKey(secretKey);
-
-  sites.erase(sitesKey);
 }
 
 SessionMap& Server::getSessions() {
