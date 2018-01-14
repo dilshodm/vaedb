@@ -49,6 +49,7 @@ Query::Query(Site *s, Context *context, const string &q) : site(s), xpathObj(NUL
   }
   if (pcrecpp::RE("([0-9]+)(/.*|)").FullMatch(query, &id, &query)) {
     find(atoi(id.c_str()));
+    // WARNING: size is used, but not initialized, it maybe arbitrary value
     if (size && (query.length() > 0)) {
       context = (Context *)getNode(0)->_private;
       if (xpathObj != NULL) {

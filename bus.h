@@ -9,6 +9,7 @@
 class Bus {
   std::string _bindaddress;
   boost::shared_ptr<Server> _server;
+  boost::shared_ptr<boost::thread> t;
 
   void reload(std::string subdomain);
 

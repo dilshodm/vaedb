@@ -16,8 +16,9 @@ using namespace boost;
 using std::string;
 
 Bus::Bus(boost::shared_ptr<Server> server, string bindaddress)
-    : _server(server), _bindaddress(bindaddress) {
-  boost::thread *t = new boost::thread(boost::bind(&Bus::run, this));
+    : _server(server), _bindaddress(bindaddress),
+      t(new boost::thread(boost::bind(&Bus::run, this)))
+{
 }
 
 void Bus::reload(string subdomain) {

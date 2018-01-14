@@ -18,8 +18,9 @@ using namespace std;
 #include "server.h"
 #include "session.h"
 
-Reaper::Reaper(Server *h, MysqlProxy &p) : server(h), mysqlProxy(p) {
-  boost::thread *t = new boost::thread(boost::bind(&Reaper::Run, this));
+Reaper::Reaper(Server *h, MysqlProxy &p) : server(h), mysqlProxy(p),
+    t(new boost::thread(boost::bind(&Reaper::Run, this)))
+{
 }
 
 void Reaper::Run() {
